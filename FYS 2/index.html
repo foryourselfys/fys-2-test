@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <title>FYS – Personal Performance Index</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+
+<!-- Loading Screen -->
+<div class="loading-screen" id="loadingScreen">
+  <div class="loading-content">
+    <div class="loading-logo">
+      <div class="logo-hex-large">
+        <div class="logo-hex-inner"></div>
+        <div class="logo-hex-inner"></div>
+        <div class="logo-hex-inner"></div>
+        <span class="logo-text-large">FYS</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<header>
+  <div class="logo">
+    <div class="logo-hex">
+      <span>FYS</span>
+    </div>
+  </div>
+  <nav>
+    <a href="#features">Features</a>
+    <a href="#pricing">Preise</a>
+    <a href="#about">Über</a>
+    <button class="login-btn" onclick="window.location.href='/app'">Login</button>
+  </nav>
+</header>
+
+<section class="hero">
+  <div class="hero-glow"></div>
+  <h1>Track Your Personal Performance <span class="gradient-text">Like a Stock</span></h1>
+  <p>FYS verwandelt Disziplin, Fokus, Fitness und Mindset in deinen persönlichen Performance-Index.</p>
+  <button class="cta-btn" onclick="window.location.href='/app'">
+    Get Started
+    <span class="btn-glow"></span>
+  </button>
+
+  <div class="hero-stats">
+    <div class="stat-card">
+      <div class="stat-icon">📈</div>
+      <div class="stat-value">+24.5%</div>
+      <div class="stat-label">Avg. Performance</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">🎯</div>
+      <div class="stat-value">89%</div>
+      <div class="stat-label">Goal Success</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">🔥</div>
+      <div class="stat-value">127</div>
+      <div class="stat-label">Day Streak</div>
+    </div>
+  </div>
+</section>
+
+<section id="features">
+  <div class="section-header">
+    <h2>Features</h2>
+    <p>Alles was du brauchst, um deine Performance zu maximieren</p>
+  </div>
+
+  <div class="features-grid">
+    <div class="feature-card">
+      <div class="feature-icon">📈</div>
+      <h3>FYS-Kurs</h3>
+      <p>Dein persönlicher Performance-Index, der deine Entwicklung in Echtzeit tracked wie ein Aktienkurs.</p>
+    </div>
+
+    <div class="feature-card">
+      <div class="feature-icon">🧠</div>
+      <h3>Daily Check-in</h3>
+      <p>Tägliche Bewertung deiner Leistung in den Kategorien Disziplin, Fokus, Fitness und Mindset.</p>
+    </div>
+
+    <div class="feature-card">
+      <div class="feature-icon">💎</div>
+      <h3>Performance-Packs</h3>
+      <p>Sammle und kombiniere Performance-Packs für Bonus-Punkte und langfristige Verbesserungen.</p>
+    </div>
+
+    <div class="feature-card">
+      <div class="feature-icon">📊</div>
+      <h3>Analytics Dashboard</h3>
+      <p>Detaillierte Einblicke in deine Performance-Entwicklung mit Charts und Statistiken.</p>
+    </div>
+  </div>
+</section>
+
+<section id="pricing">
+  <div class="section-header">
+    <h2>Preise</h2>
+    <p>Wähle den Plan, der zu dir passt</p>
+  </div>
+
+  <div class="pricing-grid">
+    <div class="pricing-card">
+      <div class="pricing-badge">Free</div>
+      <h3>Starter</h3>
+      <div class="pricing-value">€0<span>/Monat</span></div>
+      <ul class="pricing-features">
+        <li>✓ Basis-Tracking</li>
+        <li>✓ Performance-Dashboard</li>
+        <li>✓ 30 Tage Historie</li>
+        <li>✓ FYS-Kurs Tracking</li>
+      </ul>
+      <button class="pricing-btn">Jetzt starten</button>
+    </div>
+
+    <div class="pricing-card featured">
+      <div class="pricing-badge pro">Pro</div>
+      <h3>Professional</h3>
+      <div class="pricing-value">€9<span>/Monat</span></div>
+      <ul class="pricing-features">
+        <li>✓ Alle Free Features</li>
+        <li>✓ Performance-Packs</li>
+        <li>✓ Deep Analytics</li>
+        <li>✓ Unbegrenzte Historie</li>
+        <li>✓ Export-Funktion</li>
+        <li>✓ Erweiterte Statistiken</li>
+      </ul>
+      <button class="pricing-btn pro">Upgrade jetzt</button>
+    </div>
+  </div>
+</section>
+
+<section id="about">
+  <div class="about-content">
+    <h2>Über FYS</h2>
+    <p>FYS ist eine Performance-Plattform für Menschen, die sich selbst wie ein Investment behandeln. Wir glauben, dass persönliche Entwicklung messbar sein sollte – nicht durch vage Gefühle, sondern durch klare Daten.</p>
+    <p>Dein persönlicher FYS-Kurs zeigt dir, ob du auf dem richtigen Weg bist. Steigt er, machst du Fortschritte. Fällt er, ist es Zeit für Anpassungen.</p>
+    <div class="about-cta">
+      <button onclick="window.location.href='/app'">Starte deine Performance-Journey</button>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-content">
+    <div class="footer-logo">
+      <div class="logo-hex small">
+        <span>FYS</span>
+      </div>
+      <p>Track Your Personal Performance</p>
+    </div>
+    <div class="footer-links">
+      <a href="#features">Features</a>
+      <a href="#pricing">Preise</a>
+      <a href="#about">Über</a>
+      <a href="#">Impressum</a>
+      <a href="#">Datenschutz</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>© 2026 FYS – For Yourself</p>
+  </div>
+</footer>
+
+<script>
+  // Loading Screen Animation
+  window.addEventListener('load', () => {
+    setTimeout(() => {
+      const loadingScreen = document.getElementById('loadingScreen');
+      loadingScreen.classList.add('hidden');
+    }, 1500);
+  });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,4522 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FYS - For Yourself</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root[data-theme="dark"] {
+            --bg-primary: #000000;
+            --bg-secondary: #0a0a0a;
+            --bg-card: #111111;
+            --bg-elevated: #1a1a1a;
+            --text-primary: #ffffff;
+            --text-secondary: #6b6b6b;
+            --text-tertiary: #404040;
+            --accent-primary: #ff6b35;
+            --accent-up: #00ff88;
+            --accent-down: #ff3366;
+            --border: #1a1a1a;
+            --border-light: #2a2a2a;
+        }
+
+        :root[data-theme="light"] {
+            --bg-primary: #ffffff;
+            --bg-secondary: #ffffff;
+            --bg-card: #ffffff;
+            --bg-elevated: #ffffff;
+            --text-primary: #ff6b35;
+            --text-secondary: #ff8f5f;
+            --text-tertiary: #ffb89d;
+            --accent-primary: #ff6b35;
+            --accent-up: #00c96d;
+            --accent-down: #ff3366;
+            --border: #ffe8e0;
+            --border-light: #fff5f0;
+        }
+        /* ============================================
+           Loading Screen - Modern Design (Website Style)
+           ============================================ */
+
+        .loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: #000;
+            z-index: 99999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.8s ease, visibility 0.8s ease;
+            overflow: hidden;
+        }
+
+        .loading-screen::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(255, 107, 53, 0.15), transparent 70%);
+            border-radius: 50%;
+            pointer-events: none;
+            animation: glowPulse 4s ease-in-out infinite;
+        }
+
+        @keyframes glowPulse {
+            0%, 100% {
+                transform: translate(-50%, -50%) scale(1);
+                opacity: 0.5;
+            }
+            50% {
+                transform: translate(-50%, -50%) scale(1.2);
+                opacity: 0.8;
+            }
+        }
+
+        .loading-screen.hidden {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+        }
+
+        .loading-content {
+            text-align: center;
+        }
+
+        .loading-logo {
+            animation: logoFloat 2s ease-in-out infinite;
+        }
+
+        @keyframes logoFloat {
+            0%, 100% {
+                transform: translateY(0px);
+            }
+            50% {
+                transform: translateY(-15px);
+            }
+        }
+
+        .logo-hex-large {
+            width: 140px;
+            height: 140px;
+            position: relative;
+            margin: 0 auto;
+            filter: drop-shadow(0 0 40px rgba(255, 107, 53, 0.5));
+        }
+
+        .logo-hex-large .logo-hex-inner {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, #ff6b35, #ff8f5f);
+            clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+            animation: hexPulse 2s ease-in-out infinite;
+        }
+
+        .logo-hex-large .logo-hex-inner:nth-child(1) {
+            animation-delay: 0s;
+            opacity: 0.3;
+        }
+
+        .logo-hex-large .logo-hex-inner:nth-child(2) {
+            animation-delay: 0.2s;
+            opacity: 0.5;
+        }
+
+        .logo-hex-large .logo-hex-inner:nth-child(3) {
+            animation-delay: 0.4s;
+            opacity: 0.9;
+        }
+
+        @keyframes hexPulse {
+            0%, 100% {
+                transform: scale(1) rotate(0deg);
+                opacity: 0.3;
+            }
+            50% {
+                transform: scale(1.15) rotate(5deg);
+                opacity: 1;
+            }
+        }
+
+        .logo-text-large {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 42px;
+            font-weight: 900;
+            color: #000;
+            z-index: 10;
+            letter-spacing: -2px;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        /* Loading Screen */
+        .loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, #000000 0%, #1a1a1a 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            animation: fadeOut 0.5s 2s forwards;
+        }
+
+        @keyframes fadeOut {
+            to {
+                opacity: 0;
+                pointer-events: none;
+            }
+        }
+
+        .logo-container {
+            position: relative;
+            width: 180px;
+            height: 180px;
+            margin-bottom: 32px;
+        }
+
+        .logo-circle {
+            position: absolute;
+            width: 180px;
+            height: 180px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(40, 30, 20, 1) 0%, rgba(20, 15, 10, 1) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 60px rgba(255, 107, 53, 0.4),
+                        inset 0 0 40px rgba(0, 0, 0, 0.6);
+        }
+
+        .logo-ring {
+            position: absolute;
+            width: 180px;
+            height: 180px;
+            border-radius: 50%;
+            border: 10px solid transparent;
+            border-top-color: #ff6b35;
+            border-right-color: #ff6b35;
+            border-bottom-color: #ff6b35;
+            animation: rotate 3s linear infinite;
+            filter: drop-shadow(0 0 20px rgba(255, 107, 53, 0.6));
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .logo-segment-1 {
+            position: absolute;
+            width: 180px;
+            height: 180px;
+            border-radius: 50%;
+            border: 10px solid transparent;
+            border-top-color: #ff6b35;
+            transform: rotate(45deg);
+            opacity: 0.6;
+        }
+
+        .logo-segment-2 {
+            position: absolute;
+            width: 180px;
+            height: 180px;
+            border-radius: 50%;
+            border: 10px solid transparent;
+            border-bottom-color: #ff6b35;
+            transform: rotate(135deg);
+            opacity: 0.6;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .logo-text {
+            font-size: 42px;
+            font-weight: 900;
+            color: #000;
+            letter-spacing: -2px;
+        }
+
+        .brand-tagline {
+            font-size: 18px;
+            font-weight: 700;
+            color: #ff6b35;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            animation: fadeIn 0.8s 0.5s both;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .app-container {
+            max-width: 480px;
+            margin: 0 auto;
+            padding-bottom: 110px;
+            min-height: 100vh;
+        }
+
+        /* Header with Logo */
+        .header {
+            background: var(--bg-secondary);
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(20px);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo-hex {
+            width: 36px;
+            height: 36px;
+            position: relative;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(40, 30, 20, 1) 0%, rgba(20, 15, 10, 1) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 20px rgba(255, 107, 53, 0.3),
+                        inset 0 0 15px rgba(0, 0, 0, 0.5);
+        }
+
+        .logo-hex::before {
+            content: '';
+            position: absolute;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border: 2px solid transparent;
+            border-top-color: #ff6b35;
+            border-right-color: #ff6b35;
+        }
+
+        .logo-hex-text {
+            font-size: 13px;
+            font-weight: 900;
+            color: #ffffff;
+            letter-spacing: -0.5px;
+            z-index: 1;
+            text-shadow: 0 2px 8px rgba(255, 107, 53, 0.5);
+        }
+
+        .header-date {
+            font-size: 13px;
+            color: var(--text-secondary);
+            font-weight: 600;
+        }
+
+        /* Home View */
+        .home-content {
+            padding: 20px;
+        }
+
+        .index-label {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--text-tertiary);
+            font-weight: 700;
+            margin-bottom: 12px;
+            text-align: center;
+        }
+
+        .main-chart-section {
+            background: var(--bg-card);
+            border-radius: 20px;
+            border: 1px solid var(--border);
+            padding: 24px;
+            margin-bottom: 20px;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .main-chart-section:active {
+            transform: scale(0.98);
+        }
+
+        .main-chart-container {
+            position: relative;
+            height: 220px;
+            margin-bottom: 20px;
+        }
+
+        .index-value-display {
+            text-align: center;
+        }
+
+        .index-value-number {
+            font-size: 48px;
+            font-weight: 800;
+            letter-spacing: -2px;
+            line-height: 1;
+            margin-bottom: 8px;
+        }
+
+        .index-value-number.positive {
+            color: var(--accent-up);
+        }
+
+        .index-value-number.negative {
+            color: var(--accent-down);
+        }
+
+        .index-change-text {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+
+        .tap-hint {
+            text-align: center;
+            margin-top: 12px;
+            font-size: 11px;
+            color: var(--text-tertiary);
+            opacity: 0.6;
+        }
+
+        .time-selector {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+
+        .time-btn {
+            padding: 8px 16px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            color: var(--text-secondary);
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            transition: all 0.2s;
+            font-family: inherit;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2px;
+        }
+
+        .time-btn.active {
+            background: var(--accent-primary);
+            color: #000;
+            border-color: var(--accent-primary);
+        }
+
+        /* Glassmorphism für alle Cards */
+        .widget-card,
+        .main-chart-section,
+        .chart-card,
+        .stock-list-container,
+        .journal-calendar,
+        .journal-entry-section,
+        .category-chart-card {
+            background: rgba(17, 17, 17, 0.6) !important;
+            backdrop-filter: blur(20px) saturate(180%);
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3),
+                        inset 0 1px 0 rgba(255, 255, 255, 0.05);
+        }
+
+        [data-theme="light"] .widget-card,
+        [data-theme="light"] .main-chart-section,
+        [data-theme="light"] .chart-card,
+        [data-theme="light"] .stock-list-container,
+        [data-theme="light"] .journal-calendar,
+        [data-theme="light"] .journal-entry-section,
+        [data-theme="light"] .category-chart-card {
+            background: rgba(255, 255, 255, 0.7) !important;
+            backdrop-filter: blur(20px) saturate(180%);
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
+            border: 1px solid rgba(0, 0, 0, 0.06);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08),
+                        inset 0 1px 0 rgba(255, 255, 255, 0.9);
+        }
+
+        /* Widget Cards */
+        .widget-card {
+            background: var(--bg-card);
+            border-radius: 20px;
+            border: 1px solid var(--border);
+            padding: 20px;
+            margin-bottom: 16px;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .widget-card:active {
+            transform: scale(0.98);
+        }
+
+        .widget-card.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .widget-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .widget-title {
+            font-size: 16px;
+            font-weight: 700;
+        }
+
+        .widget-icon {
+            font-size: 24px;
+        }
+
+        .widget-icon.premium-icon {
+            width: 28px;
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .widget-icon.premium-icon svg {
+            width: 100%;
+            height: 100%;
+            stroke: var(--accent-primary);
+            filter: drop-shadow(0 2px 6px rgba(255, 107, 53, 0.3));
+        }
+
+        .widget-stats {
+            display: flex;
+            gap: 16px;
+        }
+
+        .widget-stat {
+            flex: 1;
+        }
+
+        .widget-stat-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--accent-primary);
+        }
+
+        .widget-stat-label {
+            font-size: 11px;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-top: 4px;
+        }
+
+        .coming-soon-badge {
+            display: inline-block;
+            background: var(--bg-elevated);
+            padding: 4px 10px;
+            border-radius: 8px;
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--text-tertiary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Check-in View */
+        .checkin-content {
+            padding: 20px;
+        }
+
+        .section-title {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 12px;
+            letter-spacing: -0.8px;
+        }
+
+        .checkin-status {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .status-icon {
+            font-size: 48px;
+            margin-bottom: 12px;
+        }
+
+        .status-title {
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .status-subtitle {
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-bottom: 16px;
+        }
+
+        .edit-btn {
+            background: var(--accent-primary);
+            color: #000;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            font-family: inherit;
+        }
+
+        .category-input {
+            margin-bottom: 28px;
+        }
+
+        .category-label {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 14px;
+        }
+
+        .input-category-name {
+            font-size: 14px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .input-category-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .input-category-icon svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        .input-category-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+
+        .category-value-display {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--accent-primary);
+        }
+
+        .slider {
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background: var(--bg-elevated);
+            outline: none;
+            -webkit-appearance: none;
+            cursor: pointer;
+        }
+
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--accent-primary);
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(255, 107, 53, 0.4);
+        }
+
+        .slider::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--accent-primary);
+            cursor: pointer;
+            border: none;
+        }
+
+        .sleep-input {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 28px;
+        }
+
+        .sleep-label {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 14px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .sleep-value-display {
+            text-align: center;
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--accent-primary);
+            margin: 20px 0;
+        }
+
+        .sleep-controls {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .sleep-btn {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: var(--bg-elevated);
+            border: 1px solid var(--border);
+            color: var(--text-primary);
+            font-size: 24px;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: inherit;
+            transition: all 0.2s;
+        }
+
+        .sleep-btn:active {
+            transform: scale(0.95);
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 18px;
+            background: var(--accent-primary);
+            color: #000;
+            border: none;
+            border-radius: 14px;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: transform 0.2s;
+            font-family: inherit;
+        }
+
+        .submit-btn:active {
+            transform: scale(0.98);
+        }
+
+        /* Habit & Sober Tracker */
+        .tracker-content {
+            padding: 20px;
+        }
+
+        .coming-soon-screen {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 60px 24px;
+            text-align: center;
+        }
+
+        .coming-soon-icon {
+            font-size: 64px;
+            margin-bottom: 20px;
+            opacity: 0.3;
+        }
+
+        .coming-soon-title {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .coming-soon-text {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Settings */
+        .settings-content {
+            padding: 20px;
+        }
+
+        .setting-item {
+            background: var(--bg-card);
+            border-radius: 16px;
+            border: 1px solid var(--border);
+            padding: 20px;
+            margin-bottom: 16px;
+        }
+
+        .setting-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 14px;
+        }
+
+        .setting-label {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 6px;
+            display: block;
+            min-height: 18px;
+        }
+
+        .setting-description {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-bottom: 14px;
+            line-height: 1.5;
+            display: block;
+            min-height: 16px;
+        }
+
+        .setting-options {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .setting-option {
+            padding: 10px 18px;
+            background: var(--bg-elevated);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            transition: all 0.2s;
+        }
+
+        .setting-option.active {
+            background: var(--accent-primary);
+            color: #000;
+            border-color: var(--accent-primary);
+        }
+
+        .sleep-goal-input {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .sleep-goal-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--bg-elevated);
+            border: 1px solid var(--border);
+            color: var(--text-primary);
+            font-size: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: inherit;
+        }
+
+        .sleep-goal-value {
+            flex: 1;
+            text-align: center;
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--accent-primary);
+        }
+
+        .toggle-switch {
+            position: relative;
+            width: 50px;
+            height: 28px;
+            background: var(--bg-elevated);
+            border-radius: 14px;
+            cursor: pointer;
+            transition: background 0.3s;
+            border: 1px solid var(--border);
+        }
+
+        .toggle-switch.active {
+            background: var(--accent-primary);
+            border-color: var(--accent-primary);
+        }
+
+        .toggle-slider {
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            width: 20px;
+            height: 20px;
+            background: var(--bg-card);
+            border-radius: 50%;
+            transition: transform 0.3s;
+        }
+
+        .toggle-switch.active .toggle-slider {
+            transform: translateX(22px);
+            background: #000;
+        }
+
+        /* Chart Details */
+        .chart-details-view {
+            padding: 20px;
+        }
+
+        .back-button {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: none;
+            border: none;
+            color: var(--text-primary);
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            padding: 10px 0;
+            margin-bottom: 20px;
+            font-family: inherit;
+        }
+
+        /* Flatex-Style Stock List */
+        .stock-list-container {
+            background: var(--bg-card);
+            border-radius: 20px;
+            border: 1px solid var(--border);
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+
+        .stock-list-header {
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .stock-list-title {
+            font-size: 18px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+
+        .stock-item {
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border-light);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .stock-item:last-child {
+            border-bottom: none;
+        }
+
+        .stock-item:active {
+            background: var(--bg-elevated);
+        }
+
+        .stock-item-left {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            flex: 1;
+        }
+
+        .stock-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+
+        .stock-icon svg {
+            width: 22px;
+            height: 22px;
+        }
+
+        .stock-info {
+            flex: 1;
+        }
+
+        .stock-name {
+            font-size: 15px;
+            font-weight: 600;
+            margin-bottom: 3px;
+            letter-spacing: -0.2px;
+        }
+
+        .stock-symbol {
+            font-size: 12px;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .stock-item-right {
+            text-align: right;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 3px;
+        }
+
+        .stock-price {
+            font-size: 17px;
+            font-weight: 700;
+            letter-spacing: -0.3px;
+        }
+
+        .stock-change {
+            font-size: 13px;
+            font-weight: 600;
+            padding: 3px 8px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            gap: 3px;
+        }
+
+        .stock-change.positive {
+            background: rgba(0, 201, 109, 0.15);
+            color: var(--accent-up);
+        }
+
+        .stock-change.negative {
+            background: rgba(255, 51, 102, 0.15);
+            color: var(--accent-down);
+        }
+
+        .stock-change.neutral {
+            background: var(--bg-elevated);
+            color: var(--text-secondary);
+        }
+
+        .stock-arrow {
+            font-size: 10px;
+        }
+
+        /* FYS Index Summary Card */
+        .fys-index-summary {
+            background: linear-gradient(135deg, var(--accent-primary) 0%, #ff8f5f 100%);
+            border-radius: 20px;
+            padding: 24px;
+            margin-bottom: 20px;
+            color: #ffffff;
+            box-shadow: 0 8px 24px rgba(255, 107, 53, 0.3);
+        }
+
+        .fys-index-label {
+            font-size: 13px;
+            font-weight: 600;
+            opacity: 0.9;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .fys-index-value {
+            font-size: 48px;
+            font-weight: 800;
+            letter-spacing: -2px;
+            margin-bottom: 8px;
+        }
+
+        .fys-index-change {
+            font-size: 16px;
+            font-weight: 600;
+            opacity: 0.95;
+        }
+
+        .chart-card {
+            background: var(--bg-card);
+            border-radius: 20px;
+            border: 1px solid var(--border);
+            padding: 24px;
+            margin-bottom: 20px;
+        }
+
+        .chart-title {
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            letter-spacing: -0.3px;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 250px;
+        }
+
+        .single-chart-container {
+            position: relative;
+            height: 180px;
+        }
+
+        /* Category Detail Modal */
+        .category-detail-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: var(--bg-primary);
+            z-index: 150;
+            display: none;
+            flex-direction: column;
+            animation: slideUp 0.3s ease-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(100%);
+            }
+            to {
+                transform: translateY(0);
+            }
+        }
+
+        .category-detail-modal.active {
+            display: flex;
+        }
+
+        /* Journal Modal */
+        .journal-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: var(--bg-primary);
+            z-index: 150;
+            display: none;
+            flex-direction: column;
+            animation: slideUp 0.3s ease-out;
+        }
+
+        .journal-modal.active {
+            display: flex;
+        }
+
+        .journal-header {
+            padding: 20px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .journal-title {
+            font-size: 20px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+
+        .journal-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+        }
+
+        .journal-calendar {
+            background: var(--bg-card);
+            border-radius: 20px;
+            border: 1px solid var(--border);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .calendar-month {
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .calendar-nav-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: var(--bg-elevated);
+            border: 1px solid var(--border);
+            color: var(--text-primary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            font-family: inherit;
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 8px;
+        }
+
+        .calendar-day-header {
+            text-align: center;
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--text-secondary);
+            padding: 8px 0;
+            text-transform: uppercase;
+        }
+
+        .calendar-day {
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+        }
+
+        .calendar-day:hover {
+            background: var(--bg-elevated);
+        }
+
+        .calendar-day.empty {
+            pointer-events: none;
+            opacity: 0;
+        }
+
+        .calendar-day.today {
+            background: var(--accent-primary);
+            color: #000;
+        }
+
+        .calendar-day.has-entry::after {
+            content: '';
+            position: absolute;
+            bottom: 4px;
+            width: 4px;
+            height: 4px;
+            border-radius: 50%;
+            background: var(--accent-primary);
+        }
+
+        .calendar-day.today.has-entry::after {
+            background: #000;
+        }
+
+        .journal-entry-section {
+            background: var(--bg-card);
+            border-radius: 20px;
+            border: 1px solid var(--border);
+            padding: 20px;
+            display: none;
+        }
+
+        .journal-entry-section.active {
+            display: block;
+        }
+
+        .journal-entry-date {
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 16px;
+            color: var(--accent-primary);
+        }
+
+        .journal-textarea {
+            width: 100%;
+            min-height: 200px;
+            padding: 16px;
+            background: var(--bg-elevated);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            color: var(--text-primary);
+            font-size: 14px;
+            font-family: inherit;
+            line-height: 1.6;
+            resize: vertical;
+        }
+
+        .journal-save-btn {
+            width: 100%;
+            padding: 14px;
+            background: var(--accent-primary);
+            color: #000;
+            border: none;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            margin-top: 12px;
+            font-family: inherit;
+        }
+
+        .category-detail-header {
+            padding: 20px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .category-detail-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .category-detail-icon svg {
+            width: 26px;
+            height: 26px;
+        }
+
+        .category-detail-info {
+            flex: 1;
+        }
+
+        .category-detail-name {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .category-detail-symbol {
+            font-size: 14px;
+            color: var(--text-secondary);
+            font-weight: 600;
+        }
+
+        .category-detail-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+        }
+
+        .category-detail-price-section {
+            margin-bottom: 24px;
+        }
+
+        .category-detail-price {
+            font-size: 42px;
+            font-weight: 800;
+            letter-spacing: -1.5px;
+            margin-bottom: 8px;
+        }
+
+        .category-detail-change {
+            font-size: 16px;
+            font-weight: 600;
+            padding: 6px 12px;
+            border-radius: 8px;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .category-time-selector {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 24px;
+        }
+
+        .category-time-btn {
+            padding: 8px 16px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            color: var(--text-secondary);
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            transition: all 0.2s;
+            font-family: inherit;
+        }
+
+        .category-time-btn.active {
+            background: var(--accent-primary);
+            color: #000;
+            border-color: var(--accent-primary);
+        }
+
+        .category-chart-card {
+            background: var(--bg-card);
+            border-radius: 20px;
+            border: 1px solid var(--border);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .category-chart-container {
+            position: relative;
+            height: 280px;
+        }
+
+        .coach-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 110px;
+            background: var(--bg-primary);
+            z-index: 250;
+            display: none;
+            flex-direction: column;
+        }
+
+        .coach-modal.active {
+            display: flex;
+        }
+
+        .coach-header {
+            padding: 20px;
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .coach-title {
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .close-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            color: var(--text-primary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            font-family: inherit;
+        }
+
+        .coach-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+        }
+
+        .message {
+            margin-bottom: 16px;
+            display: flex;
+            gap: 12px;
+            animation: messageIn 0.3s ease;
+        }
+
+        @keyframes messageIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .message.user {
+            flex-direction: row-reverse;
+        }
+
+        .message-bubble {
+            max-width: 80%;
+            padding: 14px 18px;
+            border-radius: 18px;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .message.assistant .message-bubble {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+        }
+
+        .message.user .message-bubble {
+            background: var(--accent-primary);
+            color: #000;
+            font-weight: 500;
+        }
+
+        .coach-input-area {
+            padding: 16px 20px;
+            background: var(--bg-secondary);
+            border-top: 1px solid var(--border);
+        }
+
+        .coach-input-wrapper {
+            display: flex;
+            gap: 10px;
+        }
+
+        .coach-input {
+            flex: 1;
+            padding: 14px 18px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            color: var(--text-primary);
+            font-size: 14px;
+            font-family: inherit;
+        }
+
+        .send-btn {
+            width: 46px;
+            height: 46px;
+            border-radius: 12px;
+            background: var(--accent-primary);
+            border: none;
+            color: #000;
+            font-size: 18px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: inherit;
+        }
+
+        .send-btn:disabled {
+            opacity: 0.4;
+        }
+
+        /* Bottom Navigation - Pushup App Style (Floating Pill) */
+        .bottom-nav {
+            position: fixed;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%);
+            max-width: 560px;
+            width: calc(100% - 40px);
+            height: 68px;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding: 0 20px;
+            z-index: 200;
+            
+            /* Glassmorphism Effect */
+            background: rgba(28, 28, 30, 0.78);
+            backdrop-filter: blur(40px) saturate(180%);
+            -webkit-backdrop-filter: blur(40px) saturate(180%);
+            
+            /* Floating Pill Shape */
+            border-radius: 34px;
+            border: 0.5px solid rgba(255, 255, 255, 0.18);
+            
+            /* Subtle Shadow */
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5),
+                        inset 0 1px 0 rgba(255, 255, 255, 0.15);
+        }
+
+        [data-theme="light"] .bottom-nav {
+            background: rgba(255, 255, 255, 0.88);
+            backdrop-filter: blur(40px) saturate(180%);
+            -webkit-backdrop-filter: blur(40px) saturate(180%);
+            border: 0.5px solid rgba(0, 0, 0, 0.08);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15),
+                        inset 0 1px 0 rgba(255, 255, 255, 0.95);
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            padding: 8px 14px;
+            cursor: pointer;
+            border: none;
+            background: transparent;
+            font-family: inherit;
+            position: relative;
+            flex: 1;
+            max-width: 80px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border-radius: 16px;
+        }
+
+        /* Inaktive Tabs */
+        .nav-item {
+            color: rgba(235, 235, 245, 0.6);
+        }
+
+        [data-theme="light"] .nav-item {
+            color: rgba(60, 60, 67, 0.6);
+        }
+
+        /* Aktiver Tab - Orange */
+        .nav-item.active {
+            color: #ff6b35;
+            transform: scale(1.05);
+        }
+
+        [data-theme="light"] .nav-item.active {
+            color: #ff6b35;
+        }
+
+        /* Pop Animation beim Aktivieren */
+        @keyframes tabPop {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.12); }
+            100% { transform: scale(1.05); }
+        }
+
+        .nav-item.active {
+            animation: tabPop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        /* Hover State */
+        .nav-item:hover:not(.active) {
+            color: rgba(235, 235, 245, 0.85);
+            transform: scale(1.02);
+        }
+
+        [data-theme="light"] .nav-item:hover:not(.active) {
+            color: rgba(60, 60, 67, 0.85);
+        }
+
+        /* Active Press State */
+        .nav-item:active {
+            transform: scale(0.95);
+        }
+
+        .nav-icon {
+            width: 26px;
+            height: 26px;
+            stroke: currentColor;
+            fill: none;
+            stroke-width: 2.2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* Aktives Icon - stärker */
+        .nav-item.active .nav-icon {
+            stroke-width: 2.6;
+            filter: drop-shadow(0 2px 6px rgba(255, 107, 53, 0.4));
+        }
+
+        .nav-label {
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: -0.2px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* Aktives Label - stärker */
+        .nav-item.active .nav-label {
+            font-weight: 700;
+            letter-spacing: -0.1px;
+        }
+
+        .view-section {
+            display: none;
+        }
+
+        .view-section.active {
+            display: block;
+        }
+
+        .success-toast {
+            position: fixed;
+            top: 80px;
+            left: 50%;
+            transform: translateX(-50%) translateY(-100px);
+            background: var(--accent-primary);
+            color: #000;
+            padding: 14px 24px;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 14px;
+            z-index: 400;
+            opacity: 0;
+            transition: all 0.3s;
+        }
+
+        .success-toast.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border: 2px solid var(--bg-elevated);
+            border-top-color: var(--accent-primary);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        /* ========================================
+           WIZARD CHECK-IN STYLES
+           ======================================== */
+        
+        /* Confirmation Dialog */
+        .wizard-confirm {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: calc(100vh - 200px);
+            padding: 40px 24px;
+        }
+
+        .confirm-content {
+            text-align: center;
+            max-width: 400px;
+        }
+
+        .confirm-icon {
+            font-size: 64px;
+            margin-bottom: 24px;
+        }
+
+        .confirm-title {
+            font-size: 24px;
+            font-weight: 800;
+            margin-bottom: 12px;
+            color: var(--text-primary);
+        }
+
+        .confirm-subtitle {
+            font-size: 15px;
+            color: var(--text-secondary);
+            margin-bottom: 32px;
+        }
+
+        .confirm-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        .btn-secondary {
+            flex: 1;
+            padding: 16px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            color: var(--text-secondary);
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .btn-primary-wizard {
+            flex: 1;
+            padding: 16px;
+            background: linear-gradient(135deg, #ff6b35, #ff8f5f);
+            border: none;
+            border-radius: 16px;
+            color: #000;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-primary-wizard:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(255, 107, 53, 0.3);
+        }
+
+        /* Wizard Container */
+        .wizard-container {
+            display: flex;
+            flex-direction: column;
+            height: calc(100vh - 80px); /* Space for bottom nav */
+            position: relative;
+        }
+
+        .wizard-header {
+            padding: 20px 24px 16px;
+            background: var(--bg-elevated);
+            border-bottom: 1px solid var(--border);
+            flex-shrink: 0; /* Don't shrink */
+        }
+
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .back-btn-wizard {
+            background: rgba(255, 107, 53, 0.1);
+            border: 1px solid rgba(255, 107, 53, 0.3);
+            color: var(--accent-primary);
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 20px;
+        }
+
+        .back-btn-wizard:hover {
+            background: rgba(255, 107, 53, 0.2);
+        }
+
+        .back-btn-wizard:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+
+        .close-btn-wizard {
+            background: none;
+            border: none;
+            color: #666;
+            font-size: 28px;
+            cursor: pointer;
+            width: 40px;
+            height: 40px;
+        }
+
+        .step-counter {
+            font-size: 13px;
+            color: var(--text-secondary);
+            font-weight: 600;
+        }
+
+        .progress-container-wizard {
+            height: 4px;
+            background: var(--bg-secondary);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .progress-bar-wizard {
+            height: 100%;
+            background: linear-gradient(90deg, #ff6b35, #ff8f5f);
+            transition: width 0.3s ease;
+            width: 12.5%;
+        }
+
+        .progress-dots {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+            margin-top: 12px;
+        }
+
+        .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #333;
+            transition: all 0.3s;
+        }
+
+        .dot.active {
+            background: var(--accent-primary);
+            width: 24px;
+            border-radius: 4px;
+        }
+
+        .dot.completed {
+            background: var(--accent-primary);
+        }
+
+        /* Content Area */
+        .wizard-content-area {
+            flex: 1;
+            overflow: hidden;
+            position: relative;
+            min-height: 0; /* Important for flex children */
+        }
+
+        .step-container-wizard {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            display: flex;
+            flex-direction: column;
+            padding: 20px 24px 140px; /* Extra bottom padding to clear button area */
+            opacity: 0;
+            transform: translateX(100%);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow-y: auto; /* Allow scrolling if needed */
+        }
+
+        .step-container-wizard.active {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .step-container-wizard.prev {
+            transform: translateX(-100%);
+        }
+
+        .category-icon-wizard {
+            width: 64px;
+            height: 64px;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 24px;
+        }
+
+        .category-icon-wizard svg {
+            width: 32px;
+            height: 32px;
+        }
+
+        .step-title-wizard {
+            font-size: 28px;
+            font-weight: 800;
+            margin-bottom: 12px;
+            letter-spacing: -0.5px;
+        }
+
+        .step-subtitle-wizard {
+            font-size: 15px;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+            line-height: 1.5;
+        }
+
+        .input-area-wizard {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            margin-top: 40px;
+        }
+
+        .slider-value-display-wizard {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .slider-value-wizard {
+            font-size: 72px;
+            font-weight: 900;
+            background: linear-gradient(135deg, #ff6b35, #ff8f5f);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -2px;
+        }
+
+        .slider-label-wizard {
+            font-size: 14px;
+            color: #666;
+            margin-top: 8px;
+        }
+
+        .slider-wizard {
+            width: 100%;
+            height: 8px;
+            border-radius: 4px;
+            background: var(--bg-secondary);
+            outline: none;
+            -webkit-appearance: none;
+            margin-bottom: 20px;
+        }
+
+        .slider-wizard::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #ff6b35, #ff8f5f);
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(255, 107, 53, 0.4);
+        }
+
+        .slider-wizard::-moz-range-thumb {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #ff6b35, #ff8f5f);
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 4px 12px rgba(255, 107, 53, 0.4);
+        }
+
+        .slider-labels-wizard {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            color: #666;
+            padding: 0 4px;
+        }
+
+        /* Review Screen */
+        .review-list-wizard {
+            flex: 1;
+            overflow-y: auto;
+            margin-top: 24px;
+        }
+
+        .review-item-wizard {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .review-item-wizard:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: #333;
+        }
+
+        .review-item-left-wizard {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .review-icon-wizard {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .review-icon-wizard svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        .review-info-wizard {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .review-category-wizard {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .review-hint-wizard {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .review-value-wizard {
+            font-size: 24px;
+            font-weight: 800;
+            color: var(--accent-primary);
+        }
+
+        .wizard-actions {
+            padding: 20px 24px calc(80px + 20px); /* Bottom nav height + padding */
+            background: var(--bg-elevated);
+            border-top: 1px solid var(--border);
+            flex-shrink: 0; /* Don't shrink */
+            position: relative;
+            z-index: 10;
+        }
+    </style>
+</head>
+<body>
+    <!-- Loading Screen -->
+    <div class="loading-screen" id="loadingScreen">
+        <div class="loading-content">
+            <div class="loading-logo">
+                <div class="logo-hex-large">
+                    <div class="logo-hex-inner"></div>
+                    <div class="logo-hex-inner"></div>
+                    <div class="logo-hex-inner"></div>
+                    <span class="logo-text-large">FYS</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<div class="app-container">
+        <!-- Header with Logo -->
+        <div class="header">
+            <div class="logo-hex">
+                <div class="logo-hex-text">FYS</div>
+            </div>
+            <div class="header-date" id="headerDate"></div>
+        </div>
+
+        <!-- Home View -->
+        <div id="homeView" class="view-section active">
+            <div class="home-content">
+                <div class="index-label">FYS-INDEX</div>
+                
+                <div class="time-selector">
+                    <button class="time-btn" onclick="changeTimeRange('1d')" data-range="1d">1D</button>
+                    <button class="time-btn" onclick="changeTimeRange('7d')" data-range="7d">7D</button>
+                    <button class="time-btn active" onclick="changeTimeRange('1m')" data-range="1m">1M</button>
+                    <button class="time-btn" onclick="changeTimeRange('6m')" data-range="6m">6M</button>
+                    <button class="time-btn" onclick="changeTimeRange('1y')" data-range="1y">1Y</button>
+                    <button class="time-btn" onclick="changeTimeRange('all')" data-range="all">MAX</button>
+                </div>
+
+                <div class="main-chart-section" onclick="openChartDetails()">
+                    <div class="main-chart-container">
+                        <canvas id="mainChart"></canvas>
+                    </div>
+                    <div class="index-value-display">
+                        <div class="index-value-number" id="mainIndexValue">100.0</div>
+                        <div class="index-change-text" id="mainChangeText"></div>
+                    </div>
+                    <div class="tap-hint" id="tapHint"></div>
+                </div>
+
+                <!-- Tagebuch Widget -->
+                <div class="widget-card" onclick="openJournal()">
+                    <div class="widget-header">
+                        <div class="widget-title" id="journalWidgetTitle">Tagebuch</div>
+                        <div class="widget-icon premium-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                                <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+                                <path d="M12 6v6"></path>
+                                <path d="M12 16h.01"></path>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="widget-stats">
+                        <div class="widget-stat">
+                            <div class="widget-stat-value" id="journalEntriesCount">0</div>
+                            <div class="widget-stat-label" id="journalEntriesLabel">Einträge</div>
+                        </div>
+                        <div class="widget-stat">
+                            <div class="widget-stat-value" id="journalLastDate">—</div>
+                            <div class="widget-stat-label" id="journalLastLabel">Letzter</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Task Manager Widget -->
+                <div class="widget-card" onclick="openTaskManager()">
+                    <div class="widget-header">
+                        <div class="widget-title" id="taskWidgetTitle">Task Manager</div>
+                        <div class="widget-icon premium-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M9 11l3 3L22 4"></path>
+                                <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="widget-stats">
+                        <div class="widget-stat">
+                            <div class="widget-stat-value" id="tasksOpenCount">0</div>
+                            <div class="widget-stat-label" id="tasksOpenLabel">Offen</div>
+                        </div>
+                        <div class="widget-stat">
+                            <div class="widget-stat-value" id="tasksTodayCount">0</div>
+                            <div class="widget-stat-label" id="tasksTodayLabel">Heute</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Habit Tracker Widget -->
+                <div class="widget-card" onclick="openHabitTracker()">
+                    <div class="widget-header">
+                        <div class="widget-title" id="habitWidgetTitle">Habit Tracker</div>
+                        <div class="widget-icon premium-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M22 12h-4l-3 9L9 3l-3 9H2"></path>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="widget-stats">
+                        <div class="widget-stat">
+                            <div class="widget-stat-value" id="habitsTodayValue">0/0</div>
+                            <div class="widget-stat-label" id="habitTodayLabel">Heute</div>
+                        </div>
+                        <div class="widget-stat">
+                            <div class="widget-stat-value" id="habitsStreakValue">0</div>
+                            <div class="widget-stat-label" id="habitStreakLabel">Streak</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sober Tracker Widget -->
+                <div class="widget-card" onclick="openSoberTracker()">
+                    <div class="widget-header">
+                        <div class="widget-title" id="soberWidgetTitle">Sober Tracker</div>
+                        <div class="widget-icon">🌟</div>
+                    </div>
+                    <div class="widget-stats">
+                        <div class="widget-stat">
+                            <div class="widget-stat-value">0</div>
+                            <div class="widget-stat-label" id="soberDaysLabel"></div>
+                        </div>
+                        <div class="widget-stat">
+                            <div class="widget-stat-value">0</div>
+                            <div class="widget-stat-label" id="soberStreakLabel"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Chart Details View -->
+        <div id="chartDetailsView" class="view-section">
+            <div class="chart-details-view">
+                <button class="back-button" onclick="closeChartDetails()">
+                    ← <span id="backText">Zurück</span>
+                </button>
+                
+                <!-- FYS Index Summary -->
+                <div class="fys-index-summary">
+                    <div class="fys-index-label">FYS-INDEX</div>
+                    <div class="fys-index-value" id="detailIndexValue">100.0</div>
+                    <div class="fys-index-change" id="detailIndexChange">+0.00%</div>
+                </div>
+
+                <!-- Flatex-Style Stock List -->
+                <div class="stock-list-container">
+                    <div class="stock-list-header">
+                        <div class="stock-list-title" id="categoriesOverview">Kategorien-Übersicht</div>
+                    </div>
+                    <div id="stockListItems"></div>
+                </div>
+
+                <!-- Combined Chart -->
+                <div class="chart-card">
+                    <div class="chart-title" id="allCategoriesTitle">Alle Kategorien</div>
+                    <div class="chart-container">
+                        <canvas id="combinedChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Check-in View mit Wizard -->
+        <div id="checkinView" class="view-section">
+            <!-- Confirmation Dialog -->
+            <div class="wizard-confirm" id="wizardConfirm">
+                <div class="confirm-content">
+                    <div class="confirm-icon">📝</div>
+                    <div class="confirm-title">Check-in für heute starten?</div>
+                    <div class="confirm-subtitle">Beantworte 8 kurze Fragen zu deinem Tag</div>
+                    <div class="confirm-actions">
+                        <button class="btn-secondary" onclick="cancelWizard()">Abbrechen</button>
+                        <button class="btn-primary-wizard" onclick="startWizard()">Starten</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Wizard Container -->
+            <div class="wizard-container" id="wizardContainer" style="display: none;">
+                <!-- Header -->
+                <div class="wizard-header">
+                    <div class="header-top">
+                        <button class="back-btn-wizard" id="backBtnWizard" disabled>←</button>
+                        <div class="step-counter" id="stepCounter">Schritt 1/8</div>
+                        <button class="close-btn-wizard" onclick="closeWizard()">×</button>
+                    </div>
+                    <div class="progress-container-wizard">
+                        <div class="progress-bar-wizard" id="progressBarWizard"></div>
+                    </div>
+                    <div class="progress-dots" id="progressDots"></div>
+                </div>
+
+                <!-- Content -->
+                <div class="wizard-content-area" id="wizardContent"></div>
+
+                <!-- Actions -->
+                <div class="wizard-actions">
+                    <button class="btn-primary-wizard" id="nextBtnWizard">Weiter</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Habit Tracker View -->
+        <div id="habitsView" class="view-section">
+            <div class="tracker-content">
+                <div class="section-title" id="habitsTitle"></div>
+                <div class="coming-soon-screen">
+                    <div class="coming-soon-icon">🎯</div>
+                    <div class="coming-soon-title" id="habitComingTitle"></div>
+                    <div class="coming-soon-text" id="habitComingText"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sober Tracker View -->
+        <div id="soberView" class="view-section">
+            <div class="tracker-content">
+                <div class="section-title" id="soberTitle"></div>
+                <div class="coming-soon-screen">
+                    <div class="coming-soon-icon">🌟</div>
+                    <div class="coming-soon-title" id="soberComingTitle"></div>
+                    <div class="coming-soon-text" id="soberComingText"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Settings View -->
+        <div id="settingsView" class="view-section">
+            <div class="settings-content">
+                <div class="section-title" id="settingsTitle"></div>
+                
+                <div class="setting-item">
+                    <div class="setting-label" id="languageLabel"></div>
+                    <div class="setting-description" id="languageDesc"></div>
+                    <div class="setting-options">
+                        <div class="setting-option active" onclick="changeLanguage('de')" data-lang="de">Deutsch</div>
+                        <div class="setting-option" onclick="changeLanguage('en')" data-lang="en">English</div>
+                        <div class="setting-option" onclick="changeLanguage('es')" data-lang="es">Español</div>
+                    </div>
+                </div>
+
+                <div class="setting-item">
+                    <div class="setting-label" id="themeLabel"></div>
+                    <div class="setting-description" id="themeDesc"></div>
+                    <div class="setting-options">
+                        <div class="setting-option active" onclick="changeTheme('dark')" data-theme-btn="dark" id="darkTheme"></div>
+                        <div class="setting-option" onclick="changeTheme('light')" data-theme-btn="light" id="lightTheme"></div>
+                    </div>
+                </div>
+
+                <div class="setting-item">
+                    <div class="setting-label" id="sleepGoalLabel"></div>
+                    <div class="setting-description" id="sleepGoalDesc"></div>
+                    <div class="sleep-goal-input">
+                        <button class="sleep-goal-btn" onclick="adjustSleepGoal(-0.5)">−</button>
+                        <div class="sleep-goal-value" id="sleepGoalValue">8.0h</div>
+                        <button class="sleep-goal-btn" onclick="adjustSleepGoal(0.5)">+</button>
+                    </div>
+                </div>
+
+                <div class="setting-item">
+                    <div class="setting-label" id="coachDataLabel"></div>
+                    <div class="setting-description" id="coachDataDesc"></div>
+                    <div style="display: flex; justify-content: center; margin-top: 14px;">
+                        <div class="toggle-switch" id="coachDataToggle" onclick="toggleCoachData()">
+                            <div class="toggle-slider"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="success-toast" id="successToast"></div>
+    </div>
+
+    <!-- Bottom Navigation - Pushup Style (Floating Pill) -->
+    <div class="bottom-nav">
+        <button class="nav-item active" onclick="switchView('home')" data-view="home">
+            <svg class="nav-icon" viewBox="0 0 24 24">
+                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                <polyline points="9 22 9 12 15 12 15 22"></polyline>
+            </svg>
+            <div class="nav-label" id="navHome">Start</div>
+        </button>
+        <button class="nav-item" onclick="switchView('checkin')" data-view="checkin">
+            <svg class="nav-icon" viewBox="0 0 24 24">
+                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+            </svg>
+            <div class="nav-label" id="navCheckin">Check-in</div>
+        </button>
+        <button class="nav-item" onclick="switchToCoach()" data-view="coach">
+            <svg class="nav-icon" viewBox="0 0 24 24">
+                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+            </svg>
+            <div class="nav-label" id="navCoach">Coach</div>
+        </button>
+        <button class="nav-item" onclick="switchView('settings')" data-view="settings">
+            <svg class="nav-icon" viewBox="0 0 24 24">
+                <circle cx="12" cy="12" r="3"></circle>
+                <path d="M12 1v6M12 17v6M3.93 3.93l4.24 4.24M15.83 15.83l4.24 4.24M1 12h6M17 12h6M3.93 20.07l4.24-4.24M15.83 8.17l4.24-4.24"></path>
+            </svg>
+            <div class="nav-label" id="navSettings">Einstellungen</div>
+        </button>
+    </div>
+
+    <!-- AI Coach Modal -->
+    <div class="coach-modal" id="coachModal">
+        <div class="coach-header">
+            <div class="coach-title" id="coachTitle"></div>
+            <button class="close-btn" onclick="closeCoach()">×</button>
+        </div>
+        <div class="coach-content" id="coachContent"></div>
+        <div class="coach-input-area">
+            <div class="coach-input-wrapper">
+                <input type="text" class="coach-input" id="coachInput" onkeypress="if(event.key==='Enter') sendMessage()">
+                <button class="send-btn" onclick="sendMessage()" id="sendBtn">➤</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Category Detail Modal -->
+    <div class="category-detail-modal" id="categoryDetailModal">
+        <div class="category-detail-header">
+            <button class="close-btn" onclick="closeCategoryDetail()">×</button>
+            <div class="category-detail-icon" id="categoryDetailIcon"></div>
+            <div class="category-detail-info">
+                <div class="category-detail-name" id="categoryDetailName"></div>
+                <div class="category-detail-symbol" id="categoryDetailSymbol"></div>
+            </div>
+        </div>
+        <div class="category-detail-content">
+            <div class="category-detail-price-section">
+                <div class="category-detail-price" id="categoryDetailPrice">100.0</div>
+                <div class="category-detail-change positive" id="categoryDetailChange">
+                    <span>▲</span> +0.0%
+                </div>
+            </div>
+
+            <div class="category-time-selector">
+                <button class="category-time-btn" onclick="changeCategoryTimeRange('1d')" data-cat-range="1d">1D</button>
+                <button class="category-time-btn" onclick="changeCategoryTimeRange('7d')" data-cat-range="7d">7D</button>
+                <button class="category-time-btn active" onclick="changeCategoryTimeRange('1m')" data-cat-range="1m">1M</button>
+                <button class="category-time-btn" onclick="changeCategoryTimeRange('6m')" data-cat-range="6m">6M</button>
+                <button class="category-time-btn" onclick="changeCategoryTimeRange('1y')" data-cat-range="1y">1Y</button>
+                <button class="category-time-btn" onclick="changeCategoryTimeRange('all')" data-cat-range="all">MAX</button>
+            </div>
+
+            <div class="category-chart-card">
+                <div class="category-chart-container">
+                    <canvas id="categoryDetailChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Journal Modal -->
+    <div class="journal-modal" id="journalModal">
+        <div class="journal-header">
+            <div class="journal-title">📔 Tagebuch</div>
+            <button class="close-btn" onclick="closeJournal()">×</button>
+        </div>
+        <div class="journal-content">
+            <div class="journal-calendar">
+                <div class="calendar-header">
+                    <button class="calendar-nav-btn" onclick="changeMonth(-1)">‹</button>
+                    <div class="calendar-month" id="calendarMonth"></div>
+                    <button class="calendar-nav-btn" onclick="changeMonth(1)">›</button>
+                </div>
+                <div class="calendar-grid" id="calendarGrid"></div>
+            </div>
+            <div class="journal-entry-section" id="journalEntrySection">
+                <div class="journal-entry-date" id="journalEntryDate"></div>
+                <textarea class="journal-textarea" id="journalTextarea" placeholder="Schreibe deine Gedanken..."></textarea>
+                <button class="journal-save-btn" onclick="saveJournalEntry()">Speichern</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Translations
+        const translations = {
+            de: {
+                headerDate: '',
+                tapHint: 'Tippen für Details',
+                backText: 'Zurück',
+                allCategoriesTitle: 'Alle Kategorien',
+                categoriesOverview: 'Kategorien-Übersicht',
+                checkinTitle: 'Täglicher Check-in',
+                checkinDone: 'Check-in für',
+                checkinDoneText: 'bereits erledigt! Du kannst deine Kursänderung schon ansehen.',
+                checkinDoneSub: 'Wir sehen uns morgen wieder! 🚀',
+                editCheckin: 'Ändern',
+                sleepQuestion: 'Wie viele Stunden hast du geschlafen?',
+                taskWidgetTitle: 'Task Manager',
+                comingSoonBadge: 'Bald verfügbar',
+                habitsTitle: 'Habit Tracker',
+                soberTitle: 'Sober Tracker',
+                habitWidgetTitle: 'Habit Tracker',
+                habitStreakLabel: 'Streak',
+                habitTodayLabel: 'Heute',
+                soberWidgetTitle: 'Sober Tracker',
+                soberDaysLabel: 'Tage',
+                soberStreakLabel: 'Streak',
+                habitComingTitle: 'Bald verfügbar',
+                habitComingText: 'Der Habit Tracker wird in Kürze freigeschaltet.',
+                soberComingTitle: 'Bald verfügbar',
+                soberComingText: 'Der Sober Tracker wird in Kürze freigeschaltet.',
+                settingsTitle: 'Einstellungen',
+                languageLabel: 'Sprache',
+                languageDesc: 'Wähle deine bevorzugte App-Sprache.',
+                themeLabel: 'Design',
+                themeDesc: 'Wähle zwischen hellem und dunklem Modus.',
+                darkTheme: 'Dunkel',
+                lightTheme: 'Hell',
+                sleepGoalLabel: 'Schlafziel',
+                sleepGoalDesc: 'Dein ideales Schlafziel pro Nacht. Beeinflusst deine Energie-Kategorie.',
+                coachDataLabel: 'KI-Coach Datenzugriff',
+                coachDataDesc: 'Erlaube dem Coach deine Werte zu sehen.',
+                navHome: 'Start',
+                navCheckin: 'Check-in',
+                navCoach: 'Coach',
+                navSettings: 'Einstellungen',
+                coachTitle: 'FYS Coach',
+                coachPlaceholder: 'Stelle eine Frage...',
+                coachWelcome: 'Hey! 👋 Wie kann ich dir helfen?',
+                submitBtn: 'Speichern',
+                successToast: '✓ Gespeichert!',
+                categories: {
+                    social: 'Soziale Kontakte',
+                    energy: 'Energie/Erholung',
+                    focus: 'Fokus/Produktivität',
+                    discipline: 'Disziplin',
+                    sport: 'Bewegung/Sport',
+                    nutrition: 'Ernährung',
+                    mindset: 'Stimmung/Mindset'
+                }
+            },
+            en: {
+                headerDate: '',
+                tapHint: 'Tap for details',
+                backText: 'Back',
+                allCategoriesTitle: 'All Categories',
+                categoriesOverview: 'Categories Overview',
+                checkinTitle: 'Daily Check-in',
+                checkinDone: 'Check-in for',
+                checkinDoneText: 'already complete! You can view your progress.',
+                checkinDoneSub: 'See you tomorrow! 🚀',
+                editCheckin: 'Edit',
+                sleepQuestion: 'How many hours did you sleep?',
+                taskWidgetTitle: 'Task Manager',
+                comingSoonBadge: 'Coming Soon',
+                habitsTitle: 'Habit Tracker',
+                soberTitle: 'Sober Tracker',
+                habitWidgetTitle: 'Habit Tracker',
+                habitStreakLabel: 'Streak',
+                habitTodayLabel: 'Today',
+                soberWidgetTitle: 'Sober Tracker',
+                soberDaysLabel: 'Days',
+                soberStreakLabel: 'Streak',
+                habitComingTitle: 'Coming Soon',
+                habitComingText: 'The Habit Tracker will be available soon.',
+                soberComingTitle: 'Coming Soon',
+                soberComingText: 'The Sober Tracker will be available soon.',
+                settingsTitle: 'Settings',
+                languageLabel: 'Language',
+                languageDesc: 'Choose your preferred app language.',
+                themeLabel: 'Theme',
+                themeDesc: 'Choose between light and dark mode.',
+                darkTheme: 'Dark',
+                lightTheme: 'Light',
+                sleepGoalLabel: 'Sleep Goal',
+                sleepGoalDesc: 'Your ideal sleep goal per night. Influences your energy category.',
+                coachDataLabel: 'AI Coach Data Access',
+                coachDataDesc: 'Allow coach to see your values.',
+                navHome: 'Home',
+                navCheckin: 'Check-in',
+                navCoach: 'Coach',
+                navSettings: 'Settings',
+                coachTitle: 'FYS Coach',
+                coachPlaceholder: 'Ask a question...',
+                coachWelcome: 'Hey! 👋 How can I help you?',
+                submitBtn: 'Save',
+                successToast: '✓ Saved!',
+                categories: {
+                    social: 'Social Contacts',
+                    energy: 'Energy/Recovery',
+                    focus: 'Focus/Productivity',
+                    discipline: 'Discipline',
+                    sport: 'Movement/Sport',
+                    nutrition: 'Nutrition',
+                    mindset: 'Mood/Mindset'
+                }
+            },
+            es: {
+                headerDate: '',
+                tapHint: 'Toca para detalles',
+                backText: 'Atrás',
+                allCategoriesTitle: 'Todas las Categorías',
+                categoriesOverview: 'Resumen de Categorías',
+                checkinTitle: 'Check-in Diario',
+                checkinDone: 'Check-in para',
+                checkinDoneText: '¡ya completo! Puedes ver tu progreso.',
+                checkinDoneSub: '¡Hasta mañana! 🚀',
+                editCheckin: 'Editar',
+                sleepQuestion: '¿Cuántas horas dormiste?',
+                taskWidgetTitle: 'Gestor de Tareas',
+                comingSoonBadge: 'Próximamente',
+                habitsTitle: 'Rastreador de Hábitos',
+                soberTitle: 'Rastreador de Sobriedad',
+                habitWidgetTitle: 'Hábitos',
+                habitStreakLabel: 'Racha',
+                habitTodayLabel: 'Hoy',
+                soberWidgetTitle: 'Sobriedad',
+                soberDaysLabel: 'Días',
+                soberStreakLabel: 'Racha',
+                habitComingTitle: 'Próximamente',
+                habitComingText: 'El Rastreador de Hábitos estará disponible pronto.',
+                soberComingTitle: 'Próximamente',
+                soberComingText: 'El Rastreador de Sobriedad estará disponible pronto.',
+                settingsTitle: 'Configuración',
+                languageLabel: 'Idioma',
+                languageDesc: 'Elige tu idioma preferido para la aplicación.',
+                themeLabel: 'Tema',
+                themeDesc: 'Elige entre modo claro y oscuro.',
+                darkTheme: 'Oscuro',
+                lightTheme: 'Claro',
+                sleepGoalLabel: 'Objetivo de Sueño',
+                sleepGoalDesc: 'Tu objetivo ideal de sueño por noche. Influye en tu categoría de energía.',
+                coachDataLabel: 'Acceso a Datos del Coach',
+                coachDataDesc: 'Permite al coach ver tus valores.',
+                navHome: 'Inicio',
+                navCheckin: 'Check-in',
+                navCoach: 'Coach',
+                navSettings: 'Ajustes',
+                coachTitle: 'Coach FYS',
+                coachPlaceholder: 'Haz una pregunta...',
+                coachWelcome: '¡Hola! 👋 ¿Cómo puedo ayudarte?',
+                submitBtn: 'Guardar',
+                successToast: '✓ ¡Guardado!',
+                categories: {
+                    social: 'Contactos Sociales',
+                    energy: 'Energía/Recuperación',
+                    focus: 'Enfoque/Productividad',
+                    discipline: 'Disciplina',
+                    sport: 'Movimiento/Deporte',
+                    nutrition: 'Nutrición',
+                    mindset: 'Estado de Ánimo'
+                }
+            }
+        };
+
+        // App State
+        let currentLang = localStorage.getItem('fysLanguage') || 'de';
+        let currentTheme = localStorage.getItem('fysTheme') || 'dark';
+        let currentTimeRange = '1m';
+        let sleepGoal = parseFloat(localStorage.getItem('fysSleepGoal')) || 8.0;
+        let sleepHours = 8.0;
+        let coachDataAccess = localStorage.getItem('fysCoachData') === 'true';
+        let performanceData = JSON.parse(localStorage.getItem('fysData')) || { entries: [] };
+        
+        let mainChart = null;
+        let combinedChart = null;
+        let individualCharts = {};
+
+        const categories = [
+            { id: 'social', color: '#ffd700' },
+            { id: 'energy', color: '#00ff88' },
+            { id: 'focus', color: '#ff6b35' },
+            { id: 'discipline', color: '#a8a8a8' },
+            { id: 'sport', color: '#ff4757' },
+            { id: 'nutrition', color: '#00d4ff' },
+            { id: 'mindset', color: '#5f7aff' }
+        ];
+
+        // KORRIGIERTE BERECHNUNGEN - EINFACH UND KLAR
+        function calculateFYSIndex(values, previousIndex = 100) {
+            // Durchschnitt aller Kategorien
+            let sum = 0;
+            categories.forEach(cat => {
+                sum += values[cat.id] || 5;
+            });
+            
+            const average = sum / 7;
+            const dailyChange = average - 5;
+            const newIndex = previousIndex + dailyChange;
+            
+            return Math.max(0, newIndex);
+        }
+
+        function calculateCategoryValue(checkInValue, previousValue = 100) {
+            const value = parseInt(checkInValue) || 5;
+            const dailyChange = value - 5;
+            const newValue = previousValue + dailyChange;
+            
+            return Math.max(0, newValue);
+        }
+
+        // Berechne prozentuale Änderung zum Vortag
+        function calculateDailyChangePercent(currentValue, previousValue) {
+            if (previousValue === 0) return 0;
+            return ((currentValue - previousValue) / previousValue) * 100;
+        }
+
+        // Schlaf-Bonus Berechnung
+        function calculateSleepBonus(sleepHours, sleepGoal) {
+            const difference = sleepHours - sleepGoal;
+            
+            if (Math.abs(difference) <= 0.5) {
+                return 3; // Ziel erreicht
+            } else if (difference > 0.5) {
+                return 4; // Ziel übertroffen
+            } else {
+                if (difference >= -1) return -0.5;
+                if (difference >= -2) return -1;
+                return -2;
+            }
+        }
+
+        // Get today's entry (für Testing: immer neuer Tag)
+        function getTodayEntry() {
+            // Für Testing: Return immer null, damit jeder Check-in ein neuer Tag ist
+            return null;
+        }
+
+        // Format date
+        function formatDate(date) {
+            const days = ['Sonntag', 'Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag'];
+            const months = ['Jan', 'Feb', 'Mär', 'Apr', 'Mai', 'Jun', 'Jul', 'Aug', 'Sep', 'Okt', 'Nov', 'Dez'];
+            return `${days[date.getDay()]}, ${date.getDate()}. ${months[date.getMonth()]}`;
+        }
+
+        // Update header date
+        function updateHeaderDate() {
+            const date = new Date();
+            document.getElementById('headerDate').textContent = formatDate(date);
+        }
+
+        // Adjust sleep goal
+        function adjustSleepGoal(amount) {
+            sleepGoal = Math.max(4, Math.min(12, sleepGoal + amount));
+            localStorage.setItem('fysSleepGoal', sleepGoal);
+            document.getElementById('sleepGoalValue').textContent = sleepGoal.toFixed(1) + 'h';
+        }
+
+        // Adjust sleep hours
+        function adjustSleepHours(amount) {
+            sleepHours = Math.max(0, Math.min(16, sleepHours + amount));
+            document.getElementById('sleepHoursValue').textContent = sleepHours.toFixed(1) + 'h';
+        }
+
+        // Update check-in view
+        function updateCheckinView() {
+            const t = translations[currentLang];
+            const container = document.getElementById('checkinContainer');
+            const todayEntry = getTodayEntry();
+            
+            if (todayEntry && !container.querySelector('#checkinForm')) {
+                const today = new Date();
+                container.innerHTML = `
+                    <div class="checkin-status">
+                        <div class="status-icon">✓</div>
+                        <div class="status-title">${t.checkinDone} ${formatDate(today)}</div>
+                        <div class="status-subtitle">${t.checkinDoneText}</div>
+                        <button class="edit-btn" onclick="editCheckin()">${t.editCheckin}</button>
+                        <div style="margin-top: 16px; font-size: 13px; color: var(--text-secondary);">${t.checkinDoneSub}</div>
+                    </div>
+                `;
+            } else if (!todayEntry) {
+                container.innerHTML = '<div id="checkinForm"></div>';
+                updateCheckinForm();
+            }
+        }
+
+        // Edit check-in
+        function editCheckin() {
+            const container = document.getElementById('checkinContainer');
+            container.innerHTML = '<div id="checkinForm"></div>';
+            updateCheckinForm();
+        }
+
+        // Update check-in form
+        function updateCheckinForm() {
+            const t = translations[currentLang];
+            const form = document.getElementById('checkinForm');
+            const todayEntry = getTodayEntry();
+            
+            form.innerHTML = '';
+            
+            const categoryIcons = {
+                social: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>`,
+                energy: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>`,
+                focus: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="6"></circle><circle cx="12" cy="12" r="2"></circle></svg>`,
+                discipline: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>`,
+                sport: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13.73 4a2 2 0 0 0-3.46 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>`,
+                nutrition: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8h1a4 4 0 0 1 0 8h-1"></path><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"></path><line x1="6" y1="1" x2="6" y2="4"></line><line x1="10" y1="1" x2="10" y2="4"></line><line x1="14" y1="1" x2="14" y2="4"></line></svg>`,
+                mindset: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="22"></line></svg>`
+            };
+            
+            // Regular categories with Icons
+            categories.forEach(cat => {
+                const value = (todayEntry && todayEntry.values && todayEntry.values[cat.id]) ? todayEntry.values[cat.id] : 10;
+                form.innerHTML += `
+                    <div class="category-input">
+                        <div class="category-label">
+                            <div class="input-category-name">
+                                <div class="input-category-icon" style="background: ${cat.color}20; color: ${cat.color};">
+                                    ${categoryIcons[cat.id]}
+                                </div>
+                                ${t.categories[cat.id]}
+                            </div>
+                            <div class="category-value-display" id="${cat.id}Value">${value}</div>
+                        </div>
+                        <input type="range" min="1" max="10" value="${value}" class="slider" id="${cat.id}Slider">
+                    </div>
+                `;
+            });
+            
+            // Sleep input (last)
+            const sleepValue = todayEntry ? todayEntry.sleepHours : 8.0;
+            sleepHours = sleepValue;
+            form.innerHTML += `
+                <div class="sleep-input">
+                    <div class="sleep-label">😴 ${t.sleepQuestion}</div>
+                    <div class="sleep-value-display" id="sleepHoursValue">${sleepValue.toFixed(1)}h</div>
+                    <div class="sleep-controls">
+                        <button class="sleep-btn" onclick="adjustSleepHours(-0.5)">−</button>
+                        <button class="sleep-btn" onclick="adjustSleepHours(0.5)">+</button>
+                    </div>
+                </div>
+            `;
+            
+            form.innerHTML += `<button class="submit-btn" onclick="submitCheckIn()">${t.submitBtn}</button>`;
+            initSliders();
+        }
+
+        // Initialize sliders
+        function initSliders() {
+            categories.forEach(cat => {
+                const slider = document.getElementById(`${cat.id}Slider`);
+                const value = document.getElementById(`${cat.id}Value`);
+                
+                if (slider && value) {
+                    slider.addEventListener('input', function() {
+                        value.textContent = this.value;
+                    });
+                }
+            });
+        }
+
+        // Submit check-in
+        function submitCheckIn() {
+            console.log('=== CHECK-IN START ===');
+            console.log('Categories:', categories);
+            console.log('performanceData:', performanceData);
+            
+            try {
+                // 1. Werte von Slidern sammeln
+                const values = {};
+                
+                console.log('Collecting slider values...');
+                categories.forEach(cat => {
+                    console.log(`Looking for slider: ${cat.id}Slider`);
+                    const slider = document.getElementById(`${cat.id}Slider`);
+                    console.log(`Found slider for ${cat.id}:`, slider);
+                    
+                    if (slider) {
+                        values[cat.id] = parseInt(slider.value);
+                        console.log(`Set ${cat.id} = ${values[cat.id]}`);
+                    } else {
+                        values[cat.id] = 5;
+                        console.log(`Default ${cat.id} = 5`);
+                    }
+                });
+                
+                console.log('Final values:', values);
+
+                // 2. Prüfen ob erster Eintrag
+                const isFirstEntry = performanceData.entries.length === 0;
+                console.log('Is first entry?', isFirstEntry);
+                
+                // 3. Datum bestimmen
+                let entryDate;
+                if (isFirstEntry) {
+                    entryDate = new Date();
+                } else {
+                    const lastEntry = performanceData.entries[performanceData.entries.length - 1];
+                    entryDate = new Date(lastEntry.date);
+                    entryDate.setDate(entryDate.getDate() + 1);
+                }
+                console.log('Entry date:', entryDate);
+
+                // 4. Berechnung
+                let fysIndex;
+                const categoryValues = {};
+                
+                if (isFirstEntry) {
+                    console.log('FIRST ENTRY - Setting everything to 100');
+                    // ERSTER CHECK-IN: Alles auf 100
+                    fysIndex = 100;
+                    categories.forEach(cat => {
+                        categoryValues[cat.id] = 100;
+                    });
+                } else {
+                    console.log('SUBSEQUENT ENTRY - Calculating');
+                    // FOLGENDE CHECK-INS: Berechnen
+                    const lastEntry = performanceData.entries[performanceData.entries.length - 1];
+                    console.log('Last entry:', lastEntry);
+                    
+                    console.log('Calling calculateFYSIndex with:', values, lastEntry.fysIndex);
+                    fysIndex = calculateFYSIndex(values, lastEntry.fysIndex);
+                    console.log('Calculated FYS Index:', fysIndex);
+                    
+                    categories.forEach(cat => {
+                        const prevValue = lastEntry.categoryValues[cat.id] || 100;
+                        categoryValues[cat.id] = calculateCategoryValue(values[cat.id], prevValue);
+                        console.log(`Category ${cat.id}: ${prevValue} -> ${categoryValues[cat.id]}`);
+                    });
+                }
+
+                console.log('Final FYS Index:', fysIndex);
+                console.log('Final category values:', categoryValues);
+
+                // 5. Speichern
+                const newEntry = {
+                    date: entryDate.toISOString(),
+                    values: values,
+                    categoryValues: categoryValues,
+                    sleepHours: sleepHours,
+                    fysIndex: fysIndex
+                };
+                
+                console.log('New entry to save:', newEntry);
+                performanceData.entries.push(newEntry);
+                localStorage.setItem('fysData', JSON.stringify(performanceData));
+                console.log('Saved to localStorage');
+
+                // 6. UI Update - Better feedback
+                const toast = document.getElementById('successToast');
+                if (toast) {
+                    toast.textContent = '✓ Gespeichert!';
+                    toast.classList.add('show');
+                }
+                
+                // Wait longer for user to see the toast, then reload
+                setTimeout(() => {
+                    console.log('Reloading page...');
+                    location.reload();
+                }, 2500);
+                
+                console.log('=== CHECK-IN SUCCESS ===');
+                
+            } catch (error) {
+                console.error('=== CHECK-IN ERROR ===');
+                console.error('Error:', error);
+                console.error('Stack:', error.stack);
+                alert('Fehler beim Speichern: ' + error.message);
+            }
+        }
+
+        // Show toast
+        function showToast() {
+            const toast = document.getElementById('successToast');
+            const t = translations[currentLang];
+            toast.textContent = t.successToast;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 2000);
+        }
+
+        // Initialize main chart
+        function initMainChart() {
+            const ctx = document.getElementById('mainChart').getContext('2d');
+            
+            mainChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: [],
+                    datasets: [{
+                        label: 'FYS-Index',
+                        data: [],
+                        borderColor: '#ff6b35',
+                        backgroundColor: 'rgba(255, 107, 53, 0.1)',
+                        borderWidth: 3,
+                        tension: 0.4,
+                        pointRadius: 0,
+                        pointHoverRadius: 6,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: { mode: 'index', intersect: false },
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            backgroundColor: currentTheme === 'dark' ? 'rgba(17, 17, 17, 0.95)' : 'rgba(255, 255, 255, 0.98)',
+                            titleColor: currentTheme === 'dark' ? '#ffffff' : '#ff6b35',
+                            bodyColor: currentTheme === 'dark' ? '#6b6b6b' : '#ff8f5f',
+                            borderColor: currentTheme === 'dark' ? '#1a1a1a' : '#ffe8e0',
+                            borderWidth: 1,
+                            padding: 12,
+                            displayColors: false,
+                            callbacks: {
+                                // Zeige nur den Wert (ohne "FYS-Index:")
+                                title: function(context) {
+                                    return context[0].parsed.y.toFixed(1);
+                                },
+                                // Zeige Datum als Body (unten)
+                                label: function(context) {
+                                    return context.label;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: { display: false },
+                            ticks: { display: false }
+                        },
+                        y: {
+                            // Auto-Scale für Trading-Platform-Look
+                            beginAtZero: false,
+                            grace: '5%', // 5% Padding oben und unten für bessere Sicht
+                            grid: { 
+                                color: currentTheme === 'dark' ? '#1a1a1a' : '#fff5f0', 
+                                drawBorder: false 
+                            },
+                            ticks: { 
+                                color: currentTheme === 'dark' ? '#404040' : '#ff8f5f', 
+                                font: { size: 10 },
+                                padding: 5
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Update main chart
+        function updateMainChart() {
+            console.log('updateMainChart called');
+            console.log('mainChart exists?', !!mainChart);
+            console.log('entries count:', performanceData.entries.length);
+            
+            if (!mainChart) {
+                console.log('mainChart is null, skipping chart update');
+            }
+            
+            if (performanceData.entries.length === 0) {
+                console.log('No entries, skipping chart update');
+                return;
+            }
+
+            const entries = getFilteredEntries();
+            console.log('Filtered entries:', entries.length);
+            
+            if (mainChart) {
+                mainChart.data.labels = entries.map(e => {
+                    const date = new Date(e.date);
+                    const day = date.getDate();
+                    const month = date.getMonth() + 1;
+                    const year = date.getFullYear();
+                    // Format: "23.1.2026" für Tooltip
+                    return `${day}.${month}.${year}`;
+                });
+
+                mainChart.data.datasets[0].data = entries.map(e => e.fysIndex);
+                mainChart.update('none');
+                console.log('Chart updated with', entries.length, 'entries');
+            }
+
+            if (entries.length > 0) {
+                const latest = entries[entries.length - 1];
+                const first = entries[0];
+                const change = latest.fysIndex - first.fysIndex;
+                
+                const valueEl = document.getElementById('mainIndexValue');
+                if (valueEl) {
+                    valueEl.textContent = latest.fysIndex.toFixed(1);
+                    console.log('Set main index value to:', latest.fysIndex.toFixed(1));
+                }
+                
+                if (change > 0) {
+                    valueEl.className = 'index-value-number positive';
+                } else if (change < 0) {
+                    valueEl.className = 'index-value-number negative';
+                } else {
+                    valueEl.className = 'index-value-number';
+                }
+
+                const changePercent = ((change / first.fysIndex) * 100).toFixed(2);
+                const changeText = document.getElementById('mainChangeText');
+                if (changeText) {
+                    changeText.textContent = `${change >= 0 ? '+' : ''}${changePercent}%`;
+                    // Farbe basierend auf Änderung
+                    if (change > 0) {
+                        changeText.style.color = '#00c96d';
+                    } else if (change < 0) {
+                        changeText.style.color = '#ff3366';
+                    } else {
+                        changeText.style.color = 'var(--text-secondary)';
+                    }
+                }
+            }
+        }
+
+        // Get filtered entries
+        function getFilteredEntries() {
+            if (performanceData.entries.length === 0) return [];
+            
+            // Verwende das letzte Datum in den Daten, nicht heute
+            const lastEntry = performanceData.entries[performanceData.entries.length - 1];
+            const lastDate = new Date(lastEntry.date);
+            
+            let startDate;
+            
+            switch(currentTimeRange) {
+                case '1d':
+                    startDate = new Date(lastDate.getTime() - 1 * 24 * 60 * 60 * 1000);
+                    break;
+                case '7d':
+                    startDate = new Date(lastDate.getTime() - 7 * 24 * 60 * 60 * 1000);
+                    break;
+                case '1m':
+                    startDate = new Date(lastDate.getTime() - 30 * 24 * 60 * 60 * 1000);
+                    break;
+                case '6m':
+                    startDate = new Date(lastDate.getTime() - 180 * 24 * 60 * 60 * 1000);
+                    break;
+                case '1y':
+                    startDate = new Date(lastDate.getTime() - 365 * 24 * 60 * 60 * 1000);
+                    break;
+                case 'all':
+                    return performanceData.entries;
+            }
+            
+            const filtered = performanceData.entries.filter(e => new Date(e.date) >= startDate);
+            console.log(`Filtered entries for ${currentTimeRange}:`, filtered.length, 'out of', performanceData.entries.length);
+            return filtered;
+        }
+
+        // Change time range
+        function changeTimeRange(range) {
+            console.log('Changing time range to:', range);
+            currentTimeRange = range;
+            document.querySelectorAll('.time-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelector(`[data-range="${range}"]`).classList.add('active');
+            updateMainChart();
+            createStockList(); // Update category list
+            console.log('Time range changed successfully');
+        }
+
+        // Open chart details (Flatex-Style)
+        function openChartDetails() {
+            console.log('openChartDetails called, entries:', performanceData.entries.length);
+            
+            // Öffne View auch wenn keine Daten vorhanden (für Demo)
+            document.getElementById('homeView').classList.remove('active');
+            document.getElementById('chartDetailsView').classList.add('active');
+            
+            // Update FYS Index Summary
+            const entries = getFilteredEntries();
+            console.log('Filtered entries:', entries.length);
+            
+            if (entries.length > 0) {
+                const latest = entries[entries.length - 1];
+                const first = entries[0];
+                const change = latest.fysIndex - first.fysIndex;
+                const changePercent = ((change / first.fysIndex) * 100).toFixed(2);
+                
+                document.getElementById('detailIndexValue').textContent = latest.fysIndex.toFixed(1);
+                document.getElementById('detailIndexChange').textContent = 
+                    `${change >= 0 ? '+' : ''}${changePercent}%`;
+            } else {
+                // Demo-Werte wenn keine Daten
+                document.getElementById('detailIndexValue').textContent = '100.0';
+                document.getElementById('detailIndexChange').textContent = '+0.00%';
+            }
+            
+            // Create Flatex-Style Stock List
+            createStockList();
+            
+            // Update charts
+            try {
+                if (!combinedChart) initCombinedChart();
+                if (entries.length > 0) {
+                    updateCombinedChart();
+                }
+            } catch (error) {
+                console.error('Chart error:', error);
+            }
+        }
+
+        function closeChartDetails() {
+            document.getElementById('chartDetailsView').classList.remove('active');
+            document.getElementById('homeView').classList.add('active');
+        }
+
+        // Create Flatex-Style Stock List
+        function createStockList() {
+            const t = translations[currentLang];
+            const container = document.getElementById('stockListItems');
+            
+            if (!container) {
+                console.error('stockListItems container not found!');
+                return;
+            }
+            
+            container.innerHTML = '';
+
+            const entries = getFilteredEntries();
+            console.log('createStockList entries:', entries.length);
+
+            // Category SVG Icons (im Bottom Nav Stil)
+            const categoryIcons = {
+                social: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>`,
+                energy: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>`,
+                focus: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="6"></circle><circle cx="12" cy="12" r="2"></circle></svg>`,
+                discipline: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>`,
+                sport: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13.73 4a2 2 0 0 0-3.46 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>`,
+                nutrition: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8h1a4 4 0 0 1 0 8h-1"></path><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"></path><line x1="6" y1="1" x2="6" y2="4"></line><line x1="10" y1="1" x2="10" y2="4"></line><line x1="14" y1="1" x2="14" y2="4"></line></svg>`,
+                mindset: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="22"></line></svg>`
+            };
+
+            // Wenn keine Daten, zeige Demo-Werte
+            if (entries.length === 0) {
+                categories.forEach(cat => {
+                    const stockItem = document.createElement('div');
+                    stockItem.className = 'stock-item';
+                    
+                    stockItem.innerHTML = `
+                        <div class="stock-item-left">
+                            <div class="stock-icon" style="background: ${cat.color}20; color: ${cat.color};">
+                                ${categoryIcons[cat.id]}
+                            </div>
+                            <div class="stock-info">
+                                <div class="stock-name">${t.categories[cat.id]}</div>
+                                <div class="stock-symbol">${cat.id.toUpperCase()}</div>
+                            </div>
+                        </div>
+                        <div class="stock-item-right">
+                            <div class="stock-price">100.0</div>
+                            <div class="stock-change neutral">
+                                <span class="stock-arrow">—</span>
+                                0.0%
+                            </div>
+                        </div>
+                    `;
+                    
+                    container.appendChild(stockItem);
+                });
+                return;
+            }
+
+            const latest = entries[entries.length - 1];
+            const first = entries[0];
+
+            categories.forEach(cat => {
+                // Verwende categoryValues (akkumuliert) statt values * 10
+                const latestValue = latest.categoryValues ? latest.categoryValues[cat.id] : 100;
+                const firstValue = first.categoryValues ? first.categoryValues[cat.id] : 100;
+                const change = latestValue - firstValue;
+                const changePercent = firstValue !== 0 ? ((change / firstValue) * 100).toFixed(1) : '0.0';
+                
+                const isPositive = change > 0;
+                const isNegative = change < 0;
+                const changeClass = isPositive ? 'positive' : isNegative ? 'negative' : 'neutral';
+                const arrow = isPositive ? '▲' : isNegative ? '▼' : '—';
+
+                const stockItem = document.createElement('div');
+                stockItem.className = 'stock-item';
+                stockItem.onclick = () => showCategoryDetail(cat.id);
+                
+                stockItem.innerHTML = `
+                    <div class="stock-item-left">
+                        <div class="stock-icon" style="background: ${cat.color}20; color: ${cat.color};">
+                            ${categoryIcons[cat.id]}
+                        </div>
+                        <div class="stock-info">
+                            <div class="stock-name">${t.categories[cat.id]}</div>
+                            <div class="stock-symbol">${cat.id.toUpperCase()}</div>
+                        </div>
+                    </div>
+                    <div class="stock-item-right">
+                        <div class="stock-price">${latestValue.toFixed(1)}</div>
+                        <div class="stock-change ${changeClass}">
+                            <span class="stock-arrow">${arrow}</span>
+                            ${Math.abs(parseFloat(changePercent)).toFixed(1)}%
+                        </div>
+                    </div>
+                `;
+                
+                container.appendChild(stockItem);
+            });
+        }
+
+        // Category Detail View
+        let categoryDetailChart = null;
+        let currentCategoryTimeRange = '1m';
+        let currentCategoryId = null;
+
+        // Show individual category detail
+        function showCategoryDetail(categoryId) {
+            const t = translations[currentLang];
+            const category = categories.find(c => c.id === categoryId);
+            if (!category) return;
+
+            currentCategoryId = categoryId;
+
+            const categoryIcons = {
+                social: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>`,
+                energy: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>`,
+                focus: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="6"></circle><circle cx="12" cy="12" r="2"></circle></svg>`,
+                discipline: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>`,
+                sport: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13.73 4a2 2 0 0 0-3.46 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>`,
+                nutrition: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8h1a4 4 0 0 1 0 8h-1"></path><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"></path><line x1="6" y1="1" x2="6" y2="4"></line><line x1="10" y1="1" x2="10" y2="4"></line><line x1="14" y1="1" x2="14" y2="4"></line></svg>`,
+                mindset: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="22"></line></svg>`
+            };
+
+            // Update Header
+            const iconContainer = document.getElementById('categoryDetailIcon');
+            iconContainer.style.background = `${category.color}20`;
+            iconContainer.style.color = category.color;
+            iconContainer.innerHTML = categoryIcons[categoryId];
+            
+            document.getElementById('categoryDetailName').textContent = t.categories[categoryId];
+            document.getElementById('categoryDetailSymbol').textContent = categoryId.toUpperCase();
+
+            // Update Price
+            updateCategoryDetailData();
+
+            // Show Modal
+            document.getElementById('categoryDetailModal').classList.add('active');
+
+            // Initialize Chart
+            if (!categoryDetailChart) {
+                initCategoryDetailChart();
+            }
+            updateCategoryDetailChart();
+        }
+
+        function closeCategoryDetail() {
+            document.getElementById('categoryDetailModal').classList.remove('active');
+        }
+
+        function updateCategoryDetailData() {
+            const category = categories.find(c => c.id === currentCategoryId);
+            if (!category) return;
+
+            const entries = getCategoryFilteredEntries();
+            if (entries.length === 0) {
+                document.getElementById('categoryDetailPrice').textContent = '100.0';
+                document.getElementById('categoryDetailChange').innerHTML = '<span>—</span> 0.0%';
+                document.getElementById('categoryDetailChange').className = 'category-detail-change neutral';
+                return;
+            }
+
+            const latest = entries[entries.length - 1];
+            const first = entries[0];
+            
+            // Verwende categoryValues statt values * 10
+            const latestValue = latest.categoryValues ? latest.categoryValues[currentCategoryId] : 100;
+            const firstValue = first.categoryValues ? first.categoryValues[currentCategoryId] : 100;
+            const change = latestValue - firstValue;
+            const changePercent = firstValue !== 0 ? ((change / firstValue) * 100).toFixed(1) : '0.0';
+
+            const isPositive = change > 0;
+            const isNegative = change < 0;
+            const changeClass = isPositive ? 'positive' : isNegative ? 'negative' : 'neutral';
+            const arrow = isPositive ? '▲' : isNegative ? '▼' : '—';
+
+            document.getElementById('categoryDetailPrice').textContent = latestValue.toFixed(1);
+            document.getElementById('categoryDetailPrice').style.color = category.color;
+            
+            const changeEl = document.getElementById('categoryDetailChange');
+            changeEl.className = `category-detail-change ${changeClass}`;
+            changeEl.innerHTML = `<span>${arrow}</span> ${Math.abs(parseFloat(changePercent)).toFixed(1)}%`;
+        }
+
+        function changeCategoryTimeRange(range) {
+            currentCategoryTimeRange = range;
+            document.querySelectorAll('.category-time-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelector(`[data-cat-range="${range}"]`).classList.add('active');
+            updateCategoryDetailData();
+            updateCategoryDetailChart();
+        }
+
+        // Get filtered entries for category view
+        function getCategoryFilteredEntries() {
+            if (performanceData.entries.length === 0) return [];
+            
+            // Verwende das letzte Datum in den Daten, nicht heute (wie bei Main Chart)
+            const lastEntry = performanceData.entries[performanceData.entries.length - 1];
+            const lastDate = new Date(lastEntry.date);
+            let startDate;
+            
+            switch(currentCategoryTimeRange) {
+                case '1d':
+                    startDate = new Date(lastDate.getTime() - 1 * 24 * 60 * 60 * 1000);
+                    break;
+                case '7d':
+                    startDate = new Date(lastDate.getTime() - 7 * 24 * 60 * 60 * 1000);
+                    break;
+                case '1m':
+                    startDate = new Date(lastDate.getTime() - 30 * 24 * 60 * 60 * 1000);
+                    break;
+                case '6m':
+                    startDate = new Date(lastDate.getTime() - 180 * 24 * 60 * 60 * 1000);
+                    break;
+                case '1y':
+                    startDate = new Date(lastDate.getTime() - 365 * 24 * 60 * 60 * 1000);
+                    break;
+                case 'all':
+                    return performanceData.entries;
+            }
+            
+            return performanceData.entries.filter(e => new Date(e.date) >= startDate);
+        }
+
+        // Initialize Category Detail Chart with Interactive Tooltip
+        function initCategoryDetailChart() {
+            const ctx = document.getElementById('categoryDetailChart').getContext('2d');
+            const category = categories.find(c => c.id === currentCategoryId);
+            
+            categoryDetailChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: [],
+                    datasets: [{
+                        label: 'Value',
+                        data: [],
+                        borderColor: category.color,
+                        backgroundColor: `${category.color}20`,
+                        borderWidth: 3,
+                        tension: 0.4,
+                        pointRadius: 0,
+                        pointHoverRadius: 8,
+                        pointHoverBackgroundColor: category.color,
+                        pointHoverBorderColor: '#ffffff',
+                        pointHoverBorderWidth: 3,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: { 
+                        mode: 'index', 
+                        intersect: false 
+                    },
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            backgroundColor: currentTheme === 'dark' ? 'rgba(17, 17, 17, 0.95)' : 'rgba(255, 255, 255, 0.98)',
+                            titleColor: currentTheme === 'dark' ? '#ffffff' : '#ff6b35',
+                            bodyColor: currentTheme === 'dark' ? '#6b6b6b' : '#ff8f5f',
+                            borderColor: currentTheme === 'dark' ? '#1a1a1a' : '#ffe8e0',
+                            borderWidth: 1,
+                            padding: 12,
+                            displayColors: false,
+                            callbacks: {
+                                // Zeige nur den Wert (wie Main Chart)
+                                title: function(context) {
+                                    return context[0].parsed.y.toFixed(1);
+                                },
+                                // Zeige Datum als Body (unten)
+                                label: function(context) {
+                                    return context.label;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: { 
+                                color: currentTheme === 'dark' ? '#1a1a1a' : '#fff5f0', 
+                                drawBorder: false 
+                            },
+                            ticks: { 
+                                color: currentTheme === 'dark' ? '#404040' : '#ff8f5f', 
+                                font: { size: 10 } 
+                            }
+                        },
+                        y: {
+                            // Auto-Scale für Trading-Platform-Look
+                            beginAtZero: false,
+                            grace: '5%', // 5% Padding oben und unten
+                            grid: { 
+                                color: currentTheme === 'dark' ? '#1a1a1a' : '#fff5f0', 
+                                drawBorder: false 
+                            },
+                            ticks: { 
+                                color: currentTheme === 'dark' ? '#404040' : '#ff8f5f', 
+                                font: { size: 10 },
+                                padding: 5
+                            }
+                        }
+                    },
+                    onHover: (event, activeElements) => {
+                        event.native.target.style.cursor = activeElements.length > 0 ? 'pointer' : 'default';
+                    }
+                }
+            });
+        }
+
+        // Update Category Detail Chart
+        function updateCategoryDetailChart() {
+            if (!categoryDetailChart) return;
+
+            const category = categories.find(c => c.id === currentCategoryId);
+            const entries = getCategoryFilteredEntries();
+            
+            if (entries.length === 0) {
+                categoryDetailChart.data.labels = [];
+                categoryDetailChart.data.datasets[0].data = [];
+                categoryDetailChart.update();
+                return;
+            }
+
+            categoryDetailChart.data.labels = entries.map(e => {
+                const date = new Date(e.date);
+                return `${date.getDate()}.${date.getMonth() + 1}.${date.getFullYear()}`;
+            });
+
+            // Verwende categoryValues
+            categoryDetailChart.data.datasets[0].data = entries.map(e => 
+                e.categoryValues ? e.categoryValues[currentCategoryId] : 100
+            );
+
+            // Update colors
+            categoryDetailChart.data.datasets[0].borderColor = category.color;
+            categoryDetailChart.data.datasets[0].backgroundColor = `${category.color}20`;
+            categoryDetailChart.data.datasets[0].pointHoverBackgroundColor = category.color;
+
+            categoryDetailChart.update('none');
+        }
+
+        // Initialize combined chart
+        function initCombinedChart() {
+            const ctx = document.getElementById('combinedChart').getContext('2d');
+            const t = translations[currentLang];
+            
+            const datasets = categories.map(cat => ({
+                label: t.categories[cat.id],
+                data: [],
+                borderColor: cat.color,
+                backgroundColor: 'transparent',
+                borderWidth: 2,
+                tension: 0.4,
+                pointRadius: 0,
+                pointHoverRadius: 5
+            }));
+
+            datasets.push({
+                label: 'FYS-Index',
+                data: [],
+                borderColor: '#ff6b35',
+                backgroundColor: 'transparent',
+                borderWidth: 3,
+                tension: 0.4,
+                pointRadius: 0,
+                pointHoverRadius: 6
+            });
+
+            combinedChart = new Chart(ctx, {
+                type: 'line',
+                data: { labels: [], datasets: datasets },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: { mode: 'index', intersect: false },
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            backgroundColor: currentTheme === 'dark' ? 'rgba(17, 17, 17, 0.95)' : 'rgba(255, 255, 255, 0.98)',
+                            titleColor: currentTheme === 'dark' ? '#ffffff' : '#ff6b35',
+                            bodyColor: currentTheme === 'dark' ? '#6b6b6b' : '#ff8f5f',
+                            borderColor: currentTheme === 'dark' ? '#1a1a1a' : '#ffe8e0',
+                            borderWidth: 1,
+                            padding: 12,
+                            callbacks: {
+                                // Wert oben
+                                title: function(context) {
+                                    return context[0].dataset.label + ': ' + context[0].parsed.y.toFixed(1);
+                                },
+                                // Datum unten
+                                label: function(context) {
+                                    return context.label;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: { 
+                                color: currentTheme === 'dark' ? '#1a1a1a' : '#fff5f0', 
+                                drawBorder: false 
+                            },
+                            ticks: { 
+                                color: currentTheme === 'dark' ? '#404040' : '#ff8f5f', 
+                                font: { size: 10 } 
+                            }
+                        },
+                        y: {
+                            // Auto-Scale für Trading-Platform-Look
+                            beginAtZero: false,
+                            grace: '5%',
+                            grid: { 
+                                color: currentTheme === 'dark' ? '#1a1a1a' : '#fff5f0', 
+                                drawBorder: false 
+                            },
+                            ticks: { 
+                                color: currentTheme === 'dark' ? '#404040' : '#ff8f5f', 
+                                font: { size: 10 },
+                                padding: 5
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Update combined chart
+        function updateCombinedChart() {
+            if (!combinedChart) return;
+
+            const entries = getFilteredEntries();
+            
+            combinedChart.data.labels = entries.map(e => {
+                const date = new Date(e.date);
+                return `${date.getDate()}.${date.getMonth() + 1}`;
+            });
+
+            categories.forEach((cat, index) => {
+                // Verwende categoryValues
+                combinedChart.data.datasets[index].data = entries.map(e => 
+                    e.categoryValues ? e.categoryValues[cat.id] : 100
+                );
+            });
+
+            combinedChart.data.datasets[combinedChart.data.datasets.length - 1].data = entries.map(e => e.fysIndex);
+            combinedChart.update();
+        }
+
+        // Create individual charts
+        function createIndividualCharts() {
+            const t = translations[currentLang];
+            const container = document.getElementById('individualCharts');
+            container.innerHTML = '';
+
+            categories.forEach(cat => {
+                const chartCard = document.createElement('div');
+                chartCard.className = 'chart-card';
+                chartCard.innerHTML = `
+                    <div class="chart-title">${t.categories[cat.id]}</div>
+                    <div class="single-chart-container">
+                        <canvas id="chart-${cat.id}"></canvas>
+                    </div>
+                `;
+                container.appendChild(chartCard);
+
+                const ctx = document.getElementById(`chart-${cat.id}`).getContext('2d');
+                const entries = getFilteredEntries();
+
+                individualCharts[cat.id] = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: entries.map(e => {
+                            const date = new Date(e.date);
+                            return `${date.getDate()}.${date.getMonth() + 1}`;
+                        }),
+                        datasets: [{
+                            label: t.categories[cat.id],
+                            data: entries.map(e => (e.values[cat.id] || 10) * 10),
+                            borderColor: cat.color,
+                            backgroundColor: `${cat.color}20`,
+                            borderWidth: 3,
+                            tension: 0.4,
+                            pointRadius: 0,
+                            pointHoverRadius: 5,
+                            fill: true
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { display: false },
+                            tooltip: {
+                                backgroundColor: currentTheme === 'dark' ? 'rgba(17, 17, 17, 0.95)' : 'rgba(255, 255, 255, 0.98)',
+                                titleColor: currentTheme === 'dark' ? '#ffffff' : '#ff6b35',
+                                bodyColor: currentTheme === 'dark' ? '#6b6b6b' : '#ff8f5f',
+                                borderColor: currentTheme === 'dark' ? '#1a1a1a' : '#ffe8e0',
+                                borderWidth: 1,
+                                padding: 12
+                            }
+                        },
+                        scales: {
+                            x: {
+                                grid: { 
+                                    color: currentTheme === 'dark' ? '#1a1a1a' : '#fff5f0', 
+                                    drawBorder: false 
+                                },
+                                ticks: { 
+                                    color: currentTheme === 'dark' ? '#404040' : '#ff8f5f', 
+                                    font: { size: 10 } 
+                                }
+                            },
+                            y: {
+                                // Auto-Scale für Trading-Platform-Look
+                                beginAtZero: false,
+                                grace: '5%',
+                                grid: { 
+                                    color: currentTheme === 'dark' ? '#1a1a1a' : '#fff5f0', 
+                                    drawBorder: false 
+                                },
+                                ticks: { 
+                                    color: currentTheme === 'dark' ? '#404040' : '#ff8f5f', 
+                                    font: { size: 10 },
+                                    padding: 5
+                                }
+                            }
+                        }
+                    }
+                });
+            });
+        }
+
+        // Change theme
+        function changeTheme(theme) {
+            currentTheme = theme;
+            localStorage.setItem('fysTheme', theme);
+            document.documentElement.setAttribute('data-theme', theme);
+            
+            document.querySelectorAll('[data-theme-btn]').forEach(el => el.classList.remove('active'));
+            document.querySelector(`[data-theme-btn="${theme}"]`).classList.add('active');
+            
+            if (mainChart) {
+                mainChart.destroy();
+                initMainChart();
+                updateMainChart();
+            }
+        }
+
+        // Change language
+        function changeLanguage(lang) {
+            currentLang = lang;
+            localStorage.setItem('fysLanguage', lang);
+            
+            document.querySelectorAll('[data-lang]').forEach(el => el.classList.remove('active'));
+            document.querySelector(`[data-lang="${lang}"]`).classList.add('active');
+            
+            updateUI();
+        }
+
+        // Toggle coach data
+        function toggleCoachData() {
+            coachDataAccess = !coachDataAccess;
+            localStorage.setItem('fysCoachData', coachDataAccess);
+            const toggle = document.getElementById('coachDataToggle');
+            
+            if (coachDataAccess) {
+                toggle.classList.add('active');
+            } else {
+                toggle.classList.remove('active');
+            }
+        }
+
+        // Update UI
+        function updateUI() {
+            const t = translations[currentLang];
+            
+            // Helper function for safe updates
+            const safeUpdate = (id, content, isPlaceholder = false) => {
+                const el = document.getElementById(id);
+                if (el) {
+                    if (isPlaceholder) {
+                        el.placeholder = content;
+                    } else {
+                        el.textContent = content;
+                    }
+                }
+            };
+            
+            updateHeaderDate();
+            safeUpdate('tapHint', t.tapHint);
+            safeUpdate('backText', t.backText);
+            safeUpdate('allCategoriesTitle', t.allCategoriesTitle);
+            safeUpdate('checkinTitle', t.checkinTitle);
+            safeUpdate('taskWidgetTitle', t.taskWidgetTitle);
+            safeUpdate('comingSoonBadge', t.comingSoonBadge);
+            safeUpdate('habitsTitle', t.habitsTitle);
+            safeUpdate('soberTitle', t.soberTitle);
+            safeUpdate('habitWidgetTitle', t.habitWidgetTitle);
+            safeUpdate('habitStreakLabel', t.habitStreakLabel);
+            safeUpdate('habitTodayLabel', t.habitTodayLabel);
+            safeUpdate('soberWidgetTitle', t.soberWidgetTitle);
+            safeUpdate('soberDaysLabel', t.soberDaysLabel);
+            safeUpdate('soberStreakLabel', t.soberStreakLabel);
+            safeUpdate('habitComingTitle', t.habitComingTitle);
+            safeUpdate('habitComingText', t.habitComingText);
+            safeUpdate('soberComingTitle', t.soberComingTitle);
+            safeUpdate('soberComingText', t.soberComingText);
+            safeUpdate('settingsTitle', t.settingsTitle);
+            safeUpdate('languageLabel', t.languageLabel);
+            safeUpdate('languageDesc', t.languageDesc);
+            safeUpdate('themeLabel', t.themeLabel);
+            safeUpdate('themeDesc', t.themeDesc);
+            safeUpdate('darkTheme', t.darkTheme);
+            safeUpdate('lightTheme', t.lightTheme);
+            safeUpdate('sleepGoalLabel', t.sleepGoalLabel);
+            safeUpdate('sleepGoalDesc', t.sleepGoalDesc);
+            safeUpdate('coachDataLabel', t.coachDataLabel);
+            safeUpdate('coachDataDesc', t.coachDataDesc);
+            safeUpdate('navHome', t.navHome);
+            safeUpdate('navCheckin', t.navCheckin);
+            safeUpdate('navCoach', t.navCoach);
+            safeUpdate('navSettings', t.navSettings);
+            safeUpdate('coachTitle', t.coachTitle);
+            safeUpdate('coachInput', t.coachPlaceholder, true);
+            safeUpdate('sleepGoalValue', sleepGoal.toFixed(1) + 'h');
+            
+            updateCheckinView();
+        }
+
+        // Switch view with haptic feedback
+        function switchView(view) {
+            // Haptic Feedback (iOS-Style)
+            if (window.navigator && window.navigator.vibrate) {
+                window.navigator.vibrate(10); // Light haptic
+            }
+            
+            // Close all modals
+            document.getElementById('coachModal').classList.remove('active');
+            document.getElementById('categoryDetailModal').classList.remove('active');
+            document.getElementById('journalModal').classList.remove('active');
+            
+            // Wenn Start-Button und schon auf Home: Scroll to top
+            if (view === 'home' && document.getElementById('homeView').classList.contains('active')) {
+                // Bereits auf Home - scroll to top
+                document.getElementById('homeView').scrollTo({ top: 0, behavior: 'smooth' });
+                return;
+            }
+            
+            document.querySelectorAll('.view-section').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+
+            document.getElementById(`${view}View`).classList.add('active');
+            const navItem = document.querySelector(`[data-view="${view}"]`);
+            if (navItem) {
+                navItem.classList.add('active');
+            }
+            
+            if (view === 'checkin') {
+                // Show wizard confirmation
+                document.getElementById('wizardConfirm').style.display = 'flex';
+                document.getElementById('wizardContainer').style.display = 'none';
+            }
+        }
+
+        // Switch to Coach with tab activation
+        function switchToCoach() {
+            // Haptic Feedback
+            if (window.navigator && window.navigator.vibrate) {
+                window.navigator.vibrate(10);
+            }
+            
+            // Deactivate all tabs
+            document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+            
+            // Activate coach tab
+            const coachTab = document.querySelector('[data-view="coach"]');
+            if (coachTab) {
+                coachTab.classList.add('active');
+            }
+            
+            // Open coach modal
+            openCoach();
+        }
+
+        // Coach functions
+        function openCoach() {
+            const modal = document.getElementById('coachModal');
+            const content = document.getElementById('coachContent');
+            const t = translations[currentLang];
+            
+            if (content.children.length === 0) {
+                content.innerHTML = `
+                    <div class="message assistant">
+                        <div class="message-bubble">${t.coachWelcome}</div>
+                    </div>
+                `;
+            }
+            
+            modal.classList.add('active');
+        }
+
+        function closeCoach() {
+            document.getElementById('coachModal').classList.remove('active');
+            
+            // Deactivate coach tab when closing
+            document.querySelector('[data-view="coach"]').classList.remove('active');
+        }
+
+        async function sendMessage() {
+            const input = document.getElementById('coachInput');
+            const message = input.value.trim();
+            
+            if (!message) return;
+
+            const content = document.getElementById('coachContent');
+            const sendBtn = document.getElementById('sendBtn');
+
+            const userMsg = document.createElement('div');
+            userMsg.className = 'message user';
+            userMsg.innerHTML = `<div class="message-bubble">${message}</div>`;
+            content.appendChild(userMsg);
+            content.scrollTop = content.scrollHeight;
+
+            input.value = '';
+            sendBtn.disabled = true;
+            sendBtn.innerHTML = '<div class="loading"></div>';
+
+            let context = '';
+            if (coachDataAccess && performanceData.entries.length > 0) {
+                const latest = performanceData.entries[performanceData.entries.length - 1];
+                const t = translations[currentLang];
+                context = `Values: ${categories.map(cat => 
+                    `${t.categories[cat.id]}: ${latest.values[cat.id] || 10}`).join(', ')}. Sleep: ${latest.sleepHours}h. FYS: ${latest.fysIndex.toFixed(1)}. `;
+            }
+
+            try {
+                const systemPrompts = {
+                    de: `Du bist FYS Coach. ${context}Kurz (max 3 Sätze).`,
+                    en: `You are FYS coach. ${context}Brief (max 3 sentences).`,
+                    es: `Eres coach FYS. ${context}Breve (máx 3 frases).`
+                };
+
+                const response = await fetch("https://api.anthropic.com/v1/messages", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        model: "claude-sonnet-4-20250514",
+                        max_tokens: 1000,
+                        system: systemPrompts[currentLang],
+                        messages: [{ role: "user", content: message }]
+                    })
+                });
+
+                const data = await response.json();
+                const assistantText = data.content.filter(b => b.type === "text").map(b => b.text).join("\n");
+
+                const assistantMsg = document.createElement('div');
+                assistantMsg.className = 'message assistant';
+                assistantMsg.innerHTML = `<div class="message-bubble">${assistantText}</div>`;
+                content.appendChild(assistantMsg);
+                content.scrollTop = content.scrollHeight;
+
+            } catch (error) {
+                const errorMsg = document.createElement('div');
+                errorMsg.className = 'message assistant';
+                errorMsg.innerHTML = `<div class="message-bubble">Technical issue!</div>`;
+                content.appendChild(errorMsg);
+            }
+
+            sendBtn.disabled = false;
+            sendBtn.innerHTML = '➤';
+        }
+
+        // Journal Functions
+        let journalData = JSON.parse(localStorage.getItem('fysJournal')) || {};
+        let currentJournalMonth = new Date();
+        let selectedJournalDate = null;
+
+        function openJournal() {
+            document.getElementById('journalModal').classList.add('active');
+            currentJournalMonth = new Date();
+            renderCalendar();
+            updateJournalStats();
+        }
+
+        function closeJournal() {
+            document.getElementById('journalModal').classList.remove('active');
+            document.getElementById('journalEntrySection').classList.remove('active');
+        }
+
+        function changeMonth(delta) {
+            currentJournalMonth.setMonth(currentJournalMonth.getMonth() + delta);
+            renderCalendar();
+        }
+
+        function renderCalendar() {
+            const monthNames = ['Januar', 'Februar', 'März', 'April', 'Mai', 'Juni', 
+                              'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'];
+            
+            document.getElementById('calendarMonth').textContent = 
+                `${monthNames[currentJournalMonth.getMonth()]} ${currentJournalMonth.getFullYear()}`;
+
+            const grid = document.getElementById('calendarGrid');
+            grid.innerHTML = '';
+
+            // Day headers
+            const dayHeaders = ['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So'];
+            dayHeaders.forEach(day => {
+                const header = document.createElement('div');
+                header.className = 'calendar-day-header';
+                header.textContent = day;
+                grid.appendChild(header);
+            });
+
+            // Get first day and number of days
+            const firstDay = new Date(currentJournalMonth.getFullYear(), currentJournalMonth.getMonth(), 1);
+            const lastDay = new Date(currentJournalMonth.getFullYear(), currentJournalMonth.getMonth() + 1, 0);
+            const startDay = firstDay.getDay() === 0 ? 6 : firstDay.getDay() - 1; // Monday = 0
+
+            // Empty cells
+            for (let i = 0; i < startDay; i++) {
+                const empty = document.createElement('div');
+                empty.className = 'calendar-day empty';
+                grid.appendChild(empty);
+            }
+
+            // Day cells
+            const today = new Date();
+            for (let day = 1; day <= lastDay.getDate(); day++) {
+                const dayEl = document.createElement('div');
+                dayEl.className = 'calendar-day';
+                dayEl.textContent = day;
+
+                const dateKey = `${currentJournalMonth.getFullYear()}-${currentJournalMonth.getMonth() + 1}-${day}`;
+                
+                // Check if today
+                if (currentJournalMonth.getFullYear() === today.getFullYear() &&
+                    currentJournalMonth.getMonth() === today.getMonth() &&
+                    day === today.getDate()) {
+                    dayEl.classList.add('today');
+                }
+
+                // Check if has entry
+                if (journalData[dateKey]) {
+                    dayEl.classList.add('has-entry');
+                }
+
+                dayEl.onclick = () => selectDate(day);
+                grid.appendChild(dayEl);
+            }
+        }
+
+        function selectDate(day) {
+            selectedJournalDate = `${currentJournalMonth.getFullYear()}-${currentJournalMonth.getMonth() + 1}-${day}`;
+            
+            const dateObj = new Date(currentJournalMonth.getFullYear(), currentJournalMonth.getMonth(), day);
+            const dateStr = `${day}. ${['Januar', 'Februar', 'März', 'April', 'Mai', 'Juni', 
+                                        'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'][dateObj.getMonth()]} ${dateObj.getFullYear()}`;
+            
+            document.getElementById('journalEntryDate').textContent = dateStr;
+            document.getElementById('journalTextarea').value = journalData[selectedJournalDate] || '';
+            document.getElementById('journalEntrySection').classList.add('active');
+        }
+
+        function saveJournalEntry() {
+            const text = document.getElementById('journalTextarea').value;
+            
+            if (text.trim()) {
+                journalData[selectedJournalDate] = text;
+            } else {
+                delete journalData[selectedJournalDate];
+            }
+            
+            localStorage.setItem('fysJournal', JSON.stringify(journalData));
+            showToast();
+            renderCalendar();
+            updateJournalStats();
+        }
+
+        function updateJournalStats() {
+            const entries = Object.keys(journalData).length;
+            document.getElementById('journalEntriesCount').textContent = entries;
+
+            if (entries > 0) {
+                const dates = Object.keys(journalData).sort().reverse();
+                const lastDate = dates[0].split('-');
+                document.getElementById('journalLastDate').textContent = 
+                    `${lastDate[2]}.${lastDate[1]}`;
+            } else {
+                document.getElementById('journalLastDate').textContent = '—';
+            }
+        }
+
+        // ========================================
+        // WIZARD CHECK-IN FUNCTIONS
+        // ========================================
+        
+        const wizardCategories = [
+            { id: 'social', name: { de: 'Soziales', en: 'Social', es: 'Social' }, color: '#ffd700', hint: { de: 'Wie war die Qualität deiner sozialen Interaktionen?', en: 'How was the quality of your social interactions?', es: '¿Cómo fue la calidad de tus interacciones sociales?' } },
+            { id: 'energy', name: { de: 'Energie', en: 'Energy', es: 'Energía' }, color: '#00ff88', hint: { de: 'Wie viel Energie hattest du heute?', en: 'How much energy did you have today?', es: '¿Cuánta energía tuviste hoy?' } },
+            { id: 'sleep', name: { de: 'Schlaf', en: 'Sleep', es: 'Sueño' }, color: '#00ff88', hint: { de: 'Wie viele Stunden hast du geschlafen?', en: 'How many hours did you sleep?', es: '¿Cuántas horas dormiste?' }, isSleep: true },
+            { id: 'focus', name: { de: 'Fokus', en: 'Focus', es: 'Enfoque' }, color: '#ff6b35', hint: { de: 'Wie gut konntest du dich konzentrieren?', en: 'How well could you concentrate?', es: '¿Qué tan bien pudiste concentrarte?' } },
+            { id: 'discipline', name: { de: 'Disziplin', en: 'Discipline', es: 'Disciplina' }, color: '#a8a8a8', hint: { de: 'Wie diszipliniert warst du heute?', en: 'How disciplined were you today?', es: '¿Qué tan disciplinado fuiste hoy?' } },
+            { id: 'sport', name: { de: 'Sport', en: 'Sport', es: 'Deporte' }, color: '#ff4757', hint: { de: 'Wie aktiv warst du körperlich?', en: 'How physically active were you?', es: '¿Qué tan activo estuviste físicamente?' } },
+            { id: 'nutrition', name: { de: 'Ernährung', en: 'Nutrition', es: 'Nutrición' }, color: '#00d4ff', hint: { de: 'Wie gesund hast du dich ernährt?', en: 'How healthy did you eat?', es: '¿Qué tan saludable comiste?' } },
+            { id: 'mindset', name: { de: 'Mindset', en: 'Mindset', es: 'Mentalidad' }, color: '#5f7aff', hint: { de: 'Wie positiv war deine Einstellung?', en: 'How positive was your attitude?', es: '¿Qué tan positiva fue tu actitud?' } }
+        ];
+
+        const categoryIcons = {
+            social: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>`,
+            energy: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>`,
+            sleep: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>`,
+            focus: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="6"></circle><circle cx="12" cy="12" r="2"></circle></svg>`,
+            discipline: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>`,
+            sport: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13.73 4a2 2 0 0 0-3.46 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>`,
+            nutrition: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8h1a4 4 0 0 1 0 8h-1"></path><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"></path><line x1="6" y1="1" x2="6" y2="4"></line><line x1="10" y1="1" x2="10" y2="4"></line><line x1="14" y1="1" x2="14" y2="4"></line></svg>`,
+            mindset: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="22"></line></svg>`
+        };
+
+        let wizardCurrentStep = 0;
+        let wizardDraft = {};
+
+        function startWizard() {
+            document.getElementById('wizardConfirm').style.display = 'none';
+            document.getElementById('wizardContainer').style.display = 'flex';
+            wizardCurrentStep = 0;
+            loadWizardDraft();
+            renderWizardProgressDots();
+            renderWizardSteps();
+            updateWizardUI();
+        }
+
+        function cancelWizard() {
+            switchView('home');
+        }
+
+        function closeWizard() {
+            if (confirm('Möchtest du den Check-in wirklich abbrechen? Deine Eingaben werden als Entwurf gespeichert.')) {
+                switchView('home');
+            }
+        }
+
+        function renderWizardProgressDots() {
+            const dotsContainer = document.getElementById('progressDots');
+            dotsContainer.innerHTML = wizardCategories.map((_, i) => 
+                `<div class="dot" data-step="${i}"></div>`
+            ).join('');
+        }
+
+        function renderWizardSteps() {
+            const content = document.getElementById('wizardContent');
+            content.innerHTML = '';
+            
+            // Render all categories
+            wizardCategories.forEach((cat, index) => {
+                const step = document.createElement('div');
+                step.className = 'step-container-wizard';
+                step.id = `wizard-step-${index}`;
+                
+                const isSleep = cat.isSleep;
+                const defaultValue = isSleep ? (wizardDraft[cat.id] || 8.0) : (wizardDraft[cat.id] || 5);
+                const maxValue = isSleep ? 12 : 10;
+                const minValue = isSleep ? 0 : 1;
+                const stepValue = isSleep ? 0.5 : 1;
+                const displayValue = isSleep ? defaultValue.toFixed(1) : defaultValue;
+                const labelText = isSleep ? 'Stunden' : 'von 10 Punkten';
+                const minLabel = isSleep ? '0h' : 'Sehr schlecht';
+                const maxLabel = isSleep ? '12h' : 'Perfekt';
+                
+                step.innerHTML = `
+                    <div class="category-icon-wizard" style="background: ${cat.color}20; color: ${cat.color};">
+                        ${categoryIcons[cat.id]}
+                    </div>
+                    <div class="step-title-wizard">${cat.name[currentLang]}</div>
+                    <div class="step-subtitle-wizard">${cat.hint[currentLang]}</div>
+                    <div class="input-area-wizard">
+                        <div class="slider-value-display-wizard">
+                            <div class="slider-value-wizard" id="wizard-value-${cat.id}">${displayValue}</div>
+                            <div class="slider-label-wizard">${labelText}</div>
+                        </div>
+                        <div style="padding: 0 12px;">
+                            <input type="range" min="${minValue}" max="${maxValue}" step="${stepValue}" value="${defaultValue}" 
+                                   class="slider-wizard" id="wizard-slider-${cat.id}" 
+                                   oninput="updateWizardSliderValue('${cat.id}', this.value, ${isSleep})">
+                            <div class="slider-labels-wizard">
+                                <span>${minLabel}</span>
+                                <span>${maxLabel}</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                content.appendChild(step);
+            });
+
+            // Render review step
+            const reviewStep = document.createElement('div');
+            reviewStep.className = 'step-container-wizard';
+            reviewStep.id = 'wizard-step-review';
+            reviewStep.innerHTML = `
+                <div class="step-title-wizard">Zusammenfassung</div>
+                <div class="step-subtitle-wizard">Überprüfe deine Angaben. Tippe auf eine Kategorie zum Bearbeiten.</div>
+                <div class="review-list-wizard" id="wizardReviewList"></div>
+            `;
+            content.appendChild(reviewStep);
+        }
+
+        function updateWizardSliderValue(id, value, isSleep = false) {
+            const displayValue = isSleep ? parseFloat(value).toFixed(1) : value;
+            document.getElementById(`wizard-value-${id}`).textContent = displayValue;
+            wizardDraft[id] = parseFloat(value);
+            saveWizardDraft();
+        }
+
+        function updateWizardUI() {
+            const isReview = wizardCurrentStep === wizardCategories.length;
+            document.getElementById('stepCounter').textContent = 
+                isReview ? 'Zusammenfassung' : `Schritt ${wizardCurrentStep + 1}/${wizardCategories.length}`;
+
+            const progress = ((wizardCurrentStep + 1) / (wizardCategories.length + 1)) * 100;
+            document.getElementById('progressBarWizard').style.width = progress + '%';
+
+            document.querySelectorAll('.dot').forEach((dot, i) => {
+                dot.classList.remove('active', 'completed');
+                if (i < wizardCurrentStep) dot.classList.add('completed');
+                if (i === wizardCurrentStep) dot.classList.add('active');
+            });
+
+            document.getElementById('backBtnWizard').disabled = wizardCurrentStep === 0;
+
+            document.querySelectorAll('.step-container-wizard').forEach((step, i) => {
+                step.classList.remove('active', 'prev');
+                if (i === wizardCurrentStep) step.classList.add('active');
+                if (i < wizardCurrentStep) step.classList.add('prev');
+            });
+
+            const nextBtn = document.getElementById('nextBtnWizard');
+            if (isReview) {
+                nextBtn.textContent = '✓ Speichern';
+                nextBtn.onclick = saveWizardCheckIn;
+            } else {
+                nextBtn.textContent = 'Weiter';
+                nextBtn.onclick = wizardNextStep;
+            }
+
+            if (isReview) {
+                updateWizardReviewList();
+            }
+        }
+
+        function updateWizardReviewList() {
+            const reviewList = document.getElementById('wizardReviewList');
+            reviewList.innerHTML = wizardCategories.map((cat, index) => `
+                <div class="review-item-wizard" onclick="goToWizardStep(${index})">
+                    <div class="review-item-left-wizard">
+                        <div class="review-icon-wizard" style="background: ${cat.color}20; color: ${cat.color};">
+                            ${categoryIcons[cat.id] || cat.icon}
+                        </div>
+                        <div class="review-info-wizard">
+                            <div class="review-category-wizard">${cat.name[currentLang]}</div>
+                            <div class="review-hint-wizard">${cat.hint[currentLang]}</div>
+                        </div>
+                    </div>
+                    <div class="review-value-wizard">${wizardDraft[cat.id] || (cat.id === 'sleep' ? '8.0' : '5')}</div>
+                </div>
+            `).join('');
+        }
+
+        function wizardNextStep() {
+            if (wizardCurrentStep < wizardCategories.length) {
+                wizardCurrentStep++;
+                updateWizardUI();
+            }
+        }
+
+        function goToWizardStep(step) {
+            wizardCurrentStep = step;
+            updateWizardUI();
+        }
+
+        document.addEventListener('click', function(e) {
+            if (e.target.id === 'backBtnWizard') {
+                if (wizardCurrentStep > 0) {
+                    wizardCurrentStep--;
+                    updateWizardUI();
+                }
+            }
+        });
+
+        function saveWizardDraft() {
+            localStorage.setItem('fysWizardDraft', JSON.stringify(wizardDraft));
+        }
+
+        function loadWizardDraft() {
+            const saved = localStorage.getItem('fysWizardDraft');
+            if (saved) {
+                wizardDraft = JSON.parse(saved);
+            }
+        }
+
+        function saveWizardCheckIn() {
+            console.log('=== SAVE WIZARD CHECK-IN START ===');
+            console.log('Raw wizardDraft:', wizardDraft);
+            
+            // Get all values
+            const values = {};
+            const sleepHoursValue = parseFloat(wizardDraft.sleep) || 8.0;
+            
+            console.log('Sleep Hours Value (parsed):', sleepHoursValue);
+            console.log('Sleep Goal:', sleepGoal);
+            
+            // Calculate sleep bonus: ±0.25 per 0.5h deviation
+            const sleepGoalDiff = sleepHoursValue - sleepGoal;
+            const halfHourDeviations = sleepGoalDiff / 0.5;
+            const sleepBonus = halfHourDeviations * 0.25;
+            
+            // DEBUG LOGGING
+            console.log('=== SLEEP CALCULATION DEBUG ===');
+            console.log('Sleep Hours:', sleepHoursValue);
+            console.log('Sleep Goal:', sleepGoal);
+            console.log('Difference:', sleepGoalDiff);
+            console.log('Half Hour Deviations:', halfHourDeviations);
+            console.log('Sleep Bonus:', sleepBonus);
+            
+            // Collect all category values
+            wizardCategories.forEach(cat => {
+                if (!cat.isSleep) {
+                    values[cat.id] = parseFloat(wizardDraft[cat.id]) || 5;
+                    console.log(`${cat.id} value:`, values[cat.id]);
+                }
+            });
+            
+            console.log('Energy Input Value:', values.energy);
+            console.log('All Input Values:', values);
+
+            // Use existing submitCheckIn logic
+            const isFirstEntry = performanceData.entries.length === 0;
+            let entryDate;
+            if (isFirstEntry) {
+                entryDate = new Date();
+            } else {
+                const lastEntry = performanceData.entries[performanceData.entries.length - 1];
+                entryDate = new Date(lastEntry.date);
+                entryDate.setDate(entryDate.getDate() + 1);
+            }
+
+            let fysIndex;
+            const categoryValues = {};
+
+            if (isFirstEntry) {
+                fysIndex = 100;
+                categories.forEach(cat => {
+                    categoryValues[cat.id] = 100;
+                });
+            } else {
+                const lastEntry = performanceData.entries[performanceData.entries.length - 1];
+                
+                // Create adjusted values for FYS Index calculation
+                // Sleep bonus is added to ENERGY INPUT before averaging
+                const adjustedValuesForFYS = {};
+                categories.forEach(cat => {
+                    if (cat.id === 'energy') {
+                        // Energy gets the sleep bonus added to its input value
+                        // Example: energy input 9, sleep -4h → bonus -2
+                        // For FYS average: 9 + (-2) = 7
+                        adjustedValuesForFYS[cat.id] = (values[cat.id] || 5) + sleepBonus;
+                        console.log('Adjusted Energy for FYS:', adjustedValuesForFYS[cat.id]);
+                    } else {
+                        adjustedValuesForFYS[cat.id] = values[cat.id] || 5;
+                    }
+                });
+                
+                console.log('All Adjusted Values for FYS:', adjustedValuesForFYS);
+                
+                // Calculate FYS Index with adjusted energy value
+                fysIndex = calculateFYSIndex(adjustedValuesForFYS, lastEntry.fysIndex);
+                
+                console.log('New FYS Index:', fysIndex);
+                
+                // Now calculate categoryValues
+                categories.forEach(cat => {
+                    const prevValue = lastEntry.categoryValues[cat.id] || 100;
+                    
+                    if (cat.id === 'energy') {
+                        // For energy category value: use the adjusted input
+                        // This means the category curve also reflects sleep
+                        const adjustedInput = adjustedValuesForFYS[cat.id];
+                        const dailyChange = adjustedInput - 5;
+                        categoryValues[cat.id] = Math.max(0, prevValue + dailyChange);
+                        
+                        console.log('Energy Category Calculation:');
+                        console.log('  Previous Value:', prevValue);
+                        console.log('  Adjusted Input:', adjustedInput);
+                        console.log('  Daily Change:', dailyChange);
+                        console.log('  New Value:', categoryValues[cat.id]);
+                    } else {
+                        categoryValues[cat.id] = calculateCategoryValue(values[cat.id], prevValue);
+                    }
+                });
+            }
+
+            console.log('Final Category Values:', categoryValues);
+            console.log('=== END DEBUG ===');
+
+            performanceData.entries.push({
+                date: entryDate.toISOString(),
+                values: values,
+                categoryValues: categoryValues,
+                sleepHours: sleepHoursValue,
+                fysIndex: fysIndex
+            });
+
+            localStorage.setItem('fysData', JSON.stringify(performanceData));
+            localStorage.removeItem('fysWizardDraft');
+
+            // Set flag for post-reload actions (scroll + 1D reset)
+            try {
+                sessionStorage.setItem('fysCheckInCompleted', 'true');
+                console.log('Post-checkin flag set successfully');
+            } catch(e) {
+                console.error('Could not set sessionStorage flag:', e);
+            }
+
+            showToast();
+
+            setTimeout(() => {
+                wizardDraft = {};
+                location.reload();
+            }, 1000);
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('=== PAGE LOAD ===');
+            
+            let postCheckinFlag = false;
+            try {
+                postCheckinFlag = sessionStorage.getItem('fysCheckInCompleted') === 'true';
+                console.log('Post-checkin flag:', postCheckinFlag);
+            } catch(e) {
+                console.error('SessionStorage error:', e);
+            }
+            
+            // Hide loading screen after content loads
+            setTimeout(() => {
+                const loadingScreen = document.getElementById('loadingScreen');
+                if (loadingScreen) {
+                    loadingScreen.classList.add('hidden');
+                }
+            }, 800);
+            
+            document.documentElement.setAttribute('data-theme', currentTheme);
+            
+            document.querySelectorAll('[data-theme-btn]').forEach(el => el.classList.remove('active'));
+            const themeBtn = document.querySelector(`[data-theme-btn="${currentTheme}"]`);
+            if (themeBtn) themeBtn.classList.add('active');
+            
+            if (coachDataAccess) {
+                const toggle = document.getElementById('coachDataToggle');
+                if (toggle) toggle.classList.add('active');
+            }
+            
+            initMainChart();
+            updateUI();
+            
+            // Check if we just completed a check-in
+            if (postCheckinFlag) {
+                console.log('POST-CHECKIN MODE ACTIVATED');
+                console.log('Current timerange before:', currentTimeRange);
+                
+                // Reset to 1D timeframe
+                changeTimeRange('1d');
+                
+                console.log('Current timerange after:', currentTimeRange);
+                
+                // Scroll to top after a brief delay to ensure content is rendered
+                setTimeout(() => {
+                    console.log('Scrolling to top...');
+                    window.scrollTo({ top: 0, behavior: 'instant' });
+                    const homeView = document.getElementById('homeView');
+                    if (homeView) {
+                        homeView.scrollTo({ top: 0, behavior: 'instant' });
+                        console.log('Scrolled home view to top');
+                    }
+                }, 100);
+                
+                // Clear the flag
+                try {
+                    sessionStorage.removeItem('fysCheckInCompleted');
+                    console.log('Flag cleared');
+                } catch(e) {
+                    console.error('Could not clear flag:', e);
+                }
+            } else {
+                console.log('NORMAL LOAD MODE');
+                // Normal load - just update chart with current timerange
+                updateMainChart();
+            }
+            
+            createStockList();
+            updateJournalStats();
+        });
+    </script>
+</body>
+</html>
