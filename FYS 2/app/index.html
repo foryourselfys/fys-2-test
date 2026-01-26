@@ -4,6 +4,24 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FYS - For Yourself</title>
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    
+    <!-- Apple Touch Icon -->
+    <link rel="apple-touch-icon" href="apple-touch-icon.png">
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="manifest.json">
+    
+    <!-- iOS Meta Tags -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="FYS">
+    
+    <!-- Theme Color -->
+    <meta name="theme-color" content="#0a0a0a">
+    
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
@@ -52,7 +70,7 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: var(--bg-primary);
+            background: #000;
             z-index: 99999;
             display: flex;
             align-items: center;
@@ -2108,6 +2126,204 @@
             position: relative;
             z-index: 10;
         }
+
+        /* ========================================
+           PERFORMANCE PACKS STYLES
+           ======================================== */
+        
+        .performance-packs-container {
+            margin-top: 24px;
+        }
+
+        .performance-packs-title {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--text-tertiary);
+            font-weight: 700;
+            margin-bottom: 16px;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .performance-pack-card {
+            background: var(--bg-card);
+            border-radius: 20px;
+            border: 2px solid var(--border);
+            padding: 20px;
+            margin-bottom: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .performance-pack-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, transparent, rgba(255, 107, 53, 0.05));
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .performance-pack-card:hover::before {
+            opacity: 1;
+        }
+
+        .performance-pack-card.active {
+            border-color: var(--accent-primary);
+            background: linear-gradient(135deg, rgba(255, 107, 53, 0.05), transparent);
+        }
+
+        .performance-pack-card:active {
+            transform: scale(0.98);
+        }
+
+        .pack-header-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .pack-info-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .pack-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            background: rgba(255, 107, 53, 0.1);
+            flex-shrink: 0;
+        }
+
+        .pack-name-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .pack-name {
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 2px;
+        }
+
+        .pack-index-value {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--accent-primary);
+        }
+
+        .pack-toggle {
+            width: 50px;
+            height: 28px;
+            background: var(--bg-elevated);
+            border: 2px solid var(--border);
+            border-radius: 14px;
+            cursor: pointer;
+            position: relative;
+            transition: all 0.3s;
+            flex-shrink: 0;
+        }
+
+        .pack-toggle::after {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background: var(--text-secondary);
+            border-radius: 50%;
+            top: 2px;
+            left: 2px;
+            transition: all 0.3s;
+        }
+
+        .pack-toggle.active {
+            background: var(--accent-primary);
+            border-color: var(--accent-primary);
+        }
+
+        .pack-toggle.active::after {
+            left: 24px;
+            background: #000;
+        }
+
+        .pack-description {
+            color: var(--text-secondary);
+            font-size: 12px;
+            margin-bottom: 12px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .pack-categories {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .pack-category-chip {
+            padding: 4px 10px;
+            background: var(--bg-elevated);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+
+        .performance-pack-card.active .pack-category-chip {
+            background: rgba(255, 107, 53, 0.1);
+            border-color: rgba(255, 107, 53, 0.3);
+            color: var(--accent-primary);
+        }
+
+        .performance-pack-card.locked {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .performance-pack-card.locked .pack-toggle {
+            opacity: 0.5;
+            pointer-events: none;
+        }
+
+        .lock-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 20px;
+            z-index: 10;
+        }
+
+        .lock-icon {
+            font-size: 36px;
+            color: var(--text-secondary);
+        }
     </style>
 </head>
 <body>
@@ -2157,6 +2373,15 @@
                         <div class="index-change-text" id="mainChangeText"></div>
                     </div>
                     <div class="tap-hint" id="tapHint"></div>
+                </div>
+
+                <!-- Performance Packs Section -->
+                <div class="performance-packs-container" id="performancePacksContainer" style="display: none;">
+                    <div class="performance-packs-title">
+                        📊 PERFORMANCE PACKS
+                        <span style="background: linear-gradient(135deg, #ffd700, #ffed4e); color: #000; padding: 2px 6px; border-radius: 4px; font-size: 9px; font-weight: 800;">PRO</span>
+                    </div>
+                    <div id="performancePacksList"></div>
                 </div>
 
                 <!-- Tagebuch Widget -->
@@ -2288,7 +2513,7 @@
                 <div class="confirm-content">
                     <div class="confirm-icon">📝</div>
                     <div class="confirm-title">Check-in für heute starten?</div>
-                    <div class="confirm-subtitle">Beantworte 8 kurze Fragen zu deinem Tag</div>
+                    <div class="confirm-subtitle" id="wizardConfirmSubtitle">Beantworte 8 kurze Fragen zu deinem Tag</div>
                     <div class="confirm-actions">
                         <button class="btn-secondary" onclick="cancelWizard()">Abbrechen</button>
                         <button class="btn-primary-wizard" onclick="startWizard()">Starten</button>
@@ -2387,6 +2612,36 @@
                             <div class="toggle-slider"></div>
                         </div>
                     </div>
+                </div>
+
+                <!-- Pro Toggle -->
+                <div class="setting-item" style="text-align: center;">
+                    <div class="setting-label">🌟 FYS Pro</div>
+                    <div class="setting-description" id="proStatusDesc">Performance Packs & Advanced Features</div>
+                    <button onclick="togglePro()" id="proToggleBtn" style="
+                        width: 100%;
+                        margin-top: 16px;
+                        padding: 14px;
+                        background: linear-gradient(135deg, #ff6b35, #ff8f5f);
+                        border: none;
+                        border-radius: 12px;
+                        color: #000;
+                        font-size: 15px;
+                        font-weight: 700;
+                        cursor: pointer;
+                        font-family: inherit;
+                        transition: all 0.3s;
+                    ">Activate FYS Pro</button>
+                </div>
+
+                <!-- Performance Packs Management -->
+                <div id="performancePacksSettings" style="display: none;">
+                    <div class="setting-item">
+                        <div class="setting-label">📊 Performance Packs</div>
+                        <div class="setting-description">Wähle bis zu 2 Packs aus (aktiv: <span id="activePacksCount">0</span>/2)</div>
+                    </div>
+
+                    <div id="packSettingsList"></div>
                 </div>
             </div>
         </div>
@@ -2499,6 +2754,28 @@
     </div>
 
     <script>
+        // ============================================
+        // SAFE DOM HELPERS (Prevents null errors)
+        // ============================================
+        function safeSetHTML(selector, html) {
+            const el = typeof selector === 'string' ? document.querySelector(selector) : selector;
+            if (!el) {
+                console.warn(`[SafeHTML] Element not found:`, selector);
+                return false;
+            }
+            el.innerHTML = html;
+            return true;
+        }
+
+        function safeGetElement(id) {
+            const el = document.getElementById(id);
+            if (!el) console.warn(`[SafeDOM] Element not found: #${id}`);
+            return el;
+        }
+
+        // ============================================
+        // TRANSLATIONS
+        // ============================================
         // Translations
         const translations = {
             de: {
@@ -2678,7 +2955,13 @@
         let sleepGoal = parseFloat(localStorage.getItem('fysSleepGoal')) || 8.0;
         let sleepHours = 8.0;
         let coachDataAccess = localStorage.getItem('fysCoachData') === 'true';
-        let performanceData = JSON.parse(localStorage.getItem('fysData')) || { entries: [] };
+        let isPro = localStorage.getItem('fysPro') === 'true'; // Pro status
+        let performanceData = JSON.parse(localStorage.getItem('fysData')) || { entries: [], activePacks: [] };
+        
+        // Ensure activePacks exists in loaded data
+        if (!performanceData.activePacks) {
+            performanceData.activePacks = [];
+        }
         
         let mainChart = null;
         let combinedChart = null;
@@ -2692,6 +2975,48 @@
             { id: 'sport', color: '#ff4757' },
             { id: 'nutrition', color: '#00d4ff' },
             { id: 'mindset', color: '#5f7aff' }
+        ];
+
+        // ========== PERFORMANCE PACKS DATA ==========
+        const performancePacks = [
+            {
+                id: 'finance',
+                name: 'Finance Pack',
+                icon: '💰',
+                description: 'Track your financial health and wealth building',
+                categories: [
+                    { id: 'savings', name: 'Savings', emoji: '💵', color: '#2ecc71', isPro: true },
+                    { id: 'investments', name: 'Investments', emoji: '📈', color: '#3498db', isPro: true },
+                    { id: 'budget', name: 'Budget Discipline', emoji: '🎯', color: '#e74c3c', isPro: true },
+                    { id: 'income', name: 'Income Growth', emoji: '💼', color: '#f39c12', isPro: true },
+                    { id: 'financial_education', name: 'Financial Education', emoji: '📚', color: '#9b59b6', isPro: true }
+                ]
+            },
+            {
+                id: 'health',
+                name: 'Health Pack',
+                icon: '🏥',
+                description: 'Monitor your physical and mental wellness',
+                categories: [
+                    { id: 'cardio', name: 'Cardio Fitness', emoji: '🏃', color: '#e67e22', isPro: true },
+                    { id: 'strength', name: 'Strength Training', emoji: '💪', color: '#c0392b', isPro: true },
+                    { id: 'flexibility', name: 'Flexibility', emoji: '🧘', color: '#1abc9c', isPro: true },
+                    { id: 'mental_health', name: 'Mental Health', emoji: '🧠', color: '#8e44ad', isPro: true }
+                ]
+            },
+            {
+                id: 'entrepreneurship',
+                name: 'Entrepreneurship Pack',
+                icon: '🚀',
+                description: 'Build and scale your business ventures',
+                categories: [
+                    { id: 'networking', name: 'Networking', emoji: '🤝', color: '#16a085', isPro: true },
+                    { id: 'product_development', name: 'Product Development', emoji: '🛠️', color: '#2980b9', isPro: true },
+                    { id: 'marketing', name: 'Marketing', emoji: '📣', color: '#d35400', isPro: true },
+                    { id: 'sales', name: 'Sales', emoji: '💸', color: '#27ae60', isPro: true },
+                    { id: 'leadership', name: 'Leadership', emoji: '👑', color: '#8e44ad', isPro: true }
+                ]
+            }
         ];
 
         // KORRIGIERTE BERECHNUNGEN - EINFACH UND KLAR
@@ -3216,6 +3541,12 @@
         function closeChartDetails() {
             document.getElementById('chartDetailsView').classList.remove('active');
             document.getElementById('homeView').classList.add('active');
+            
+            // Clean up pack values table if it exists
+            const packTable = document.getElementById('packValuesTableContainer');
+            if (packTable) {
+                packTable.remove();
+            }
         }
 
         // Create Flatex-Style Stock List
@@ -3788,7 +4119,880 @@
             }
         }
 
+        function togglePro() {
+            isPro = !isPro;
+            localStorage.setItem('fysPro', isPro);
+            
+            // Update button
+            updateProButton();
+            
+            // Show/Hide Performance Packs
+            renderPerformancePacks();
+            
+            // Show message
+            if (isPro) {
+                alert('🎉 FYS Pro aktiviert! Performance Packs sind jetzt auf dem Startbildschirm verfügbar.');
+            } else {
+                alert('FYS Pro deaktiviert. Performance Packs wurden ausgeblendet.');
+            }
+        }
+
+        function updateProButton() {
+            const btn = document.getElementById('proToggleBtn');
+            const desc = document.getElementById('proStatusDesc');
+            
+            if (btn && desc) {
+                if (isPro) {
+                    btn.textContent = 'Deactivate FYS Pro';
+                    btn.style.background = 'linear-gradient(135deg, #666, #888)';
+                    desc.textContent = 'Pro Status: Active ✓';
+                } else {
+                    btn.textContent = 'Activate FYS Pro';
+                    btn.style.background = 'linear-gradient(135deg, #ff6b35, #ff8f5f)';
+                    desc.textContent = 'Performance Packs & Advanced Features';
+                }
+            }
+            
+            // Show/hide pack settings
+            renderPackSettings();
+        }
+
         // Update UI
+        // ========== PERFORMANCE PACKS FUNCTIONS ==========
+        function getActivePackCategories() {
+            let packCategories = [];
+            performanceData.activePacks.forEach(packId => {
+                const pack = performancePacks.find(p => p.id === packId);
+                if (pack) {
+                    packCategories = packCategories.concat(pack.categories);
+                }
+            });
+            return packCategories;
+        }
+
+        function calculatePackIndex(packId, values, previousIndex) {
+            const pack = performancePacks.find(p => p.id === packId);
+            if (!pack) return 100;
+
+            const packCategoryIds = pack.categories.map(c => c.id);
+            let sum = 0;
+            let count = 0;
+
+            packCategoryIds.forEach(catId => {
+                if (values[catId] !== undefined) {
+                    sum += values[catId];
+                    count++;
+                }
+            });
+
+            if (count === 0) return previousIndex;
+
+            const avg = sum / count;
+            const change = avg - 5;
+            return Math.max(0, previousIndex + change);
+        }
+
+        function togglePerformancePack(packId) {
+            const index = performanceData.activePacks.indexOf(packId);
+            
+            if (index > -1) {
+                // Deactivate pack
+                performanceData.activePacks.splice(index, 1);
+            } else {
+                // Check limit
+                if (performanceData.activePacks.length >= 2) {
+                    alert('⚠️ Du kannst maximal 2 Performance Packs gleichzeitig aktivieren. Deaktiviere zuerst ein anderes Pack.');
+                    return;
+                }
+                // Activate pack
+                performanceData.activePacks.push(packId);
+            }
+            
+            localStorage.setItem('fysData', JSON.stringify(performanceData));
+            renderPackSettings();
+            renderPerformancePacks();
+        }
+
+        function renderPackSettings() {
+            const container = document.getElementById('performancePacksSettings');
+            const listContainer = document.getElementById('packSettingsList');
+            const countSpan = document.getElementById('activePacksCount');
+
+            if (!isPro) {
+                container.style.display = 'none';
+                return;
+            }
+
+            container.style.display = 'block';
+            
+            const activeCount = performanceData.activePacks.length;
+            if (countSpan) countSpan.textContent = activeCount;
+
+            listContainer.innerHTML = '';
+
+            performancePacks.forEach(pack => {
+                const isActive = performanceData.activePacks.includes(pack.id);
+                
+                const packItem = document.createElement('div');
+                packItem.className = 'setting-item';
+                packItem.style.cursor = 'pointer';
+                
+                packItem.innerHTML = `
+                    <div>
+                        <div class="setting-label" style="display: flex; align-items: center; gap: 8px;">
+                            <span style="font-size: 20px;">${pack.icon}</span>
+                            <span>${pack.name}</span>
+                        </div>
+                        <div class="setting-description">${pack.description}</div>
+                        <div style="margin-top: 8px; display: flex; flex-wrap: wrap; gap: 4px;">
+                            ${pack.categories.map(cat => `
+                                <span style="
+                                    padding: 2px 8px;
+                                    background: var(--bg-elevated);
+                                    border: 1px solid var(--border);
+                                    border-radius: 4px;
+                                    font-size: 10px;
+                                    font-weight: 600;
+                                    color: var(--text-secondary);
+                                ">${cat.emoji} ${cat.name}</span>
+                            `).join('')}
+                        </div>
+                    </div>
+                    <div style="display: flex; justify-content: center; margin-top: 14px;">
+                        <div class="toggle-switch ${isActive ? 'active' : ''}" id="packToggle_${pack.id}">
+                            <div class="toggle-slider"></div>
+                        </div>
+                    </div>
+                `;
+
+                const toggle = packItem.querySelector('.toggle-switch');
+                toggle.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    togglePerformancePack(pack.id);
+                });
+
+                listContainer.appendChild(packItem);
+            });
+        }
+
+        function renderPerformancePacks() {
+            const container = document.getElementById('performancePacksContainer');
+            const listContainer = document.getElementById('performancePacksList');
+
+            if (!isPro) {
+                container.style.display = 'none';
+                return;
+            }
+
+            const activePacks = performanceData.activePacks || [];
+            
+            if (activePacks.length === 0) {
+                container.style.display = 'none';
+                return;
+            }
+
+            container.style.display = 'block';
+            listContainer.innerHTML = '';
+
+            // Render each active pack like FYS-Index
+            activePacks.forEach(packId => {
+                const pack = performancePacks.find(p => p.id === packId);
+                if (!pack) return;
+                
+                // Get current pack index value
+                let packIndexValue = 100.0;
+                let changeValue = 0;
+                let changePercent = 0;
+                
+                if (performanceData.entries.length > 0) {
+                    const lastEntry = performanceData.entries[performanceData.entries.length - 1];
+                    packIndexValue = lastEntry.packIndices?.[pack.id] || 100.0;
+                    
+                    if (performanceData.entries.length > 1) {
+                        const prevEntry = performanceData.entries[performanceData.entries.length - 2];
+                        const prevValue = prevEntry.packIndices?.[pack.id] || 100.0;
+                        changeValue = packIndexValue - prevValue;
+                        changePercent = (changeValue / prevValue) * 100;
+                    }
+                }
+
+                // Create main chart section like FYS Index
+                const packSection = document.createElement('div');
+                packSection.className = 'main-chart-section';
+                packSection.style.marginBottom = '20px';
+                packSection.onclick = () => openPackDetails(pack.id);
+                
+                packSection.innerHTML = `
+                    <div class="main-chart-container">
+                        <canvas id="packChart_${pack.id}"></canvas>
+                    </div>
+                    <div class="index-value-display">
+                        <div style="font-size: 14px; font-weight: 600; color: var(--text-secondary); margin-bottom: 8px; display: flex; align-items: center; gap: 8px; justify-content: center;">
+                            <span style="font-size: 20px;">${pack.icon}</span>
+                            <span>${pack.name}</span>
+                        </div>
+                        <div class="index-value-number" style="color: ${changeValue >= 0 ? 'var(--accent-up)' : 'var(--accent-down)'};">${packIndexValue.toFixed(1)}</div>
+                        <div class="index-change-text" style="color: ${changeValue >= 0 ? 'var(--accent-up)' : 'var(--accent-down)'};">
+                            ${changeValue >= 0 ? '▲' : '▼'} ${Math.abs(changeValue).toFixed(2)} (${changePercent >= 0 ? '+' : ''}${changePercent.toFixed(2)}%)
+                        </div>
+                    </div>
+                    <div class="tap-hint">Tippen für Details</div>
+                `;
+
+                listContainer.appendChild(packSection);
+
+                // Create chart after DOM insertion
+                setTimeout(() => {
+                    createPackMiniChart(pack.id);
+                }, 100);
+            });
+        }
+
+        function createPackMiniChart(packId) {
+            const canvas = document.getElementById(`packChart_${packId}`);
+            if (!canvas) return;
+
+            const ctx = canvas.getContext('2d');
+            
+            // Destroy existing chart
+            if (window[`packMiniChart_${packId}`]) {
+                window[`packMiniChart_${packId}`].destroy();
+            }
+
+            // Get data from last 30 days
+            const now = new Date();
+            const cutoff = new Date(now);
+            cutoff.setDate(cutoff.getDate() - 30);
+            
+            let entries = performanceData.entries.filter(e => {
+                return e.packIndices && 
+                       e.packIndices[packId] !== undefined &&
+                       new Date(e.date) >= cutoff;
+            });
+
+            const labels = entries.map(e => {
+                const d = new Date(e.date);
+                return d.toLocaleDateString('de-DE', { month: 'short', day: 'numeric' });
+            });
+
+            const data = entries.map(e => e.packIndices[packId]);
+
+            window[`packMiniChart_${packId}`] = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        data: data,
+                        borderColor: '#ff6b35',
+                        backgroundColor: 'rgba(255, 107, 53, 0.1)',
+                        fill: true,
+                        tension: 0.4,
+                        pointRadius: 0,
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: { enabled: false }
+                    },
+                    scales: {
+                        x: {
+                            display: false,
+                            grid: { display: false }
+                        },
+                        y: {
+                            display: false,
+                            grid: { display: false }
+                        }
+                    },
+                    interaction: { mode: 'nearest', axis: 'x', intersect: false }
+                }
+            });
+        }
+
+        // Performance Pack Detail Views
+        function openPackDetails(packId) {
+            const pack = performancePacks.find(p => p.id === packId);
+            if (!pack) return;
+            
+            if (!performanceData.activePacks.includes(packId)) {
+                alert('Bitte aktiviere zuerst dieses Performance Pack um Details zu sehen.');
+                return;
+            }
+            
+            // Open chartDetailsView (same as FYS Index)
+            const homeView = safeGetElement('homeView');
+            const detailsView = safeGetElement('chartDetailsView');
+            if (homeView) homeView.classList.remove('active');
+            if (detailsView) detailsView.classList.add('active');
+            
+            // Update header with PACK NAME (NOT "FYS Index")
+            const detailHeader = document.querySelector('#chartDetailsView .category-detail-header');
+            if (detailHeader) {
+                detailHeader.innerHTML = `
+                    <button class="back-btn" onclick="closeChartDetails()">←</button>
+                    <div style="flex: 1; text-align: center;">
+                        <div style="font-size: 22px; font-weight: 800; margin-bottom: 4px; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                            <span style="font-size: 26px;">${pack.icon}</span>
+                            <span>${pack.name}</span>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            // Update index summary
+            let currentValue = 100;
+            let changeValue = 0;
+            let changePercent = 0;
+            
+            if (performanceData.entries.length > 0) {
+                const lastEntry = performanceData.entries[performanceData.entries.length - 1];
+                currentValue = lastEntry.packIndices?.[packId] || 100;
+                
+                if (performanceData.entries.length > 1) {
+                    const firstEntry = performanceData.entries[0];
+                    const firstValue = firstEntry.packIndices?.[packId] || 100;
+                    changeValue = currentValue - firstValue;
+                    changePercent = ((changeValue / firstValue) * 100);
+                }
+            }
+            
+            const indexValueEl = safeGetElement('detailIndexValue');
+            const indexChangeEl = safeGetElement('detailIndexChange');
+            if (indexValueEl) indexValueEl.textContent = currentValue.toFixed(1);
+            if (indexChangeEl) indexChangeEl.textContent = `${changePercent >= 0 ? '+' : ''}${changePercent.toFixed(2)}%`;
+            
+            // Create stock list for pack categories (with CONSISTENT ICONS)
+            createPackStockList(pack);
+            
+            // Update combined chart with pack data
+            updatePackCombinedChart(packId);
+            
+            // Render values table (like FYS Index)
+            setTimeout(() => renderPackValuesTable(packId), 200);
+        }
+
+        function renderPackValuesTable(packId) {
+            // Find or create table container
+            let tableContainer = document.getElementById('packValuesTableContainer');
+            
+            if (!tableContainer) {
+                // Insert after combined chart
+                const chartCard = document.querySelector('#chartDetailsView .chart-card');
+                if (chartCard) {
+                    tableContainer = document.createElement('div');
+                    tableContainer.id = 'packValuesTableContainer';
+                    tableContainer.className = 'chart-card';
+                    tableContainer.style.marginTop = '16px';
+                    chartCard.parentNode.insertBefore(tableContainer, chartCard.nextSibling);
+                }
+            }
+            
+            if (!tableContainer) return;
+
+            const entries = getFilteredEntries().filter(e => e.packIndices && e.packIndices[packId] !== undefined);
+            
+            if (entries.length === 0) {
+                tableContainer.innerHTML = '<div style="text-align: center; color: var(--text-secondary); padding: 20px;">Keine Daten verfügbar</div>';
+                return;
+            }
+
+            // Reverse to show newest first
+            const reversedEntries = [...entries].reverse();
+
+            let tableHTML = `
+                <div style="max-height: 300px; overflow-y: auto;">
+                    <table style="width: 100%; font-size: 13px;">
+                        <thead style="position: sticky; top: 0; background: var(--bg-card); z-index: 1;">
+                            <tr style="border-bottom: 1px solid var(--border);">
+                                <th style="text-align: left; padding: 12px 8px; color: var(--text-secondary); font-weight: 600;">Datum</th>
+                                <th style="text-align: right; padding: 12px 8px; color: var(--text-secondary); font-weight: 600;">Wert</th>
+                                <th style="text-align: right; padding: 12px 8px; color: var(--text-secondary); font-weight: 600;">Änderung</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+            `;
+
+            reversedEntries.forEach((entry, index) => {
+                const date = new Date(entry.date);
+                const dateStr = date.toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: 'numeric' });
+                const value = entry.packIndices[packId];
+                
+                let change = 0;
+                let changePercent = 0;
+                
+                if (index < reversedEntries.length - 1) {
+                    const prevEntry = reversedEntries[index + 1];
+                    const prevValue = prevEntry.packIndices[packId];
+                    change = value - prevValue;
+                    changePercent = (change / prevValue) * 100;
+                }
+
+                const changeColor = change > 0 ? 'var(--accent-up)' : change < 0 ? 'var(--accent-down)' : 'var(--text-secondary)';
+                const changeSymbol = change > 0 ? '▲' : change < 0 ? '▼' : '—';
+
+                tableHTML += `
+                    <tr style="border-bottom: 1px solid var(--border);">
+                        <td style="padding: 12px 8px; color: var(--text-primary);">${dateStr}</td>
+                        <td style="text-align: right; padding: 12px 8px; color: var(--text-primary); font-weight: 600;">${value.toFixed(1)}</td>
+                        <td style="text-align: right; padding: 12px 8px; color: ${changeColor}; font-weight: 600;">
+                            ${changeSymbol} ${Math.abs(changePercent).toFixed(2)}%
+                        </td>
+                    </tr>
+                `;
+            });
+
+            tableHTML += '</tbody></table></div>';
+            tableContainer.innerHTML = tableHTML;
+        }
+
+        function createPackStockList(pack) {
+            const container = document.getElementById('stockListItems');
+            if (!container) return;
+            
+            container.innerHTML = '';
+
+            const entries = getFilteredEntries();
+            
+            // SVG Icons for pack categories
+            const packCategoryIcons = {
+                // Finance Pack
+                savings: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path></svg>`,
+                investments: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>`,
+                budget: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"></path><path d="M12 18V6"></path></svg>`,
+                income: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 12H4M20 12l-4-4M20 12l-4 4"></path></svg>`,
+                financial_education: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>`,
+                
+                // Health Pack
+                cardio: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"></path></svg>`,
+                strength: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6.5 6.5v11M17.5 6.5v11M3 9.5h3M18 9.5h3M3 14.5h3M18 14.5h3M9 3v3M15 3v3M9 18v3M15 18v3"></path></svg>`,
+                flexibility: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"></path></svg>`,
+                mental_health: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 1 1 7.072 0l-.548.547A3.374 3.374 0 0 0 14 18.469V19a2 2 0 1 1-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path></svg>`,
+                
+                // Entrepreneurship Pack
+                networking: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>`,
+                product_development: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>`,
+                marketing: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.3 15.3a2.4 2.4 0 0 1 0 3.4l-2.6 2.6a2.4 2.4 0 0 1-3.4 0L2.7 8.7a2.41 2.41 0 0 1 0-3.4l2.6-2.6a2.41 2.41 0 0 1 3.4 0L21.3 15.3z"></path><path d="M7.5 10.5L14 17"></path></svg>`,
+                sales: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>`,
+                leadership: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 20h20M5 20V9l7-5 7 5v11M9 20v-6h6v6"></path></svg>`
+            };
+
+            pack.categories.forEach(cat => {
+                let currentValue = 100;
+                let changeValue = 0;
+                let changePercent = 0;
+
+                if (entries.length > 0) {
+                    const lastEntry = entries[entries.length - 1];
+                    currentValue = lastEntry.categoryValues?.[cat.id] || 100;
+
+                    if (entries.length > 1) {
+                        const firstEntry = entries[0];
+                        const firstValue = firstEntry.categoryValues?.[cat.id] || 100;
+                        changeValue = currentValue - firstValue;
+                        changePercent = ((changeValue / firstValue) * 100);
+                    }
+                }
+
+                const stockItem = document.createElement('div');
+                stockItem.className = 'stock-item';
+                stockItem.onclick = () => openPackCategoryDetail(pack.id, cat.id);
+                stockItem.style.cursor = 'pointer';
+                
+                stockItem.innerHTML = `
+                    <div class="stock-item-left">
+                        <div class="stock-icon" style="background: ${cat.color}20; color: ${cat.color};">
+                            ${packCategoryIcons[cat.id] || cat.emoji}
+                        </div>
+                        <div class="stock-info">
+                            <div class="stock-name">${cat.name}</div>
+                            <div class="stock-symbol">${cat.id.toUpperCase()}</div>
+                        </div>
+                    </div>
+                    <div class="stock-item-right">
+                        <div class="stock-price">${currentValue.toFixed(1)}</div>
+                        <div class="stock-change ${changeValue >= 0 ? 'positive' : changeValue < 0 ? 'negative' : 'neutral'}">
+                            <span class="stock-arrow">${changeValue >= 0 ? '▲' : changeValue < 0 ? '▼' : '—'}</span>
+                            ${Math.abs(changePercent).toFixed(1)}%
+                        </div>
+                    </div>
+                `;
+                
+                container.appendChild(stockItem);
+            });
+        }
+
+        function updatePackCombinedChart(packId) {
+            const canvas = document.getElementById('combinedChart');
+            if (!canvas) return;
+
+            const ctx = canvas.getContext('2d');
+            
+            if (combinedChart) {
+                combinedChart.destroy();
+            }
+
+            const entries = getFilteredEntries();
+            if (entries.length === 0) {
+                combinedChart = null;
+                return;
+            }
+
+            const pack = performancePacks.find(p => p.id === packId);
+            if (!pack) return;
+
+            const labels = entries.map(e => {
+                const d = new Date(e.date);
+                return d.toLocaleDateString('de-DE', { month: 'short', day: 'numeric' });
+            });
+
+            // Create datasets for all pack categories
+            const datasets = pack.categories.map(cat => {
+                const data = entries.map(e => e.categoryValues?.[cat.id] || 100);
+                
+                return {
+                    label: cat.name,
+                    data: data,
+                    borderColor: cat.color,
+                    backgroundColor: `${cat.color}10`,
+                    fill: false,
+                    tension: 0.4,
+                    pointRadius: 0,
+                    borderWidth: 2
+                };
+            });
+
+            combinedChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: datasets
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'bottom',
+                            labels: {
+                                color: '#666',
+                                usePointStyle: true,
+                                padding: 15,
+                                font: { size: 11 }
+                            }
+                        },
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false,
+                            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                            padding: 12
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: { display: false },
+                            ticks: { color: '#666', maxTicksLimit: 6 }
+                        },
+                        y: {
+                            grid: { color: '#1a1a1a' },
+                            ticks: { color: '#666' }
+                        }
+                    },
+                    interaction: {
+                        mode: 'nearest',
+                        axis: 'x',
+                        intersect: false
+                    }
+                }
+            });
+        }
+
+        function openPackCategoryDetail(packId, categoryId) {
+            const pack = performancePacks.find(p => p.id === packId);
+            if (!pack) return;
+            
+            const category = pack.categories.find(c => c.id === categoryId);
+            if (!category) return;
+            
+            if (!performanceData.activePacks.includes(packId)) {
+                alert('Bitte aktiviere zuerst dieses Performance Pack um Details zu sehen.');
+                return;
+            }
+            
+            // Use EXACT SAME LAYOUT as FYS Index category details
+            const modal = safeGetElement('categoryDetailModal');
+            const header = safeGetElement('categoryDetailHeader');
+            const content = safeGetElement('categoryDetailContent');
+            
+            if (!modal || !header || !content) return;
+            
+            // Get icon HTML (same as FYS Index)
+            const iconHtml = categoryIcons[categoryId] || `<div style="font-size: 24px;">${category.emoji}</div>`;
+            
+            // IDENTICAL HEADER STRUCTURE TO FYS INDEX
+            header.innerHTML = `
+                <div class="category-detail-icon" style="background: ${category.color}20; color: ${category.color};">
+                    ${iconHtml}
+                </div>
+                <div class="category-detail-info">
+                    <div class="category-detail-name">${category.name}</div>
+                    <div class="category-detail-symbol" style="display: flex; align-items: center; gap: 6px;">
+                        <span style="color: var(--text-secondary); font-size: 12px;">${pack.name}</span>
+                        <span style="background: linear-gradient(135deg, #ffd700, #ffed4e); color: #000; padding: 2px 5px; border-radius: 3px; font-size: 8px; font-weight: 800; letter-spacing: 0.5px;">PRO</span>
+                    </div>
+                </div>
+                <button class="close-btn" onclick="closeCategoryDetail()">×</button>
+            `;
+            
+            // Get data (same calculation as FYS Index)
+            const entries = getFilteredEntries();
+            let currentValue = 100;
+            let changeValue = 0;
+            let changePercent = 0;
+            
+            if (entries.length > 0) {
+                const lastEntry = entries[entries.length - 1];
+                currentValue = lastEntry.categoryValues?.[categoryId] || 100;
+                
+                if (entries.length > 1) {
+                    const firstEntry = entries[0];
+                    const firstValue = firstEntry.categoryValues?.[categoryId] || 100;
+                    changeValue = currentValue - firstValue;
+                    changePercent = (changeValue / firstValue) * 100;
+                }
+            }
+            
+            // IDENTICAL CONTENT STRUCTURE TO FYS INDEX
+            content.innerHTML = `
+                <div class="category-detail-price-section">
+                    <div class="category-detail-price" style="color: ${changeValue >= 0 ? 'var(--accent-up)' : 'var(--accent-down)'};">${currentValue.toFixed(1)}</div>
+                    <div class="category-detail-change" style="background: ${changeValue >= 0 ? 'rgba(0, 255, 136, 0.1)' : 'rgba(255, 51, 102, 0.1)'}; color: ${changeValue >= 0 ? 'var(--accent-up)' : 'var(--accent-down)'};">
+                        ${changeValue >= 0 ? '▲' : '▼'} ${Math.abs(changePercent).toFixed(2)}%
+                    </div>
+                </div>
+                
+                <div class="category-time-selector">
+                    <button class="category-time-btn active" onclick="changePackCategoryTimeRange('${categoryId}', '1d')" data-range="1d">1D</button>
+                    <button class="category-time-btn" onclick="changePackCategoryTimeRange('${categoryId}', '7d')" data-range="7d">7D</button>
+                    <button class="category-time-btn" onclick="changePackCategoryTimeRange('${categoryId}', '1m')" data-range="1m">1M</button>
+                    <button class="category-time-btn" onclick="changePackCategoryTimeRange('${categoryId}', '6m')" data-range="6m">6M</button>
+                    <button class="category-time-btn" onclick="changePackCategoryTimeRange('${categoryId}', '1y')" data-range="1y">1Y</button>
+                    <button class="category-time-btn" onclick="changePackCategoryTimeRange('${categoryId}', 'all')" data-range="all">MAX</button>
+                </div>
+                
+                <div class="category-chart-card">
+                    <div class="category-chart-container">
+                        <canvas id="packCategoryDetailChart"></canvas>
+                    </div>
+                </div>
+                
+                <div class="category-chart-card" style="margin-top: 16px;">
+                    <div id="packCategoryValuesTable"></div>
+                </div>
+            `;
+            
+            modal.classList.add('active');
+            
+            setTimeout(() => {
+                createPackCategoryDetailChart(categoryId, 'all');
+                renderPackCategoryValuesTable(categoryId);
+            }, 100);
+        }
+
+        function renderPackCategoryValuesTable(categoryId) {
+            const container = document.getElementById('packCategoryValuesTable');
+            if (!container) return;
+
+            const entries = getFilteredEntries().filter(e => e.categoryValues && e.categoryValues[categoryId] !== undefined);
+            
+            if (entries.length === 0) {
+                container.innerHTML = '<div style="text-align: center; color: var(--text-secondary); padding: 20px;">Keine Daten verfügbar</div>';
+                return;
+            }
+
+            // Reverse to show newest first
+            const reversedEntries = [...entries].reverse();
+
+            let tableHTML = `
+                <div style="max-height: 300px; overflow-y: auto;">
+                    <table style="width: 100%; font-size: 13px;">
+                        <thead style="position: sticky; top: 0; background: var(--bg-card); z-index: 1;">
+                            <tr style="border-bottom: 1px solid var(--border);">
+                                <th style="text-align: left; padding: 12px 8px; color: var(--text-secondary); font-weight: 600;">Datum</th>
+                                <th style="text-align: right; padding: 12px 8px; color: var(--text-secondary); font-weight: 600;">Wert</th>
+                                <th style="text-align: right; padding: 12px 8px; color: var(--text-secondary); font-weight: 600;">Änderung</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+            `;
+
+            reversedEntries.forEach((entry, index) => {
+                const date = new Date(entry.date);
+                const dateStr = date.toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: 'numeric' });
+                const value = entry.categoryValues[categoryId];
+                
+                let change = 0;
+                let changePercent = 0;
+                
+                if (index < reversedEntries.length - 1) {
+                    const prevEntry = reversedEntries[index + 1];
+                    const prevValue = prevEntry.categoryValues[categoryId];
+                    change = value - prevValue;
+                    changePercent = (change / prevValue) * 100;
+                }
+
+                const changeColor = change > 0 ? 'var(--accent-up)' : change < 0 ? 'var(--accent-down)' : 'var(--text-secondary)';
+                const changeSymbol = change > 0 ? '▲' : change < 0 ? '▼' : '—';
+
+                tableHTML += `
+                    <tr style="border-bottom: 1px solid var(--border);">
+                        <td style="padding: 12px 8px; color: var(--text-primary);">${dateStr}</td>
+                        <td style="text-align: right; padding: 12px 8px; color: var(--text-primary); font-weight: 600;">${value.toFixed(1)}</td>
+                        <td style="text-align: right; padding: 12px 8px; color: ${changeColor}; font-weight: 600;">
+                            ${changeSymbol} ${Math.abs(changePercent).toFixed(2)}%
+                        </td>
+                    </tr>
+                `;
+            });
+
+            tableHTML += '</tbody></table></div>';
+            container.innerHTML = tableHTML;
+        }
+
+        function createPackDetailChart(packId, timeRange) {
+            const canvas = document.getElementById('packDetailChart');
+            if (!canvas) return;
+            
+            const ctx = canvas.getContext('2d');
+            if (window.currentPackDetailChart) window.currentPackDetailChart.destroy();
+            
+            let entries = performanceData.entries.filter(e => e.packIndices && e.packIndices[packId] !== undefined);
+            
+            const now = new Date();
+            if (timeRange !== 'all') {
+                const ranges = { '1d': 1, '7d': 7, '1m': 30, '6m': 180, '1y': 365 };
+                const days = ranges[timeRange];
+                const cutoff = new Date(now);
+                cutoff.setDate(cutoff.getDate() - days);
+                entries = entries.filter(e => new Date(e.date) >= cutoff);
+            }
+            
+            const labels = entries.map(e => new Date(e.date).toLocaleDateString('de-DE', { month: 'short', day: 'numeric' }));
+            const data = entries.map(e => e.packIndices[packId]);
+            
+            window.currentPackDetailChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Pack Index',
+                        data: data,
+                        borderColor: '#ff6b35',
+                        backgroundColor: 'rgba(255, 107, 53, 0.1)',
+                        fill: true,
+                        tension: 0.4,
+                        pointRadius: 4,
+                        pointHoverRadius: 6,
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false,
+                            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                            padding: 12,
+                            displayColors: false
+                        }
+                    },
+                    scales: {
+                        x: { grid: { display: false }, ticks: { color: '#666' } },
+                        y: { grid: { color: '#1a1a1a' }, ticks: { color: '#666' } }
+                    }
+                }
+            });
+        }
+
+        function createPackCategoryDetailChart(categoryId, timeRange) {
+            const canvas = document.getElementById('packCategoryDetailChart');
+            if (!canvas) return;
+            
+            const ctx = canvas.getContext('2d');
+            if (window.currentPackCategoryDetailChart) window.currentPackCategoryDetailChart.destroy();
+            
+            let entries = performanceData.entries.filter(e => e.categoryValues && e.categoryValues[categoryId] !== undefined);
+            
+            const now = new Date();
+            if (timeRange !== 'all') {
+                const ranges = { '1d': 1, '7d': 7, '1m': 30, '6m': 180, '1y': 365 };
+                const days = ranges[timeRange];
+                const cutoff = new Date(now);
+                cutoff.setDate(cutoff.getDate() - days);
+                entries = entries.filter(e => new Date(e.date) >= cutoff);
+            }
+            
+            // Find category color
+            let categoryColor = '#ff6b35';
+            performancePacks.forEach(pack => {
+                const cat = pack.categories.find(c => c.id === categoryId);
+                if (cat) categoryColor = cat.color;
+            });
+            
+            const labels = entries.map(e => new Date(e.date).toLocaleDateString('de-DE', { month: 'short', day: 'numeric' }));
+            const data = entries.map(e => e.categoryValues[categoryId]);
+            
+            window.currentPackCategoryDetailChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Category Value',
+                        data: data,
+                        borderColor: categoryColor,
+                        backgroundColor: `${categoryColor}20`,
+                        fill: true,
+                        tension: 0.4,
+                        pointRadius: 4,
+                        pointHoverRadius: 6,
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false,
+                            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                            padding: 12,
+                            displayColors: false
+                        }
+                    },
+                    scales: {
+                        x: { grid: { display: false }, ticks: { color: '#666' } },
+                        y: { grid: { color: '#1a1a1a' }, ticks: { color: '#666' } }
+                    }
+                }
+            });
+        }
+
+        function changePackCategoryTimeRange(categoryId, range) {
+            document.querySelectorAll('.category-time-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.range === range);
+            });
+            createPackCategoryDetailChart(categoryId, range);
+        }
+
         function updateUI() {
             const t = translations[currentLang];
             
@@ -3842,7 +5046,11 @@
             safeUpdate('coachInput', t.coachPlaceholder, true);
             safeUpdate('sleepGoalValue', sleepGoal.toFixed(1) + 'h');
             
+            // Update Pro button state
+            updateProButton();
+            
             updateCheckinView();
+            renderPerformancePacks();
         }
 
         // Switch view with haptic feedback
@@ -3874,6 +5082,13 @@
             }
             
             if (view === 'checkin') {
+                // Update wizard subtitle with correct number of questions
+                const totalQuestions = baseWizardCategories.length + (isPro ? getActivePackCategories().length : 0);
+                const subtitle = document.getElementById('wizardConfirmSubtitle');
+                if (subtitle) {
+                    subtitle.textContent = `Beantworte ${totalQuestions} kurze Fragen zu deinem Tag`;
+                }
+                
                 // Show wizard confirmation
                 document.getElementById('wizardConfirm').style.display = 'flex';
                 document.getElementById('wizardContainer').style.display = 'none';
@@ -4113,7 +5328,7 @@
         // WIZARD CHECK-IN FUNCTIONS
         // ========================================
         
-        const wizardCategories = [
+        const baseWizardCategories = [
             { id: 'social', name: { de: 'Soziales', en: 'Social', es: 'Social' }, color: '#ffd700', hint: { de: 'Wie war die Qualität deiner sozialen Interaktionen?', en: 'How was the quality of your social interactions?', es: '¿Cómo fue la calidad de tus interacciones sociales?' } },
             { id: 'energy', name: { de: 'Energie', en: 'Energy', es: 'Energía' }, color: '#00ff88', hint: { de: 'Wie viel Energie hattest du heute?', en: 'How much energy did you have today?', es: '¿Cuánta energía tuviste hoy?' } },
             { id: 'sleep', name: { de: 'Schlaf', en: 'Sleep', es: 'Sueño' }, color: '#00ff88', hint: { de: 'Wie viele Stunden hast du geschlafen?', en: 'How many hours did you sleep?', es: '¿Cuántas horas dormiste?' }, isSleep: true },
@@ -4124,21 +5339,71 @@
             { id: 'mindset', name: { de: 'Mindset', en: 'Mindset', es: 'Mentalidad' }, color: '#5f7aff', hint: { de: 'Wie positiv war deine Einstellung?', en: 'How positive was your attitude?', es: '¿Qué tan positiva fue tu actitud?' } }
         ];
 
+        // Function to get wizard categories including active pack categories
+        function getWizardCategories() {
+            let wizardCats = [...baseWizardCategories];
+            
+            // Add active pack categories
+            if (isPro && performanceData.activePacks.length > 0) {
+                const packCats = getActivePackCategories();
+                packCats.forEach(packCat => {
+                    wizardCats.push({
+                        id: packCat.id,
+                        name: { de: packCat.name, en: packCat.name, es: packCat.name },
+                        color: packCat.color,
+                        hint: { de: `Wie würdest du dein ${packCat.name} heute bewerten?`, en: `How would you rate your ${packCat.name} today?`, es: `¿Cómo calificarías tu ${packCat.name} hoy?` }
+                    });
+                    
+                    // Add icon for pack category
+                    if (!categoryIcons[packCat.id]) {
+                        categoryIcons[packCat.id] = `<div style="font-size: 20px;">${packCat.emoji}</div>`;
+                    }
+                });
+            }
+            
+            return wizardCats;
+        }
+
         const categoryIcons = {
+            // Base categories
             social: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>`,
             energy: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>`,
-            sleep: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>`,
+            sleep: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>`,
             focus: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="6"></circle><circle cx="12" cy="12" r="2"></circle></svg>`,
             discipline: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>`,
-            sport: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13.73 4a2 2 0 0 0-3.46 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>`,
+            sport: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"></path></svg>`,
             nutrition: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8h1a4 4 0 0 1 0 8h-1"></path><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"></path><line x1="6" y1="1" x2="6" y2="4"></line><line x1="10" y1="1" x2="10" y2="4"></line><line x1="14" y1="1" x2="14" y2="4"></line></svg>`,
-            mindset: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="22"></line></svg>`
+            mindset: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="22"></line></svg>`,
+            
+            // Finance Pack
+            savings: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path></svg>`,
+            investments: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>`,
+            budget: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"></path><path d="M12 18V6"></path></svg>`,
+            income: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg>`,
+            financial_education: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>`,
+            
+            // Health Pack
+            cardio: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"></path></svg>`,
+            strength: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6.5 6.5v11M17.5 6.5v11M3 9.5h3M18 9.5h3M3 14.5h3M18 14.5h3M9 3v3M15 3v3M9 18v3M15 18v3"></path></svg>`,
+            flexibility: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"></path></svg>`,
+            mental_health: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 1 1 7.072 0l-.548.547A3.374 3.374 0 0 0 14 18.469V19a2 2 0 1 1-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path></svg>`,
+            
+            // Entrepreneurship Pack
+            networking: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>`,
+            product_development: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path></svg>`,
+            marketing: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.3 15.3a2.4 2.4 0 0 1 0 3.4l-2.6 2.6a2.4 2.4 0 0 1-3.4 0L2.7 8.7a2.41 2.41 0 0 1 0-3.4l2.6-2.6a2.41 2.41 0 0 1 3.4 0L21.3 15.3z"></path><path d="M7.5 10.5L14 17"></path></svg>`,
+            sales: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>`,
+            leadership: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 20h20M5 20V9l7-5 7 5v11M9 20v-6h6v6"></path></svg>`
         };
 
         let wizardCurrentStep = 0;
         let wizardDraft = {};
+        let wizardCategories = []; // Will be populated in startWizard
 
         function startWizard() {
+            // Get current wizard categories (base + active packs)
+            wizardCategories = getWizardCategories();
+            
             document.getElementById('wizardConfirm').style.display = 'none';
             document.getElementById('wizardContainer').style.display = 'flex';
             wizardCurrentStep = 0;
@@ -4159,14 +5424,18 @@
         }
 
         function renderWizardProgressDots() {
-            const dotsContainer = document.getElementById('progressDots');
+            const dotsContainer = safeGetElement('progressDots');
+            if (!dotsContainer) return;
+            
             dotsContainer.innerHTML = wizardCategories.map((_, i) => 
                 `<div class="dot" data-step="${i}"></div>`
             ).join('');
         }
 
         function renderWizardSteps() {
-            const content = document.getElementById('wizardContent');
+            const content = safeGetElement('wizardContent');
+            if (!content) return;
+            
             content.innerHTML = '';
             
             // Render all categories
@@ -4230,12 +5499,22 @@
         }
 
         function updateWizardUI() {
+            const stepCounter = document.getElementById('stepCounter');
+            const progressBar = document.getElementById('progressBarWizard');
+            const backBtn = document.getElementById('backBtnWizard');
+            const nextBtn = document.getElementById('nextBtnWizard');
+            
+            if (!stepCounter || !progressBar || !backBtn || !nextBtn) {
+                console.error('Wizard UI elements not found');
+                return;
+            }
+            
             const isReview = wizardCurrentStep === wizardCategories.length;
-            document.getElementById('stepCounter').textContent = 
+            stepCounter.textContent = 
                 isReview ? 'Zusammenfassung' : `Schritt ${wizardCurrentStep + 1}/${wizardCategories.length}`;
 
             const progress = ((wizardCurrentStep + 1) / (wizardCategories.length + 1)) * 100;
-            document.getElementById('progressBarWizard').style.width = progress + '%';
+            progressBar.style.width = progress + '%';
 
             document.querySelectorAll('.dot').forEach((dot, i) => {
                 dot.classList.remove('active', 'completed');
@@ -4243,7 +5522,7 @@
                 if (i === wizardCurrentStep) dot.classList.add('active');
             });
 
-            document.getElementById('backBtnWizard').disabled = wizardCurrentStep === 0;
+            backBtn.disabled = wizardCurrentStep === 0;
 
             document.querySelectorAll('.step-container-wizard').forEach((step, i) => {
                 step.classList.remove('active', 'prev');
@@ -4251,7 +5530,6 @@
                 if (i < wizardCurrentStep) step.classList.add('prev');
             });
 
-            const nextBtn = document.getElementById('nextBtnWizard');
             if (isReview) {
                 nextBtn.textContent = '✓ Speichern';
                 nextBtn.onclick = saveWizardCheckIn;
@@ -4267,6 +5545,10 @@
 
         function updateWizardReviewList() {
             const reviewList = document.getElementById('wizardReviewList');
+            if (!reviewList) {
+                console.error('wizardReviewList not found');
+                return;
+            }
             reviewList.innerHTML = wizardCategories.map((cat, index) => `
                 <div class="review-item-wizard" onclick="goToWizardStep(${index})">
                     <div class="review-item-left-wizard">
@@ -4363,11 +5645,22 @@
 
             let fysIndex;
             const categoryValues = {};
+            const packIndices = {}; // Add pack indices
 
             if (isFirstEntry) {
                 fysIndex = 100;
                 categories.forEach(cat => {
                     categoryValues[cat.id] = 100;
+                });
+                
+                // Initialize pack categories
+                getActivePackCategories().forEach(cat => {
+                    categoryValues[cat.id] = 100;
+                });
+                
+                // Initialize pack indices
+                performanceData.activePacks.forEach(packId => {
+                    packIndices[packId] = 100;
                 });
             } else {
                 const lastEntry = performanceData.entries[performanceData.entries.length - 1];
@@ -4394,7 +5687,7 @@
                 
                 console.log('New FYS Index:', fysIndex);
                 
-                // Now calculate categoryValues
+                // Now calculate categoryValues (BASE categories)
                 categories.forEach(cat => {
                     const prevValue = lastEntry.categoryValues[cat.id] || 100;
                     
@@ -4414,9 +5707,23 @@
                         categoryValues[cat.id] = calculateCategoryValue(values[cat.id], prevValue);
                     }
                 });
+                
+                // Calculate pack category values
+                getActivePackCategories().forEach(cat => {
+                    const prevValue = lastEntry.categoryValues[cat.id] || 100;
+                    categoryValues[cat.id] = calculateCategoryValue(values[cat.id], prevValue);
+                });
+                
+                // Calculate pack indices
+                performanceData.activePacks.forEach(packId => {
+                    const prevPackIndex = lastEntry.packIndices?.[packId] || 100;
+                    packIndices[packId] = calculatePackIndex(packId, values, prevPackIndex);
+                    console.log(`Pack ${packId} Index:`, packIndices[packId]);
+                });
             }
 
             console.log('Final Category Values:', categoryValues);
+            console.log('Final Pack Indices:', packIndices);
             console.log('=== END DEBUG ===');
 
             performanceData.entries.push({
@@ -4424,7 +5731,8 @@
                 values: values,
                 categoryValues: categoryValues,
                 sleepHours: sleepHoursValue,
-                fysIndex: fysIndex
+                fysIndex: fysIndex,
+                packIndices: packIndices // Add pack indices to entry
             });
 
             localStorage.setItem('fysData', JSON.stringify(performanceData));
