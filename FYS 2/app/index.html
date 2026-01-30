@@ -24,7 +24,95 @@
     
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- jsPDF for PDF Export -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
+    
     <style>
+        /* ============================================ */
+        /* PREMIUM LOADING SCREEN - BITPANDA STYLE */
+        /* ============================================ */
+        #loadingScreen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: linear-gradient(180deg, #050505 0%, #0B0B0B 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+            transition: opacity 600ms cubic-bezier(0.4, 0.0, 0.2, 1),
+                        visibility 600ms cubic-bezier(0.4, 0.0, 0.2, 1);
+        }
+        
+        #loadingScreen.hidden {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+        }
+        
+        .loading-logo-container {
+            width: 38vw;
+            max-width: 240px;
+            position: relative;
+        }
+        
+        .loading-logo {
+            width: 100%;
+            height: auto;
+            display: block;
+            opacity: 0;
+            animation: logoFadeIn 400ms cubic-bezier(0.4, 0.0, 0.2, 1) forwards,
+                       logoArrowRise 700ms ease-out 400ms forwards,
+                       logoGlowPulse 600ms ease-out 1100ms forwards;
+        }
+        
+        @keyframes logoFadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+        
+        @keyframes logoArrowRise {
+            from {
+                transform: translateY(12px) rotate(-6deg);
+            }
+            to {
+                transform: translateY(0) rotate(0deg);
+            }
+        }
+        
+        @keyframes logoGlowPulse {
+            0% {
+                filter: drop-shadow(0 0 0 rgba(255, 165, 0, 0));
+            }
+            50% {
+                filter: drop-shadow(0 0 18px rgba(255, 165, 0, 0.35));
+            }
+            100% {
+                filter: drop-shadow(0 0 0 rgba(255, 165, 0, 0));
+            }
+        }
+        
+        /* ============================================ */
+        /* APP HEADER LOGO */
+        /* ============================================ */
+        .header-logo-fys {
+            position: fixed;
+            top: 14px;
+            left: 16px;
+            height: 28px;
+            width: auto;
+            z-index: 999; /* Above all views except modals */
+            pointer-events: none; /* Logo is decorative, not clickable */
+        }
+
         * {
             margin: 0;
             padding: 0;
@@ -70,12 +158,12 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: #000;
+            background: linear-gradient(135deg, #000000 0%, #0d0d0d 100%);
             z-index: 99999;
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: opacity 0.8s ease, visibility 0.8s ease;
+            transition: opacity 1s ease, visibility 1s ease;
             overflow: hidden;
         }
 
@@ -85,22 +173,22 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            width: 600px;
-            height: 600px;
-            background: radial-gradient(circle, rgba(255, 107, 53, 0.15), transparent 70%);
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(255, 107, 53, 0.08), transparent 65%);
             border-radius: 50%;
             pointer-events: none;
-            animation: glowPulse 4s ease-in-out infinite;
+            animation: glowPulse 5s ease-in-out infinite;
         }
 
         @keyframes glowPulse {
             0%, 100% {
                 transform: translate(-50%, -50%) scale(1);
-                opacity: 0.5;
+                opacity: 0.3;
             }
             50% {
-                transform: translate(-50%, -50%) scale(1.2);
-                opacity: 0.8;
+                transform: translate(-50%, -50%) scale(1.1);
+                opacity: 0.6;
             }
         }
 
@@ -112,77 +200,75 @@
 
         .loading-content {
             text-align: center;
+            position: relative;
         }
 
         .loading-logo {
-            animation: logoFloat 2s ease-in-out infinite;
+            width: 240px;
+            height: 120px;
+            position: relative;
+            margin: 0 auto;
         }
-
+        
+        /* Professional FYS Loading Logo */
+        .fys-loading-svg {
+            width: 100%;
+            height: 100%;
+            filter: drop-shadow(0 12px 40px rgba(255, 107, 53, 0.4));
+            animation: logoFloat 4s ease-in-out infinite;
+        }
+        
         @keyframes logoFloat {
             0%, 100% {
                 transform: translateY(0px);
             }
             50% {
-                transform: translateY(-15px);
+                transform: translateY(-10px);
             }
         }
-
-        .logo-hex-large {
-            width: 140px;
-            height: 140px;
-            position: relative;
-            margin: 0 auto;
-            filter: drop-shadow(0 0 40px rgba(255, 107, 53, 0.5));
+        
+        /* Animated Arrow in Loading Screen */
+        .loading-arrow-anim path {
+            animation: loadingArrowDraw 2.5s cubic-bezier(0.65, 0, 0.35, 1) infinite;
         }
-
-        .logo-hex-large .logo-hex-inner {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: linear-gradient(135deg, #ff6b35, #ff8f5f);
-            clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
-            animation: hexPulse 2s ease-in-out infinite;
+        
+        .loading-arrow-anim polyline {
+            animation: loadingArrowFade 2.5s cubic-bezier(0.65, 0, 0.35, 1) infinite;
         }
-
-        .logo-hex-large .logo-hex-inner:nth-child(1) {
-            animation-delay: 0s;
-            opacity: 0.3;
-        }
-
-        .logo-hex-large .logo-hex-inner:nth-child(2) {
-            animation-delay: 0.2s;
-            opacity: 0.5;
-        }
-
-        .logo-hex-large .logo-hex-inner:nth-child(3) {
-            animation-delay: 0.4s;
-            opacity: 0.9;
-        }
-
-        @keyframes hexPulse {
-            0%, 100% {
-                transform: scale(1) rotate(0deg);
-                opacity: 0.3;
+        
+        @keyframes loadingArrowDraw {
+            0% {
+                stroke-dashoffset: 60;
+                opacity: 0;
             }
-            50% {
-                transform: scale(1.15) rotate(5deg);
+            20% {
                 opacity: 1;
             }
+            60% {
+                stroke-dashoffset: 0;
+            }
+            85%, 100% {
+                stroke-dashoffset: 0;
+                opacity: 0;
+            }
+        }
+        
+        @keyframes loadingArrowFade {
+            0%, 50% {
+                opacity: 0;
+                transform: translateY(3px);
+            }
+            60% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+            85%, 100% {
+                opacity: 0;
+                transform: translateY(-3px);
+            }
         }
 
-        .logo-text-large {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            font-size: 42px;
-            font-weight: 900;
-            color: #000;
-            z-index: 10;
-            letter-spacing: -2px;
-        }
+        /* Legacy loading styles removed */
 
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
@@ -329,37 +415,55 @@
             align-items: center;
         }
 
-        .logo-hex {
-            width: 36px;
-            height: 36px;
-            position: relative;
-            border-radius: 50%;
-            background: radial-gradient(circle, rgba(40, 30, 20, 1) 0%, rgba(20, 15, 10, 1) 100%);
+        /* ============================================ */
+        /* PROFESSIONAL FYS LOGO - HEADER */
+        /* ============================================ */
+        .logo-fys-header {
             display: flex;
             align-items: center;
-            justify-content: center;
-            box-shadow: 0 0 20px rgba(255, 107, 53, 0.3),
-                        inset 0 0 15px rgba(0, 0, 0, 0.5);
         }
 
-        .logo-hex::before {
-            content: '';
-            position: absolute;
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            border: 2px solid transparent;
-            border-top-color: #ff6b35;
-            border-right-color: #ff6b35;
+        .fys-logo-svg {
+            width: 80px;
+            height: 40px;
+            filter: drop-shadow(0 2px 8px rgba(255, 107, 53, 0.3));
         }
 
-        .logo-hex-text {
-            font-size: 13px;
-            font-weight: 900;
-            color: #ffffff;
-            letter-spacing: -0.5px;
-            z-index: 1;
-            text-shadow: 0 2px 8px rgba(255, 107, 53, 0.5);
+        /* Subtle Arrow Animation in Logo */
+        .arrow-animated path {
+            animation: arrowDraw 3s ease-in-out infinite;
+        }
+
+        .arrow-animated polyline {
+            animation: arrowFade 3s ease-in-out infinite;
+        }
+
+        @keyframes arrowDraw {
+            0%, 100% {
+                stroke-dashoffset: 30;
+                opacity: 0;
+            }
+            30% {
+                opacity: 1;
+            }
+            60% {
+                stroke-dashoffset: 0;
+            }
+            90% {
+                opacity: 0;
+            }
+        }
+
+        @keyframes arrowFade {
+            0%, 50% {
+                opacity: 0;
+            }
+            60% {
+                opacity: 1;
+            }
+            90%, 100% {
+                opacity: 0;
+            }
         }
 
         .header-date {
@@ -371,6 +475,8 @@
         /* Home View */
         .home-content {
             padding: 20px;
+            padding-top: 0; /* No top padding - widget starts at very top */
+            position: relative; /* Enable stacking context for z-index */
         }
 
         .index-label {
@@ -442,6 +548,11 @@
             justify-content: center;
             gap: 8px;
             margin-bottom: 20px;
+            position: relative; /* NEW: Enable stacking */
+            z-index: 10; /* NEW: Above other content */
+            padding: 4px;
+            background: var(--bg-secondary);
+            border-radius: 16px;
         }
 
         .time-btn {
@@ -463,8 +574,13 @@
 
         .time-btn.active {
             background: var(--accent-primary);
-            color: #000;
+            color: #000; /* Dark text in dark mode */
             border-color: var(--accent-primary);
+        }
+        
+        /* Light Mode: White text on orange */
+        :root[data-theme="light"] .time-btn.active {
+            color: #ffffff;
         }
 
         /* Glassmorphism für alle Cards */
@@ -868,8 +984,14 @@
 
         .setting-option.active {
             background: var(--accent-primary);
-            color: #000;
+            color: #ffffff;
             border-color: var(--accent-primary);
+        }
+
+        /* Light Mode: Better contrast for active state */
+        :root[data-theme="light"] .setting-option.active {
+            background: #ff6b35;
+            color: #ffffff;
         }
 
         .sleep-goal-input {
@@ -908,13 +1030,14 @@
             background: var(--bg-elevated);
             border-radius: 14px;
             cursor: pointer;
-            transition: background 0.3s;
+            transition: all 0.3s;
             border: 1px solid var(--border);
         }
 
         .toggle-switch.active {
             background: var(--accent-primary);
             border-color: var(--accent-primary);
+            box-shadow: 0 0 20px rgba(255, 107, 53, 0.2); /* Glow effect */
         }
 
         .toggle-slider {
@@ -925,12 +1048,22 @@
             height: 20px;
             background: var(--bg-card);
             border-radius: 50%;
-            transition: transform 0.3s;
+            transition: all 0.3s;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
 
         .toggle-switch.active .toggle-slider {
             transform: translateX(22px);
+        }
+        
+        /* Dark Mode: Black slider when active */
+        :root[data-theme="dark"] .toggle-switch.active .toggle-slider {
             background: #000;
+        }
+        
+        /* Light Mode: White slider when active */
+        :root[data-theme="light"] .toggle-switch.active .toggle-slider {
+            background: #ffffff;
         }
 
         /* Chart Details */
@@ -1446,9 +1579,9 @@
             top: 0;
             left: 0;
             right: 0;
-            bottom: 110px;
+            bottom: 80px; /* Platz für Bottom Nav */
             background: var(--bg-primary);
-            z-index: 250;
+            z-index: 250; /* Unter Bottom Nav */
             display: none;
             flex-direction: column;
         }
@@ -1520,16 +1653,18 @@
             border-radius: 18px;
             font-size: 14px;
             line-height: 1.6;
+            color: var(--text-primary); /* Einheitliche Farbe */
         }
 
         .message.assistant .message-bubble {
             background: var(--bg-card);
             border: 1px solid var(--border);
+            color: var(--text-primary); /* Explizit */
         }
 
         .message.user .message-bubble {
             background: var(--accent-primary);
-            color: #000;
+            color: #ffffff; /* Weiß auf Orange */
             font-weight: 500;
         }
 
@@ -1680,7 +1815,7 @@
             height: 26px;
             stroke: currentColor;
             fill: none;
-            stroke-width: 2.2;
+            stroke-width: 1.8; /* Dünner */
             stroke-linecap: round;
             stroke-linejoin: round;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -1688,7 +1823,7 @@
 
         /* Aktives Icon - stärker */
         .nav-item.active .nav-icon {
-            stroke-width: 2.6;
+            stroke-width: 2.2; /* Dünner */
             filter: drop-shadow(0 2px 6px rgba(255, 107, 53, 0.4));
         }
 
@@ -1753,11 +1888,75 @@
         
         /* Confirmation Dialog */
         .wizard-confirm {
-            display: flex;
+            display: none; /* Initially hidden */
             align-items: center;
             justify-content: center;
             min-height: calc(100vh - 200px);
             padding: 40px 24px;
+        }
+        
+        .wizard-confirm.active {
+            display: flex; /* Show when active */
+        }
+        
+        /* Error Fallback UI */
+        .wizard-error {
+            display: none;
+            align-items: center;
+            justify-content: center;
+            min-height: calc(100vh - 200px);
+            padding: 40px 24px;
+        }
+        
+        .wizard-error.active {
+            display: flex;
+        }
+        
+        .error-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            padding: 40px;
+            text-align: center;
+            max-width: 400px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+        }
+        
+        .error-icon {
+            font-size: 64px;
+            margin-bottom: 20px;
+        }
+        
+        .error-title {
+            font-size: 22px;
+            font-weight: 800;
+            margin-bottom: 12px;
+            color: var(--text-primary);
+        }
+        
+        .error-message {
+            font-size: 15px;
+            color: var(--text-secondary);
+            margin-bottom: 28px;
+            line-height: 1.5;
+        }
+        
+        .error-retry-btn {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #ff6b35, #ff8f5f);
+            border: none;
+            border-radius: 16px;
+            color: #ffffff;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .error-retry-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(255, 107, 53, 0.4);
         }
 
         .confirm-content {
@@ -1811,11 +2010,23 @@
             background: linear-gradient(135deg, #ff6b35, #ff8f5f);
             border: none;
             border-radius: 16px;
-            color: #000;
+            color: #ffffff; /* Default: white text */
             font-size: 16px;
             font-weight: 700;
             cursor: pointer;
             transition: all 0.2s;
+        }
+        
+        /* Dark Mode: Black text on orange buttons */
+        :root[data-theme="dark"] .btn-primary-wizard,
+        :root[data-theme="dark"] .btn-primary {
+            color: #000000;
+        }
+        
+        /* Light Mode: White text on orange buttons */
+        :root[data-theme="light"] .btn-primary-wizard,
+        :root[data-theme="light"] .btn-primary {
+            color: #ffffff;
         }
 
         .btn-primary-wizard:hover {
@@ -1825,10 +2036,14 @@
 
         /* Wizard Container */
         .wizard-container {
-            display: flex;
+            display: none; /* Initially hidden */
             flex-direction: column;
             height: calc(100vh - 80px); /* Space for bottom nav */
             position: relative;
+        }
+        
+        .wizard-container.active {
+            display: flex; /* Show when active */
         }
 
         .wizard-header {
@@ -1938,22 +2153,27 @@
             left: 0;
             right: 0;
             bottom: 0;
-            display: flex;
+            display: none; /* Hide by default */
             flex-direction: column;
             padding: 20px 24px 140px; /* Extra bottom padding to clear button area */
             opacity: 0;
             transform: translateX(100%);
             transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             overflow-y: auto; /* Allow scrolling if needed */
+            pointer-events: none; /* Disable interaction when not active */
         }
 
         .step-container-wizard.active {
+            display: flex; /* Show active step */
             opacity: 1;
             transform: translateX(0);
+            pointer-events: auto; /* Enable interaction */
         }
 
         .step-container-wizard.prev {
+            display: none; /* Completely hide previous steps */
             transform: translateX(-100%);
+            pointer-events: none;
         }
 
         .category-icon-wizard {
@@ -2324,28 +2544,546 @@
             font-size: 36px;
             color: var(--text-secondary);
         }
+        /* ============================================ */
+        /* TYPOGRAPHY - THINNER WEIGHTS */
+        /* ============================================ */
+        :root {
+            --font-weight-light: 300;
+            --font-weight-normal: 400;
+            --font-weight-medium: 500;
+            --font-weight-semibold: 600;
+            --font-weight-bold: 700;
+        }
+
+        body {
+            font-weight: var(--font-weight-light); /* 400 → 300 */
+        }
+
+        h1, h2, h3, .section-title {
+            font-weight: var(--font-weight-medium); /* 600 → 500 */
+        }
+
+        button, .btn-primary, .btn-secondary, .nav-label {
+            font-weight: var(--font-weight-normal); /* 500 → 400 */
+        }
+
+        /* Keep bold for numbers */
+        .index-value-number, .category-detail-price, .stock-price {
+            font-weight: var(--font-weight-bold);
+        }
+
+        /* ============================================ */
+        /* FLOATING CHECK-IN BUTTON */
+        /* ============================================ */
+        /* ============================================ */
+        /* TOOLS VIEW */
+        /* ============================================ */
+        .tool-card {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 16px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            margin-bottom: 12px;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .tool-card:hover {
+            background: var(--bg-elevated);
+            transform: translateX(4px);
+        }
+
+        .tool-icon {
+            font-size: 32px;
+            width: 48px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--bg-elevated);
+            border-radius: 12px;
+        }
+
+        .tool-info {
+            flex: 1;
+        }
+
+        .tool-title {
+            font-size: 16px;
+            font-weight: 500;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+
+        .tool-description {
+            font-size: 13px;
+            font-weight: 300;
+            color: var(--text-secondary);
+        }
+
+        .pro-badge-small {
+            background: linear-gradient(135deg, #ffd700, #ffed4e);
+            color: #000;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 10px;
+            font-weight: 700;
+        }
+
+        /* ============================================ */
+        /* UPGRADE MODAL */
+        /* ============================================ */
+        .upgrade-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .upgrade-modal.active {
+            display: flex;
+        }
+
+        .upgrade-content {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            padding: 32px;
+            max-width: 400px;
+            text-align: center;
+            position: relative;
+            animation: slideUp 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .upgrade-icon {
+            font-size: 64px;
+            margin-bottom: 16px;
+        }
+
+        .upgrade-title {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--text-primary);
+        }
+
+        .upgrade-description {
+            font-size: 14px;
+            font-weight: 300;
+            color: var(--text-secondary);
+            margin-bottom: 24px;
+            line-height: 1.5;
+        }
+
+        .upgrade-features {
+            text-align: left;
+            margin-bottom: 24px;
+        }
+
+        .upgrade-feature {
+            padding: 8px 0;
+            font-size: 14px;
+            font-weight: 400;
+            color: var(--text-primary);
+        }
+
+        .upgrade-btn {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #ff6b35, #ff8f5f);
+            border: none;
+            border-radius: 12px;
+            color: #ffffff;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .upgrade-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(255, 107, 53, 0.4);
+        }
+
+        /* ============================================ */
+        /* DAILY CHECK-IN WIDGET */
+        /* ============================================ */
+        .checkin-widget {
+            position: sticky; /* Sticky on scroll */
+            top: 0; /* Stick to top */
+            z-index: 50; /* Above content, below modals */
+            
+            background: rgba(255, 107, 53, 0.95); /* Semi-transparent for glass effect */
+            backdrop-filter: blur(20px) saturate(180%); /* Glassmorphism */
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
+            
+            border-radius: 16px;
+            padding: 20px;
+            margin: 20px 0 16px 0; /* Top margin for breathing room */
+            cursor: pointer;
+            
+            box-shadow: 0 4px 12px rgba(255, 107, 53, 0.2),
+                        0 8px 24px rgba(255, 107, 53, 0.1);
+            
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .checkin-widget:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(255, 107, 53, 0.3),
+                        0 12px 36px rgba(255, 107, 53, 0.15);
+        }
+        
+        /* Compact mode when sticky (smaller) */
+        .checkin-widget.is-sticky {
+            padding: 14px 18px; /* Slightly bigger for better look */
+            margin: 0; /* No margin when sticky */
+            border-radius: 16px; /* Fully rounded, not cut off */
+            box-shadow: 0 8px 24px rgba(255, 107, 53, 0.35),
+                        0 16px 48px rgba(255, 107, 53, 0.2);
+            backdrop-filter: blur(30px) saturate(200%);
+            -webkit-backdrop-filter: blur(30px) saturate(200%);
+        }
+        
+        /* Hide subtitle when sticky */
+        .checkin-widget.is-sticky .checkin-widget-subtitle {
+            display: none;
+        }
+        
+        /* Smaller icon when sticky */
+        .checkin-widget.is-sticky .checkin-widget-icon {
+            width: 40px; /* Slightly bigger: 36 → 40 */
+            height: 40px;
+        }
+        
+        .checkin-widget.is-sticky .checkin-widget-icon svg {
+            width: 20px; /* Slightly bigger: 18 → 20 */
+            height: 20px;
+        }
+        
+        /* Smaller title when sticky */
+        .checkin-widget.is-sticky .checkin-widget-title {
+            font-size: 16px; /* Slightly bigger: 15 → 16 */
+        }
+
+        .checkin-widget-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .checkin-widget-icon {
+            width: 48px;
+            height: 48px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .checkin-widget-icon svg {
+            width: 24px;
+            height: 24px;
+            stroke: #ffffff;
+        }
+
+        .checkin-widget-info {
+            flex: 1;
+        }
+
+        .checkin-widget-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 4px;
+        }
+
+        .checkin-widget-subtitle {
+            font-size: 13px;
+            font-weight: 400;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .checkin-widget-arrow {
+            font-size: 24px;
+            color: #ffffff;
+            opacity: 0.8;
+        }
+
+        /* ============================================ */
+        /* ACTIVE PERFORMANCE PACK CARD */
+        /* ============================================ */
+        /* ============================================ */
+        /* ENHANCED CATEGORY DETAILS */
+        /* ============================================ */
+        .category-influence-card {
+            background: var(--bg-elevated);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 16px;
+            margin: 16px 0;
+            text-align: center;
+        }
+
+        .influence-title {
+            font-size: 12px;
+            font-weight: 300;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+        }
+
+        .influence-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--accent-primary);
+            margin-bottom: 4px;
+        }
+
+        .influence-description {
+            font-size: 11px;
+            font-weight: 300;
+            color: var(--text-secondary);
+        }
+
+        .trend-badge {
+            font-size: 10px;
+            font-weight: 400;
+            padding: 2px 6px;
+            border-radius: 4px;
+            margin-left: 8px;
+        }
+
+        .trend-badge.bullish {
+            background: rgba(0, 255, 136, 0.1);
+            color: var(--accent-up);
+        }
+
+        .trend-badge.bearish {
+            background: rgba(255, 51, 102, 0.1);
+            color: var(--accent-down);
+        }
+
+        .trend-badge.neutral {
+            background: rgba(128, 128, 128, 0.1);
+            color: var(--text-secondary);
+        }
+
+        .recent-checkins-card {
+            background: var(--bg-elevated);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 16px;
+            margin-top: 16px;
+        }
+
+        .checkins-title {
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 12px;
+            color: var(--text-primary);
+        }
+
+        .checkin-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .checkin-item:last-child {
+            border-bottom: none;
+        }
+
+        .checkin-date {
+            font-size: 12px;
+            font-weight: 300;
+            color: var(--text-secondary);
+        }
+
+        .checkin-rating {
+            font-size: 10px;
+        }
+
+        .checkin-value {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        /* ============================================ */
+        /* WIZARD SUMMARY */
+        /* ============================================ */
+        .summary-container {
+            padding: 20px;
+        }
+
+        .summary-title {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--text-primary);
+        }
+
+        .summary-subtitle {
+            font-size: 14px;
+            font-weight: 300;
+            color: var(--text-secondary);
+            margin-bottom: 24px;
+        }
+
+        .summary-list {
+            margin-bottom: 24px;
+        }
+
+        .summary-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            margin-bottom: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .summary-item:hover {
+            background: var(--bg-elevated);
+            transform: translateX(4px);
+        }
+
+        .summary-item-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .summary-icon {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 10px;
+        }
+
+        .summary-icon svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        .summary-value {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .summary-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 16px;
+        }
+
+        .summary-actions button {
+            flex: 1;
+        }
+
+        /* ============================================ */
+        /* LIGHT MODE BUTTON CONTRAST FIX */
+        /* ============================================ */
+        :root[data-theme="light"] .btn-primary,
+        :root[data-theme="light"] .btn-primary-wizard,
+        :root[data-theme="light"] .floating-checkin-btn,
+        :root[data-theme="light"] .upgrade-btn {
+            background: linear-gradient(135deg, #ff6b35, #ff8f5f);
+            color: #ffffff !important;
+            border: none;
+        }
+
+        :root[data-theme="light"] button:not(.nav-item) {
+            color: var(--text-primary);
+        }
+
+        :root[data-theme="light"] .btn-primary,
+        :root[data-theme="light"] .btn-primary-wizard {
+            color: #ffffff !important;
+        }
+
     </style>
 </head>
 <body>
-    <!-- Loading Screen -->
-    <div class="loading-screen" id="loadingScreen">
-        <div class="loading-content">
-            <div class="loading-logo">
-                <div class="logo-hex-large">
-                    <div class="logo-hex-inner"></div>
-                    <div class="logo-hex-inner"></div>
-                    <div class="logo-hex-inner"></div>
-                    <span class="logo-text-large">FYS</span>
-                </div>
-            </div>
+    <!-- Premium Loading Screen - Bitpanda Style -->
+    <div id="loadingScreen">
+        <div class="loading-logo-container">
+            <!-- FYS Logo - EXACT 1:1 from uploaded image -->
+            <svg viewBox="0 0 240 120" class="loading-logo">
+                <path d="M 20 20 L 20 100 M 20 20 L 60 20 M 20 60 L 50 60" stroke="url(#gradientLoading)" stroke-width="8" stroke-linecap="round" fill="none"/>
+                <path d="M 80 20 L 100 60 L 100 100 M 120 20 L 100 60" stroke="url(#gradientLoading)" stroke-width="8" stroke-linecap="round" fill="none"/>
+                <path d="M 100 85 L 100 45 L 95 50 M 100 45 L 105 50" stroke="#ff8f5f" stroke-width="4" stroke-linecap="round" fill="none" style="transform-origin: 100px 65px;"/>
+                <path d="M 170 30 Q 150 20, 140 30 T 150 50 Q 160 60, 170 70 Q 180 80, 170 90 Q 160 100, 140 90" stroke="url(#gradientLoading)" stroke-width="8" stroke-linecap="round" fill="none"/>
+                <defs>
+                    <linearGradient id="gradientLoading" x1="0%" y1="0%" x2="100%" y2="0%">
+                        <stop offset="0%" style="stop-color:#ff6b35;stop-opacity:1" />
+                        <stop offset="100%" style="stop-color:#ffb088;stop-opacity:1" />
+                    </linearGradient>
+                </defs>
+            </svg>
         </div>
     </div>
 
 <div class="app-container">
         <!-- Header with Logo -->
         <div class="header">
-            <div class="logo-hex">
-                <div class="logo-hex-text">FYS</div>
+            <div class="logo-fys-header">
+                <!-- FYS Logo SVG - Professionell -->
+                <svg viewBox="0 0 120 60" class="fys-logo-svg">
+                    <!-- F -->
+                    <path d="M 10 10 L 10 50 M 10 10 L 30 10 M 10 30 L 25 30" 
+                          stroke="#ff6b35" stroke-width="4" stroke-linecap="round" fill="none"/>
+                    
+                    <!-- Y mit Pfeil -->
+                    <path d="M 40 10 L 50 30 L 50 50 M 60 10 L 50 30" 
+                          stroke="#ff6b35" stroke-width="4" stroke-linecap="round" fill="none"/>
+                    
+                    <!-- Pfeil im Y -->
+                    <g class="arrow-animated">
+                        <path d="M 50 45 L 50 20" 
+                              stroke="#ff8f5f" stroke-width="3" stroke-linecap="round" 
+                              stroke-dasharray="30" stroke-dashoffset="30" fill="none"/>
+                        <polyline points="45,25 50,20 55,25" 
+                                  stroke="#ff8f5f" stroke-width="3" stroke-linecap="round" 
+                                  fill="none" opacity="0"/>
+                    </g>
+                    
+                    <!-- S -->
+                    <path d="M 85 15 Q 75 10, 70 15 T 75 25 Q 80 30, 85 35 Q 90 40, 85 45 Q 80 50, 70 45" 
+                          stroke="#ff6b35" stroke-width="4" stroke-linecap="round" fill="none"/>
+                </svg>
             </div>
             <div class="header-date" id="headerDate"></div>
         </div>
@@ -2354,6 +3092,23 @@
         <div id="homeView" class="view-section active">
             <div class="home-content">
                 <div class="index-label">FYS-INDEX</div>
+                
+                <!-- Daily Check-in Widget (MOVED TO TOP) -->
+                <div class="checkin-widget" onclick="switchView('checkin')">
+                    <div class="checkin-widget-header">
+                        <div class="checkin-widget-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                                <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                            </svg>
+                        </div>
+                        <div class="checkin-widget-info">
+                            <div class="checkin-widget-title">Daily Check-In</div>
+                            <div class="checkin-widget-subtitle" id="checkinWidgetSubtitle">Beantworte 8 Fragen zu deinem Tag</div>
+                        </div>
+                        <div class="checkin-widget-arrow">→</div>
+                    </div>
+                </div>
                 
                 <div class="time-selector">
                     <button class="time-btn" onclick="changeTimeRange('1d')" data-range="1d">1D</button>
@@ -2384,93 +3139,6 @@
                     <div id="performancePacksList"></div>
                 </div>
 
-                <!-- Tagebuch Widget -->
-                <div class="widget-card" onclick="openJournal()">
-                    <div class="widget-header">
-                        <div class="widget-title" id="journalWidgetTitle">Tagebuch</div>
-                        <div class="widget-icon premium-icon">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
-                                <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
-                                <path d="M12 6v6"></path>
-                                <path d="M12 16h.01"></path>
-                            </svg>
-                        </div>
-                    </div>
-                    <div class="widget-stats">
-                        <div class="widget-stat">
-                            <div class="widget-stat-value" id="journalEntriesCount">0</div>
-                            <div class="widget-stat-label" id="journalEntriesLabel">Einträge</div>
-                        </div>
-                        <div class="widget-stat">
-                            <div class="widget-stat-value" id="journalLastDate">—</div>
-                            <div class="widget-stat-label" id="journalLastLabel">Letzter</div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Task Manager Widget -->
-                <div class="widget-card" onclick="openTaskManager()">
-                    <div class="widget-header">
-                        <div class="widget-title" id="taskWidgetTitle">Task Manager</div>
-                        <div class="widget-icon premium-icon">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M9 11l3 3L22 4"></path>
-                                <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
-                            </svg>
-                        </div>
-                    </div>
-                    <div class="widget-stats">
-                        <div class="widget-stat">
-                            <div class="widget-stat-value" id="tasksOpenCount">0</div>
-                            <div class="widget-stat-label" id="tasksOpenLabel">Offen</div>
-                        </div>
-                        <div class="widget-stat">
-                            <div class="widget-stat-value" id="tasksTodayCount">0</div>
-                            <div class="widget-stat-label" id="tasksTodayLabel">Heute</div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Habit Tracker Widget -->
-                <div class="widget-card" onclick="openHabitTracker()">
-                    <div class="widget-header">
-                        <div class="widget-title" id="habitWidgetTitle">Habit Tracker</div>
-                        <div class="widget-icon premium-icon">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M22 12h-4l-3 9L9 3l-3 9H2"></path>
-                            </svg>
-                        </div>
-                    </div>
-                    <div class="widget-stats">
-                        <div class="widget-stat">
-                            <div class="widget-stat-value" id="habitsTodayValue">0/0</div>
-                            <div class="widget-stat-label" id="habitTodayLabel">Heute</div>
-                        </div>
-                        <div class="widget-stat">
-                            <div class="widget-stat-value" id="habitsStreakValue">0</div>
-                            <div class="widget-stat-label" id="habitStreakLabel">Streak</div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Sober Tracker Widget -->
-                <div class="widget-card" onclick="openSoberTracker()">
-                    <div class="widget-header">
-                        <div class="widget-title" id="soberWidgetTitle">Sober Tracker</div>
-                        <div class="widget-icon">🌟</div>
-                    </div>
-                    <div class="widget-stats">
-                        <div class="widget-stat">
-                            <div class="widget-stat-value">0</div>
-                            <div class="widget-stat-label" id="soberDaysLabel"></div>
-                        </div>
-                        <div class="widget-stat">
-                            <div class="widget-stat-value">0</div>
-                            <div class="widget-stat-label" id="soberStreakLabel"></div>
-                        </div>
-                    </div>
-                </div>
             </div>
         </div>
 
@@ -2521,8 +3189,20 @@
                 </div>
             </div>
 
+            <!-- Error State -->
+            <div class="wizard-error" id="wizardError">
+                <div class="error-card">
+                    <div class="error-icon">⚠️</div>
+                    <div class="error-title">Check-in konnte nicht geladen werden</div>
+                    <div class="error-message">Es gab ein Problem beim Laden der Fragen. Bitte versuche es erneut.</div>
+                    <button class="error-retry-btn" onclick="retryWizard()">
+                        Erneut versuchen
+                    </button>
+                </div>
+            </div>
+
             <!-- Wizard Container -->
-            <div class="wizard-container" id="wizardContainer" style="display: none;">
+            <div class="wizard-container" id="wizardContainer">
                 <!-- Header -->
                 <div class="wizard-header">
                     <div class="header-top">
@@ -2646,7 +3326,100 @@
             </div>
         </div>
 
+        <!-- Tools View (NEW) -->
+        <div id="toolsView" class="view-section">
+            <div class="content-container">
+                <div class="section-title">🛠️ Tools & Features</div>
+                
+                <!-- Performance Report -->
+                <div class="tool-card" onclick="openPerformanceReport()">
+                    <div class="tool-icon">📊</div>
+                    <div class="tool-info">
+                        <div class="tool-title">Performance Report</div>
+                        <div class="tool-description">Export detailed PDF report</div>
+                    </div>
+                    <div class="pro-badge-small">PRO</div>
+                </div>
+                
+                <!-- Tagebuch (Journal) -->
+                <div class="tool-card" onclick="openJournal()">
+                    <div class="tool-icon">📔</div>
+                    <div class="tool-info">
+                        <div class="tool-title">Tagebuch</div>
+                        <div class="tool-description">Dokumentiere deine Gedanken</div>
+                    </div>
+                    <div class="pro-badge-small">PRO</div>
+                </div>
+                
+                <!-- Task Manager -->
+                <div class="tool-card" onclick="openTaskManager()">
+                    <div class="tool-icon">✓</div>
+                    <div class="tool-info">
+                        <div class="tool-title">Task Manager</div>
+                        <div class="tool-description">Verwalte deine Aufgaben</div>
+                    </div>
+                </div>
+                
+                <!-- Habit Tracker -->
+                <div class="tool-card" onclick="openHabitTracker()">
+                    <div class="tool-icon">🎯</div>
+                    <div class="tool-info">
+                        <div class="tool-title">Habit Tracker</div>
+                        <div class="tool-description">Tracke deine Gewohnheiten</div>
+                    </div>
+                </div>
+                
+                <!-- Sober Tracker -->
+                <div class="tool-card" onclick="openSoberTracker()">
+                    <div class="tool-icon">🌟</div>
+                    <div class="tool-info">
+                        <div class="tool-title">Sober Tracker</div>
+                        <div class="tool-description">Verfolge deine Erfolge</div>
+                    </div>
+                </div>
+                
+                <!-- Data & Statistics -->
+                <div class="tool-card" onclick="openStatistics()">
+                    <div class="tool-icon">📈</div>
+                    <div class="tool-info">
+                        <div class="tool-title">Data & Statistics</div>
+                        <div class="tool-description">Detailed analytics dashboard</div>
+                    </div>
+                </div>
+                
+                <!-- Pro Features Overview -->
+                <div class="tool-card" onclick="openProFeatures()">
+                    <div class="tool-icon">⭐</div>
+                    <div class="tool-info">
+                        <div class="tool-title">Pro Features</div>
+                        <div class="tool-description">View all premium features</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <div class="success-toast" id="successToast"></div>
+    </div>
+
+    <!-- Upgrade Modal (NEW) -->
+    <div class="upgrade-modal" id="upgradeModal">
+        <div class="upgrade-content">
+            <button class="close-btn" onclick="closeUpgradeModal()">×</button>
+            <div class="upgrade-icon">⭐</div>
+            <div class="upgrade-title">Upgrade to FYS Pro</div>
+            <div class="upgrade-description">
+                Unlock Performance Packs, PDF Reports, and Advanced Analytics
+            </div>
+            <div class="upgrade-features">
+                <div class="upgrade-feature">✓ 3 Performance Packs</div>
+                <div class="upgrade-feature">✓ PDF Export</div>
+                <div class="upgrade-feature">✓ Advanced Statistics</div>
+                <div class="upgrade-feature">✓ Unlimited History</div>
+            </div>
+            <button class="upgrade-btn" onclick="activateProFromModal()">
+                Activate Pro Now
+            </button>
+        </div>
     </div>
 
     <!-- Bottom Navigation - Pushup Style (Floating Pill) -->
@@ -2658,12 +3431,11 @@
             </svg>
             <div class="nav-label" id="navHome">Start</div>
         </button>
-        <button class="nav-item" onclick="switchView('checkin')" data-view="checkin">
+        <button class="nav-item" onclick="switchView('tools')" data-view="tools">
             <svg class="nav-icon" viewBox="0 0 24 24">
-                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
-                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path>
             </svg>
-            <div class="nav-label" id="navCheckin">Check-in</div>
+            <div class="nav-label" id="navTools">Tools</div>
         </button>
         <button class="nav-item" onclick="switchToCoach()" data-view="coach">
             <svg class="nav-icon" viewBox="0 0 24 24">
@@ -2680,6 +3452,7 @@
         </button>
     </div>
 
+    <!-- Floating Check-in Button (Apple Trading Style) -->
     <!-- AI Coach Modal -->
     <div class="coach-modal" id="coachModal">
         <div class="coach-header">
@@ -3490,11 +4263,26 @@
         function changeTimeRange(range) {
             console.log('Changing time range to:', range);
             currentTimeRange = range;
+            
+            // Save to localStorage
+            localStorage.setItem('fys_timeRange', range);
+            
             document.querySelectorAll('.time-btn').forEach(btn => btn.classList.remove('active'));
-            document.querySelector(`[data-range="${range}"]`).classList.add('active');
+            const targetBtn = document.querySelector(`[data-range="${range}"]`);
+            if (targetBtn) targetBtn.classList.add('active');
+            
             updateMainChart();
             createStockList(); // Update category list
-            console.log('Time range changed successfully');
+            
+            // Update Performance Pack charts (synchronized!)
+            if (isPro && performanceData.activePacks && performanceData.activePacks.length > 0) {
+                performanceData.activePacks.forEach(packId => {
+                    createPackMiniChart(packId);
+                });
+                console.log('✓ Pack charts updated with new timerange');
+            }
+            
+            console.log('Time range changed and saved:', range);
         }
 
         // Open chart details (Flatex-Style)
@@ -3541,6 +4329,12 @@
         function closeChartDetails() {
             document.getElementById('chartDetailsView').classList.remove('active');
             document.getElementById('homeView').classList.add('active');
+            
+            // Reset label back to FYS-INDEX
+            const indexLabel = document.querySelector('#chartDetailsView .fys-index-label');
+            if (indexLabel) {
+                indexLabel.textContent = 'FYS-INDEX';
+            }
             
             // Clean up pack values table if it exists
             const packTable = document.getElementById('packValuesTableContainer');
@@ -3645,6 +4439,130 @@
                 
                 container.appendChild(stockItem);
             });
+        }
+
+        // Create Stock List for Performance Pack Categories (1:1 copy)
+        function createPackStockList(pack) {
+            const container = document.getElementById('stockListItems');
+            const categoriesOverview = document.getElementById('categoriesOverview');
+            
+            if (!container) {
+                console.error('stockListItems container not found!');
+                return;
+            }
+            
+            // Update title
+            if (categoriesOverview) {
+                categoriesOverview.textContent = `${pack.name} Kategorien`;
+            }
+            
+            container.innerHTML = '';
+
+            const entries = getFilteredEntries().filter(e => 
+                e.packIndices && e.packIndices[pack.id] !== undefined
+            );
+
+            console.log('createPackStockList entries:', entries.length);
+
+            // SVG Icons for pack categories (same as in settings)
+            const packCategoryIcons = {
+                // Finance Pack
+                savings: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path></svg>`,
+                investments: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>`,
+                budget: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"></path><path d="M12 18V6"></path></svg>`,
+                income: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg>`,
+                financial_education: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>`,
+                
+                // Health Pack
+                cardio: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"></path></svg>`,
+                strength: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6.5 6.5v11M17.5 6.5v11M3 9.5h3M18 9.5h3M3 14.5h3M18 14.5h3M9 3v3M15 3v3M9 18v3M15 18v3"></path></svg>`,
+                flexibility: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"></path></svg>`,
+                mental_health: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 1 1 7.072 0l-.548.547A3.374 3.374 0 0 0 14 18.469V19a2 2 0 1 1-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path></svg>`,
+                
+                // Entrepreneurship Pack
+                networking: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>`,
+                product_development: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path></svg>`,
+                marketing: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.3 15.3a2.4 2.4 0 0 1 0 3.4l-2.6 2.6a2.4 2.4 0 0 1-3.4 0L2.7 8.7a2.41 2.41 0 0 1 0-3.4l2.6-2.6a2.41 2.41 0 0 1 3.4 0L21.3 15.3z"></path><path d="M7.5 10.5L14 17"></path></svg>`,
+                sales: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>`,
+                leadership: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 20h20M5 20V9l7-5 7 5v11M9 20v-6h6v6"></path></svg>`
+            };
+
+            // If no data, show demo values
+            if (entries.length === 0) {
+                pack.categories.forEach(cat => {
+                    const stockItem = document.createElement('div');
+                    stockItem.className = 'stock-item';
+                    
+                    stockItem.innerHTML = `
+                        <div class="stock-item-left">
+                            <div class="stock-icon" style="background: ${cat.color}20; color: ${cat.color};">
+                                ${packCategoryIcons[cat.id] || cat.emoji}
+                            </div>
+                            <div class="stock-info">
+                                <div class="stock-name">${cat.name}</div>
+                                <div class="stock-symbol">${cat.id.toUpperCase()}</div>
+                            </div>
+                        </div>
+                        <div class="stock-item-right">
+                            <div class="stock-price">5.0</div>
+                            <div class="stock-change neutral">
+                                <span class="stock-arrow">—</span>
+                                0.0%
+                            </div>
+                        </div>
+                    `;
+                    
+                    container.appendChild(stockItem);
+                });
+                return;
+            }
+
+            const latest = entries[entries.length - 1];
+            const first = entries[0];
+
+            pack.categories.forEach(cat => {
+                const latestValue = latest.values ? latest.values[cat.id] : 5;
+                const firstValue = first.values ? first.values[cat.id] : 5;
+                const change = latestValue - firstValue;
+                const changePercent = firstValue !== 0 ? ((change / firstValue) * 100).toFixed(1) : '0.0';
+                
+                const isPositive = change > 0;
+                const isNegative = change < 0;
+                const changeClass = isPositive ? 'positive' : isNegative ? 'negative' : 'neutral';
+                const arrow = isPositive ? '▲' : isNegative ? '▼' : '—';
+
+                const stockItem = document.createElement('div');
+                stockItem.className = 'stock-item';
+                stockItem.onclick = () => showPackCategoryDetail(pack.id, cat.id);
+                
+                stockItem.innerHTML = `
+                    <div class="stock-item-left">
+                        <div class="stock-icon" style="background: ${cat.color}20; color: ${cat.color};">
+                            ${packCategoryIcons[cat.id] || cat.emoji}
+                        </div>
+                        <div class="stock-info">
+                            <div class="stock-name">${cat.name}</div>
+                            <div class="stock-symbol">${cat.id.toUpperCase()}</div>
+                        </div>
+                    </div>
+                    <div class="stock-item-right">
+                        <div class="stock-price">${latestValue.toFixed(1)}</div>
+                        <div class="stock-change ${changeClass}">
+                            <span class="stock-arrow">${arrow}</span>
+                            ${Math.abs(parseFloat(changePercent)).toFixed(1)}%
+                        </div>
+                    </div>
+                `;
+                
+                container.appendChild(stockItem);
+            });
+        }
+
+        // Show individual pack category detail
+        function showPackCategoryDetail(packId, categoryId) {
+            // For now, just log - can be extended like showCategoryDetail
+            console.log('Show pack category detail:', packId, categoryId);
+            // TODO: Implement modal for pack category details (like FYS Index categories)
         }
 
         // Category Detail View
@@ -4161,12 +5079,26 @@
         // ========== PERFORMANCE PACKS FUNCTIONS ==========
         function getActivePackCategories() {
             let packCategories = [];
-            performanceData.activePacks.forEach(packId => {
-                const pack = performancePacks.find(p => p.id === packId);
-                if (pack) {
-                    packCategories = packCategories.concat(pack.categories);
+            
+            try {
+                if (!performanceData || !performanceData.activePacks) {
+                    console.warn('No active packs data available');
+                    return packCategories;
                 }
-            });
+                
+                performanceData.activePacks.forEach(packId => {
+                    const pack = performancePacks.find(p => p.id === packId);
+                    if (pack && pack.categories && Array.isArray(pack.categories)) {
+                        packCategories = packCategories.concat(pack.categories);
+                        console.log('✓ Added categories from pack:', packId, '→', pack.categories.length, 'categories');
+                    } else {
+                        console.warn('Pack not found or invalid:', packId);
+                    }
+                });
+            } catch (error) {
+                console.error('Error in getActivePackCategories:', error);
+            }
+            
             return packCategories;
         }
 
@@ -4208,9 +5140,17 @@
                 performanceData.activePacks.push(packId);
             }
             
+            // Save to localStorage
             localStorage.setItem('fysData', JSON.stringify(performanceData));
+            localStorage.setItem('fys_activePacks', JSON.stringify(performanceData.activePacks));
+            
+            console.log('✓ Performance Pack toggled:', packId);
+            console.log('  Active packs:', performanceData.activePacks);
+            
             renderPackSettings();
             renderPerformancePacks();
+            renderPerformancePacks(); // Update home view
+            updateUI(); // Update check-in question count
         }
 
         function renderPackSettings() {
@@ -4229,6 +5169,29 @@
             if (countSpan) countSpan.textContent = activeCount;
 
             listContainer.innerHTML = '';
+
+            // SVG Icons for pack categories (same as in stock list)
+            const packCategoryIcons = {
+                // Finance Pack
+                savings: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 14px; height: 14px;"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path></svg>`,
+                investments: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 14px; height: 14px;"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>`,
+                budget: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 14px; height: 14px;"><circle cx="12" cy="12" r="10"></circle><path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"></path><path d="M12 18V6"></path></svg>`,
+                income: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 14px; height: 14px;"><path d="M20 12H4M20 12l-4-4M20 12l-4 4"></path></svg>`,
+                financial_education: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 14px; height: 14px;"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>`,
+                
+                // Health Pack
+                cardio: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 14px; height: 14px;"><path d="M22 12h-4l-3 9L9 3l-3 9H2"></path></svg>`,
+                strength: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 14px; height: 14px;"><path d="M6.5 6.5v11M17.5 6.5v11M3 9.5h3M18 9.5h3M3 14.5h3M18 14.5h3M9 3v3M15 3v3M9 18v3M15 18v3"></path></svg>`,
+                flexibility: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 14px; height: 14px;"><circle cx="12" cy="12" r="10"></circle><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"></path></svg>`,
+                mental_health: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 14px; height: 14px;"><path d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 1 1 7.072 0l-.548.547A3.374 3.374 0 0 0 14 18.469V19a2 2 0 1 1-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path></svg>`,
+                
+                // Entrepreneurship Pack
+                networking: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 14px; height: 14px;"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>`,
+                product_development: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 14px; height: 14px;"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>`,
+                marketing: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 14px; height: 14px;"><path d="M21.3 15.3a2.4 2.4 0 0 1 0 3.4l-2.6 2.6a2.4 2.4 0 0 1-3.4 0L2.7 8.7a2.41 2.41 0 0 1 0-3.4l2.6-2.6a2.41 2.41 0 0 1 3.4 0L21.3 15.3z"></path><path d="M7.5 10.5L14 17"></path></svg>`,
+                sales: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 14px; height: 14px;"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>`,
+                leadership: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 14px; height: 14px;"><path d="M2 20h20M5 20V9l7-5 7 5v11M9 20v-6h6v6"></path></svg>`
+            };
 
             performancePacks.forEach(pack => {
                 const isActive = performanceData.activePacks.includes(pack.id);
@@ -4254,7 +5217,10 @@
                                     font-size: 10px;
                                     font-weight: 600;
                                     color: var(--text-secondary);
-                                ">${cat.emoji} ${cat.name}</span>
+                                    display: inline-flex;
+                                    align-items: center;
+                                    gap: 4px;
+                                ">${packCategoryIcons[cat.id] || ''} ${cat.name}</span>
                             `).join('')}
                         </div>
                     </div>
@@ -4359,56 +5325,85 @@
                 window[`packMiniChart_${packId}`].destroy();
             }
 
-            // Get data from last 30 days
-            const now = new Date();
-            const cutoff = new Date(now);
-            cutoff.setDate(cutoff.getDate() - 30);
+            // Use SAME time range as FYS Index (synchronized)
+            const entries = getFilteredEntries(); // Uses currentTimeRange!
             
-            let entries = performanceData.entries.filter(e => {
-                return e.packIndices && 
-                       e.packIndices[packId] !== undefined &&
-                       new Date(e.date) >= cutoff;
+            // Filter for entries with pack data
+            const packEntries = entries.filter(e => 
+                e.packIndices && e.packIndices[packId] !== undefined
+            );
+
+            const labels = packEntries.map(e => {
+                const date = new Date(e.date);
+                const day = date.getDate();
+                const month = date.getMonth() + 1;
+                const year = date.getFullYear();
+                return `${day}.${month}.${year}`;
             });
 
-            const labels = entries.map(e => {
-                const d = new Date(e.date);
-                return d.toLocaleDateString('de-DE', { month: 'short', day: 'numeric' });
-            });
+            const data = packEntries.map(e => e.packIndices[packId]);
 
-            const data = entries.map(e => e.packIndices[packId]);
-
+            // 1:1 COPY of FYS Index Chart Config!
             window[`packMiniChart_${packId}`] = new Chart(ctx, {
                 type: 'line',
                 data: {
                     labels: labels,
                     datasets: [{
+                        label: packId,
                         data: data,
-                        borderColor: '#ff6b35',
-                        backgroundColor: 'rgba(255, 107, 53, 0.1)',
-                        fill: true,
-                        tension: 0.4,
-                        pointRadius: 0,
-                        borderWidth: 2
+                        borderColor: '#ff6b35', // Same as FYS Index
+                        backgroundColor: 'rgba(255, 107, 53, 0.1)', // Same as FYS Index
+                        borderWidth: 3, // Same as FYS Index
+                        tension: 0.4, // Same as FYS Index
+                        pointRadius: 0, // Same as FYS Index
+                        pointHoverRadius: 6, // Same as FYS Index
+                        fill: true // Same as FYS Index
                     }]
                 },
                 options: {
                     responsive: true,
-                    maintainAspectRatio: true,
+                    maintainAspectRatio: false, // Same as FYS Index
+                    interaction: { mode: 'index', intersect: false }, // Same as FYS Index
                     plugins: {
                         legend: { display: false },
-                        tooltip: { enabled: false }
+                        tooltip: {
+                            backgroundColor: currentTheme === 'dark' ? 'rgba(17, 17, 17, 0.95)' : 'rgba(255, 255, 255, 0.98)',
+                            titleColor: currentTheme === 'dark' ? '#ffffff' : '#ff6b35',
+                            bodyColor: currentTheme === 'dark' ? '#6b6b6b' : '#ff8f5f',
+                            borderColor: currentTheme === 'dark' ? '#1a1a1a' : '#ffe8e0',
+                            borderWidth: 1,
+                            padding: 12,
+                            displayColors: false,
+                            callbacks: {
+                                title: function(context) {
+                                    return context[0].parsed.y.toFixed(1);
+                                },
+                                label: function(context) {
+                                    return context.label;
+                                }
+                            }
+                        }
                     },
                     scales: {
                         x: {
-                            display: false,
-                            grid: { display: false }
+                            grid: { display: false },
+                            ticks: { display: false }
                         },
                         y: {
-                            display: false,
-                            grid: { display: false }
+                            // 1:1 SAME as FYS Index!
+                            beginAtZero: false,
+                            grace: '5%', // 5% Padding oben und unten
+                            grid: { 
+                                color: currentTheme === 'dark' ? '#1a1a1a' : '#fff5f0', 
+                                drawBorder: false 
+                            },
+                            ticks: { 
+                                color: currentTheme === 'dark' ? '#404040' : '#ff8f5f', 
+                                font: { size: 10 },
+                                padding: 5
+                            }
                         }
-                    },
-                    interaction: { mode: 'nearest', axis: 'x', intersect: false }
+                    }
                 }
             });
         }
@@ -4429,18 +5424,10 @@
             if (homeView) homeView.classList.remove('active');
             if (detailsView) detailsView.classList.add('active');
             
-            // Update header with PACK NAME (NOT "FYS Index")
-            const detailHeader = document.querySelector('#chartDetailsView .category-detail-header');
-            if (detailHeader) {
-                detailHeader.innerHTML = `
-                    <button class="back-btn" onclick="closeChartDetails()">←</button>
-                    <div style="flex: 1; text-align: center;">
-                        <div style="font-size: 22px; font-weight: 800; margin-bottom: 4px; display: flex; align-items: center; justify-content: center; gap: 8px;">
-                            <span style="font-size: 26px;">${pack.icon}</span>
-                            <span>${pack.name}</span>
-                        </div>
-                    </div>
-                `;
+            // Update FYS-INDEX label to PACK NAME
+            const indexLabel = document.querySelector('#chartDetailsView .fys-index-label');
+            if (indexLabel) {
+                indexLabel.textContent = pack.name.toUpperCase();
             }
             
             // Update index summary
@@ -5009,6 +5996,11 @@
             };
             
             updateHeaderDate();
+            
+            // Update Check-in Widget with correct question count
+            const totalQuestions = baseWizardCategories.length + (isPro ? getActivePackCategories().length : 0);
+            safeUpdate('checkinWidgetSubtitle', `Beantworte ${totalQuestions} Fragen zu deinem Tag`);
+            
             safeUpdate('tapHint', t.tapHint);
             safeUpdate('backText', t.backText);
             safeUpdate('allCategoriesTitle', t.allCategoriesTitle);
@@ -5050,7 +6042,7 @@
             updateProButton();
             
             updateCheckinView();
-            renderPerformancePacks();
+            renderPerformancePacks(); // Render active pack cards
         }
 
         // Switch view with haptic feedback
@@ -5082,16 +6074,38 @@
             }
             
             if (view === 'checkin') {
-                // Update wizard subtitle with correct number of questions
-                const totalQuestions = baseWizardCategories.length + (isPro ? getActivePackCategories().length : 0);
-                const subtitle = document.getElementById('wizardConfirmSubtitle');
-                if (subtitle) {
-                    subtitle.textContent = `Beantworte ${totalQuestions} kurze Fragen zu deinem Tag`;
-                }
+                console.log('🔧 CHECK-IN VIEW ACTIVATED');
                 
-                // Show wizard confirmation
-                document.getElementById('wizardConfirm').style.display = 'flex';
-                document.getElementById('wizardContainer').style.display = 'none';
+                try {
+                    // Update wizard subtitle with correct number of questions
+                    const totalQuestions = baseWizardCategories.length + (isPro ? getActivePackCategories().length : 0);
+                    console.log('  ✓ Total questions:', totalQuestions);
+                    
+                    const subtitle = document.getElementById('wizardConfirmSubtitle');
+                    if (subtitle) {
+                        subtitle.textContent = `Beantworte ${totalQuestions} kurze Fragen zu deinem Tag`;
+                        console.log('  ✓ Subtitle updated');
+                    }
+                    
+                    // Hide error and wizard container
+                    const errorDiv = document.getElementById('wizardError');
+                    const container = document.getElementById('wizardContainer');
+                    if (errorDiv) errorDiv.classList.remove('active');
+                    if (container) container.classList.remove('active');
+                    
+                    // Show wizard confirmation dialog
+                    const confirmDialog = document.getElementById('wizardConfirm');
+                    if (confirmDialog) {
+                        confirmDialog.classList.add('active');
+                        console.log('  ✓ Confirm dialog shown');
+                    } else {
+                        console.error('  ✗ wizardConfirm element not found!');
+                        throw new Error('wizardConfirm element not found');
+                    }
+                } catch (error) {
+                    console.error('  ✗ Error showing check-in:', error);
+                    showWizardError();
+                }
             }
         }
 
@@ -5221,6 +6235,18 @@
             document.getElementById('journalEntrySection').classList.remove('active');
         }
 
+        function openTaskManager() {
+            alert('✓ Task Manager\n\nDiese Funktion wird gerade entwickelt und ist bald verfügbar!');
+        }
+
+        function openHabitTracker() {
+            alert('🎯 Habit Tracker\n\nDiese Funktion wird gerade entwickelt und ist bald verfügbar!');
+        }
+
+        function openSoberTracker() {
+            alert('🌟 Sober Tracker\n\nDiese Funktion wird gerade entwickelt und ist bald verfügbar!');
+        }
+
         function changeMonth(delta) {
             currentJournalMonth.setMonth(currentJournalMonth.getMonth() + delta);
             renderCalendar();
@@ -5343,22 +6369,38 @@
         function getWizardCategories() {
             let wizardCats = [...baseWizardCategories];
             
-            // Add active pack categories
-            if (isPro && performanceData.activePacks.length > 0) {
-                const packCats = getActivePackCategories();
-                packCats.forEach(packCat => {
-                    wizardCats.push({
-                        id: packCat.id,
-                        name: { de: packCat.name, en: packCat.name, es: packCat.name },
-                        color: packCat.color,
-                        hint: { de: `Wie würdest du dein ${packCat.name} heute bewerten?`, en: `How would you rate your ${packCat.name} today?`, es: `¿Cómo calificarías tu ${packCat.name} hoy?` }
-                    });
+            try {
+                // Add active pack categories
+                if (isPro && performanceData.activePacks && performanceData.activePacks.length > 0) {
+                    console.log('Adding pack categories:', performanceData.activePacks);
+                    const packCats = getActivePackCategories();
                     
-                    // Add icon for pack category
-                    if (!categoryIcons[packCat.id]) {
-                        categoryIcons[packCat.id] = `<div style="font-size: 20px;">${packCat.emoji}</div>`;
+                    if (packCats && packCats.length > 0) {
+                        packCats.forEach(packCat => {
+                            if (packCat && packCat.id && packCat.name && packCat.color) {
+                                wizardCats.push({
+                                    id: packCat.id,
+                                    name: { de: packCat.name, en: packCat.name, es: packCat.name },
+                                    color: packCat.color,
+                                    hint: { 
+                                        de: `Wie würdest du dein ${packCat.name} heute bewerten?`, 
+                                        en: `How would you rate your ${packCat.name} today?`, 
+                                        es: `¿Cómo calificarías tu ${packCat.name} hoy?` 
+                                    }
+                                });
+                                
+                                // Add icon for pack category
+                                if (!categoryIcons[packCat.id] && packCat.emoji) {
+                                    categoryIcons[packCat.id] = `<div style="font-size: 20px;">${packCat.emoji}</div>`;
+                                }
+                            }
+                        });
+                        console.log('✓ Added', packCats.length, 'pack categories');
                     }
-                });
+                }
+            } catch (error) {
+                console.error('Error adding pack categories:', error);
+                console.error('Falling back to base categories only');
             }
             
             return wizardCats;
@@ -5401,26 +6443,151 @@
         let wizardCategories = []; // Will be populated in startWizard
 
         function startWizard() {
-            // Get current wizard categories (base + active packs)
-            wizardCategories = getWizardCategories();
+            console.log('╔════════════════════════════════════╗');
+            console.log('║   START WIZARD - DEBUG MODE        ║');
+            console.log('╚════════════════════════════════════╝');
             
-            document.getElementById('wizardConfirm').style.display = 'none';
-            document.getElementById('wizardContainer').style.display = 'flex';
-            wizardCurrentStep = 0;
-            loadWizardDraft();
-            renderWizardProgressDots();
-            renderWizardSteps();
-            updateWizardUI();
+            try {
+                // Step 1: Get categories
+                wizardCategories = getWizardCategories();
+                console.log('✓ Categories loaded:', wizardCategories.length);
+                console.log('  Categories:', wizardCategories.map(c => c.id).join(', '));
+                
+                // Step 2: Defensive guards
+                if (!wizardCategories || wizardCategories.length === 0) {
+                    console.error('✗ ERROR: No categories! Using fallback.');
+                    wizardCategories = [...baseWizardCategories];
+                }
+                
+                if (!wizardDraft) {
+                    wizardDraft = {};
+                    console.log('✓ wizardDraft initialized');
+                }
+                
+                // Step 3: UI Elements
+                const confirmDialog = document.getElementById('wizardConfirm');
+                const container = document.getElementById('wizardContainer');
+                const content = document.getElementById('wizardContent');
+                const errorDiv = document.getElementById('wizardError');
+                
+                console.log('✓ UI Elements:');
+                console.log('  - confirmDialog:', !!confirmDialog);
+                console.log('  - container:', !!container);
+                console.log('  - content:', !!content);
+                
+                if (!confirmDialog || !container || !content) {
+                    throw new Error('Critical UI elements missing');
+                }
+                
+                // Step 4: Hide dialogs, show container
+                confirmDialog.classList.remove('active'); // Use classList!
+                if (errorDiv) errorDiv.classList.remove('active');
+                container.classList.add('active');
+                console.log('✓ Container shown (added .active class)');
+                
+                // Step 5: Reset state
+                wizardCurrentStep = 0;
+                console.log('✓ Current step set to 0');
+                
+                // Step 6: Load draft
+                loadWizardDraft();
+                console.log('✓ Draft loaded');
+                
+                // Step 7: Render dots
+                renderWizardProgressDots();
+                console.log('✓ Progress dots rendered');
+                
+                // Step 8: Render steps
+                renderWizardSteps();
+                console.log('✓ Steps rendered');
+                
+                // Step 9: Wait for DOM, then update UI
+                setTimeout(() => {
+                    console.log('--- Delayed UI Update (50ms) ---');
+                    
+                    try {
+                        // Update UI
+                        updateWizardUI();
+                        console.log('✓ UI updated');
+                        
+                        // Check if first step is visible
+                        const firstStep = document.getElementById('wizard-step-0');
+                        if (firstStep) {
+                            const hasActive = firstStep.classList.contains('active');
+                            const styles = window.getComputedStyle(firstStep);
+                            
+                            console.log('✓ First step check:');
+                            console.log('  - Element exists:', !!firstStep);
+                            console.log('  - Has .active class:', hasActive);
+                            console.log('  - Display:', styles.display);
+                            console.log('  - Opacity:', styles.opacity);
+                            
+                            // NUCLEAR FIX: Force visible if needed
+                            if (!hasActive || styles.display === 'none') {
+                                console.warn('⚠ First step not visible! Forcing...');
+                                firstStep.classList.add('active');
+                                console.log('✓ First step FORCED visible');
+                            }
+                        } else {
+                            console.error('✗ ERROR: First step element not found!');
+                            throw new Error('First step element not found');
+                        }
+                        
+                        console.log('╔════════════════════════════════════╗');
+                        console.log('║   WIZARD STARTED SUCCESSFULLY      ║');
+                        console.log('╚════════════════════════════════════╝');
+                    } catch (innerError) {
+                        console.error('✗ Error in delayed UI update:', innerError);
+                        showWizardError();
+                    }
+                }, 50);
+                
+            } catch (error) {
+                console.error('╔════════════════════════════════════╗');
+                console.error('║   WIZARD START FAILED              ║');
+                console.error('╚════════════════════════════════════╝');
+                console.error('Error details:', error);
+                console.error('Stack trace:', error.stack);
+                showWizardError();
+            }
         }
 
         function cancelWizard() {
+            const container = document.getElementById('wizardContainer');
+            const confirmDialog = document.getElementById('wizardConfirm');
+            if (container) container.classList.remove('active');
+            if (confirmDialog) confirmDialog.classList.remove('active');
             switchView('home');
         }
 
         function closeWizard() {
             if (confirm('Möchtest du den Check-in wirklich abbrechen? Deine Eingaben werden als Entwurf gespeichert.')) {
+                const container = document.getElementById('wizardContainer');
+                const confirmDialog = document.getElementById('wizardConfirm');
+                if (container) container.classList.remove('active');
+                if (confirmDialog) confirmDialog.classList.remove('active');
                 switchView('home');
             }
+        }
+        
+        function showWizardError() {
+            console.log('🚨 Showing error UI');
+            const confirmDialog = document.getElementById('wizardConfirm');
+            const container = document.getElementById('wizardContainer');
+            const errorDiv = document.getElementById('wizardError');
+            
+            if (confirmDialog) confirmDialog.classList.remove('active');
+            if (container) container.classList.remove('active');
+            if (errorDiv) errorDiv.classList.add('active');
+        }
+        
+        function retryWizard() {
+            console.log('🔄 Retrying wizard...');
+            const errorDiv = document.getElementById('wizardError');
+            if (errorDiv) errorDiv.classList.remove('active');
+            
+            // Go back to confirm dialog
+            switchView('checkin');
         }
 
         function renderWizardProgressDots() {
@@ -5434,9 +6601,14 @@
 
         function renderWizardSteps() {
             const content = safeGetElement('wizardContent');
-            if (!content) return;
+            if (!content) {
+                console.error('ERROR: wizardContent not found!');
+                return;
+            }
             
             content.innerHTML = '';
+            
+            console.log('Rendering', wizardCategories.length, 'wizard steps');
             
             // Render all categories
             wizardCategories.forEach((cat, index) => {
@@ -5456,10 +6628,10 @@
                 
                 step.innerHTML = `
                     <div class="category-icon-wizard" style="background: ${cat.color}20; color: ${cat.color};">
-                        ${categoryIcons[cat.id]}
+                        ${categoryIcons[cat.id] || '?'}
                     </div>
-                    <div class="step-title-wizard">${cat.name[currentLang]}</div>
-                    <div class="step-subtitle-wizard">${cat.hint[currentLang]}</div>
+                    <div class="step-title-wizard">${cat.name[currentLang] || cat.name}</div>
+                    <div class="step-subtitle-wizard">${cat.hint[currentLang] || cat.hint}</div>
                     <div class="input-area-wizard">
                         <div class="slider-value-display-wizard">
                             <div class="slider-value-wizard" id="wizard-value-${cat.id}">${displayValue}</div>
@@ -5489,6 +6661,8 @@
                 <div class="review-list-wizard" id="wizardReviewList"></div>
             `;
             content.appendChild(reviewStep);
+            
+            console.log('Wizard steps rendered successfully');
         }
 
         function updateWizardSliderValue(id, value, isSleep = false) {
@@ -5524,22 +6698,31 @@
 
             backBtn.disabled = wizardCurrentStep === 0;
 
+            // Handle ALL step containers (including review)
             document.querySelectorAll('.step-container-wizard').forEach((step, i) => {
                 step.classList.remove('active', 'prev');
-                if (i === wizardCurrentStep) step.classList.add('active');
-                if (i < wizardCurrentStep) step.classList.add('prev');
+                
+                // Regular steps (0 to length-1)
+                if (i < wizardCategories.length) {
+                    if (i === wizardCurrentStep) {
+                        step.classList.add('active');
+                    } else if (i < wizardCurrentStep) {
+                        step.classList.add('prev');
+                    }
+                }
+                // Review step (last one)
+                else if (i === wizardCategories.length && isReview) {
+                    step.classList.add('active');
+                }
             });
 
             if (isReview) {
                 nextBtn.textContent = '✓ Speichern';
                 nextBtn.onclick = saveWizardCheckIn;
+                updateWizardReviewList();
             } else {
                 nextBtn.textContent = 'Weiter';
                 nextBtn.onclick = wizardNextStep;
-            }
-
-            if (isReview) {
-                updateWizardReviewList();
             }
         }
 
@@ -5573,8 +6756,12 @@
         }
 
         function goToWizardStep(step) {
+            console.log('🔄 goToWizardStep called:', step);
+            console.log('  Current step before:', wizardCurrentStep);
             wizardCurrentStep = step;
+            console.log('  Current step after:', wizardCurrentStep);
             updateWizardUI();
+            console.log('  ✓ UI updated - should show step', step);
         }
 
         document.addEventListener('click', function(e) {
@@ -5750,13 +6937,36 @@
 
             setTimeout(() => {
                 wizardDraft = {};
-                location.reload();
+                // Navigate to home and set 1D timeframe
+                switchView('home');
+                setTimeout(() => {
+                    changeTimeRange('1d');
+                    highlightLatestDataPoint();
+                }, 300);
             }, 1000);
         }
 
         // Initialize
         document.addEventListener('DOMContentLoaded', function() {
             console.log('=== PAGE LOAD ===');
+            
+            // Load saved timeRange
+            const savedTimeRange = localStorage.getItem('fys_timeRange');
+            if (savedTimeRange) {
+                currentTimeRange = savedTimeRange;
+                console.log('✓ Loaded saved timeRange:', savedTimeRange);
+            }
+            
+            // Load active Performance Packs
+            const savedActivePacks = localStorage.getItem('fys_activePacks');
+            if (savedActivePacks) {
+                try {
+                    performanceData.activePacks = JSON.parse(savedActivePacks);
+                    console.log('✓ Loaded active packs:', performanceData.activePacks);
+                } catch (e) {
+                    console.error('Error loading active packs:', e);
+                }
+            }
             
             let postCheckinFlag = false;
             try {
@@ -5787,6 +6997,7 @@
             
             initMainChart();
             updateUI();
+            renderPerformancePacks(); // Show active packs immediately
             
             // Check if we just completed a check-in
             if (postCheckinFlag) {
@@ -5818,13 +7029,531 @@
                 }
             } else {
                 console.log('NORMAL LOAD MODE');
-                // Normal load - just update chart with current timerange
-                updateMainChart();
+                // Normal load - apply saved timerange
+                changeTimeRange(currentTimeRange);
             }
             
             createStockList();
             updateJournalStats();
+            renderPerformancePacks(); // Render Performance Packs on home
+            
+            // Setup IntersectionObserver for sticky checkin widget
+            const checkinWidget = document.querySelector('.checkin-widget');
+            if (checkinWidget && 'IntersectionObserver' in window) {
+                const observerOptions = {
+                    root: null,
+                    threshold: [0, 1],
+                    rootMargin: '-1px 0px 0px 0px'
+                };
+                
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.intersectionRatio < 1) {
+                            entry.target.classList.add('is-sticky');
+                        } else {
+                            entry.target.classList.remove('is-sticky');
+                        }
+                    });
+                }, observerOptions);
+                
+                observer.observe(checkinWidget);
+                console.log('✓ IntersectionObserver setup for sticky widget');
+            }
         });
+        // ============================================
+        // PERFORMANCE PACK CARD ON HOME
+        // ============================================
+        
+        // ============================================
+        // ENHANCED CATEGORY DETAILS
+        // ============================================
+        
+        function calculateCategoryIndexInfluence(categoryId) {
+            const entries = performanceData.entries;
+            if (entries.length < 2) return 0;
+            
+            const latest = entries[entries.length - 1];
+            const previous = entries[entries.length - 2];
+            
+            const categoryValue = latest.categoryValues?.[categoryId] || 100;
+            const prevCategoryValue = previous.categoryValues?.[categoryId] || 100;
+            const categoryChange = categoryValue - prevCategoryValue;
+            
+            const indexValue = latest.fysIndex;
+            const prevIndexValue = previous.fysIndex;
+            const indexChange = indexValue - prevIndexValue;
+            
+            if (indexChange === 0) return 0;
+            return (categoryChange / indexChange) * 100;
+        }
+
+        function getTrendLabel(trend) {
+            return {
+                'bullish': '📈 Bullish',
+                'bearish': '📉 Bearish',
+                'neutral': '➡️ Neutral'
+            }[trend] || '➡️ Neutral';
+        }
+
+        function renderRecentCheckins(categoryId) {
+            const container = document.getElementById('recentCheckinsList');
+            if (!container) return;
+            
+            const entries = performanceData.entries.slice(-5).reverse();
+            
+            if (entries.length === 0) {
+                container.innerHTML = '<div style="text-align: center; padding: 20px; color: var(--text-secondary); font-size: 13px;">Keine Check-ins vorhanden</div>';
+                return;
+            }
+            
+            container.innerHTML = entries.map(entry => {
+                const date = new Date(entry.date);
+                const value = entry.categoryValues?.[categoryId] || 100;
+                const rating = entry.ratings?.[categoryId] || 5;
+                
+                return `
+                    <div class="checkin-item">
+                        <div class="checkin-date">${date.toLocaleDateString('de-DE')}</div>
+                        <div class="checkin-rating">${'⭐'.repeat(rating)}</div>
+                        <div class="checkin-value">${value.toFixed(1)}</div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Override openCategoryDetail to add enhanced features
+        const originalOpenCategoryDetailFunc = typeof openCategoryDetail !== 'undefined' ? openCategoryDetail : null;
+
+        function openCategoryDetailEnhanced(categoryId) {
+            const category = categories.find(c => c.id === categoryId);
+            if (!category) return;
+            
+            currentCategoryId = categoryId;
+            
+            const modal = safeGetElement('categoryDetailModal');
+            const header = safeGetElement('categoryDetailHeader');
+            const content = safeGetElement('categoryDetailContent');
+            
+            if (!modal || !header || !content) return;
+            
+            const entries = getFilteredEntries();
+            let currentValue = 100;
+            let changeValue = 0;
+            let changePercent = 0;
+            let trend = 'neutral';
+            
+            if (entries.length > 0) {
+                const latest = entries[entries.length - 1];
+                currentValue = latest.categoryValues?.[categoryId] || 100;
+                
+                if (entries.length > 1) {
+                    const first = entries[0];
+                    const firstValue = first.categoryValues?.[categoryId] || 100;
+                    changeValue = currentValue - firstValue;
+                    changePercent = (changeValue / firstValue) * 100;
+                    
+                    if (changePercent > 5) trend = 'bullish';
+                    else if (changePercent < -5) trend = 'bearish';
+                }
+            }
+            
+            const indexInfluence = calculateCategoryIndexInfluence(categoryId);
+            const iconHtml = categoryIcons[categoryId] || category.icon;
+            
+            header.innerHTML = `
+                <div class="category-detail-icon" style="background: ${category.color}20; color: ${category.color};">
+                    ${iconHtml}
+                </div>
+                <div class="category-detail-info">
+                    <div class="category-detail-name">${category.name[currentLang]}</div>
+                    <div class="category-detail-symbol">
+                        ${category.id.toUpperCase()} 
+                        <span class="trend-badge ${trend}">${getTrendLabel(trend)}</span>
+                    </div>
+                </div>
+                <button class="close-btn" onclick="closeCategoryDetail()">×</button>
+            `;
+            
+            content.innerHTML = `
+                <div class="category-detail-price-section">
+                    <div class="category-detail-price" style="color: ${changeValue >= 0 ? 'var(--accent-up)' : 'var(--accent-down)'};">
+                        ${currentValue.toFixed(1)}
+                    </div>
+                    <div class="category-detail-change" style="background: ${changeValue >= 0 ? 'rgba(0, 255, 136, 0.1)' : 'rgba(255, 51, 102, 0.1)'}; color: ${changeValue >= 0 ? 'var(--accent-up)' : 'var(--accent-down)'};">
+                        ${changeValue >= 0 ? '▲' : '▼'} ${Math.abs(changePercent).toFixed(2)}%
+                    </div>
+                </div>
+                
+                <div class="category-influence-card">
+                    <div class="influence-title">Index Influence</div>
+                    <div class="influence-value">${indexInfluence >= 0 ? '+' : ''}${indexInfluence.toFixed(2)}%</div>
+                    <div class="influence-description">Impact on ${getActiveIndexName()}</div>
+                </div>
+                
+                <div class="category-time-selector">
+                    <button class="category-time-btn active" onclick="changeCategoryTimeRange('1d')" data-range="1d">1D</button>
+                    <button class="category-time-btn" onclick="changeCategoryTimeRange('7d')" data-range="7d">7D</button>
+                    <button class="category-time-btn" onclick="changeCategoryTimeRange('1m')" data-range="1m">1M</button>
+                    <button class="category-time-btn" onclick="changeCategoryTimeRange('6m')" data-range="6m">6M</button>
+                    <button class="category-time-btn" onclick="changeCategoryTimeRange('1y')" data-range="1y">1Y</button>
+                    <button class="category-time-btn" onclick="changeCategoryTimeRange('all')" data-range="all">MAX</button>
+                </div>
+                
+                <div class="category-chart-card">
+                    <div class="category-chart-container">
+                        <canvas id="categoryDetailChart"></canvas>
+                    </div>
+                </div>
+                
+                <div class="recent-checkins-card">
+                    <div class="checkins-title">Recent Check-ins</div>
+                    <div id="recentCheckinsList"></div>
+                </div>
+            `;
+            
+            modal.classList.add('active');
+            
+            setTimeout(() => {
+                initCategoryDetailChart();
+                updateCategoryDetailChart();
+                renderRecentCheckins(categoryId);
+            }, 100);
+        }
+
+        // Use enhanced version
+        if (typeof openCategoryDetail !== 'undefined') {
+            openCategoryDetail = openCategoryDetailEnhanced;
+        }
+
+        // ============================================
+        // WIZARD SUMMARY FLOW (IMPROVED)
+        // ============================================
+        
+        let summaryEditMode = false;
+        let editingCategoryIndex = null;
+
+        function showWizardSummary() {
+            wizardCurrentStep = wizardCategories.length;
+            updateWizardUI();
+            
+            const content = safeGetElement('wizardContent');
+            if (!content) return;
+            
+            content.innerHTML = `
+                <div class="summary-container">
+                    <div class="summary-title">Zusammenfassung</div>
+                    <div class="summary-subtitle">Überprüfe deine Angaben</div>
+                    
+                    <div class="summary-list" id="summaryListItems"></div>
+                    
+                    <div class="summary-actions">
+                        <button class="btn-secondary" onclick="editLastCategory()">
+                            Letzte Kategorie bearbeiten
+                        </button>
+                        <button class="btn-primary-wizard" onclick="saveWizardCheckIn()">
+                            ✓ Speichern & Abschließen
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            const summaryList = safeGetElement('summaryListItems');
+            if (summaryList) {
+                summaryList.innerHTML = wizardCategories.map((cat, index) => `
+                    <div class="summary-item" onclick="editCategory(${index})">
+                        <div class="summary-item-left">
+                            <div class="summary-icon" style="background: ${cat.color}20; color: ${cat.color};">
+                                ${categoryIcons[cat.id] || cat.icon}
+                            </div>
+                            <div style="font-size: 14px; font-weight: 500;">${cat.name[currentLang]}</div>
+                        </div>
+                        <div class="summary-value">${wizardDraft[cat.id] || (cat.isSleep ? '8.0' : '5')}</div>
+                    </div>
+                `).join('');
+            }
+        }
+
+        function editCategory(index) {
+            summaryEditMode = true;
+            editingCategoryIndex = index;
+            wizardCurrentStep = index;
+            updateWizardUI();
+            
+            const nextBtn = safeGetElement('nextBtnWizard');
+            if (nextBtn) {
+                nextBtn.textContent = 'Zurück zur Übersicht';
+                nextBtn.onclick = () => {
+                    summaryEditMode = false;
+                    showWizardSummary();
+                };
+            }
+        }
+
+        function editLastCategory() {
+            const lastIndex = wizardCategories.length - 1;
+            editCategory(lastIndex);
+        }
+
+        // Update wizardNextStep to go to summary
+        const originalWizardNextStep = wizardNextStep;
+        wizardNextStep = function() {
+            if (wizardCurrentStep < wizardCategories.length - 1) {
+                wizardCurrentStep++;
+                updateWizardUI();
+            } else {
+                // Last category done → go to summary
+                showWizardSummary();
+            }
+        };
+
+        // ============================================
+        // NEW FEATURES - 10 MAJOR UPDATES
+        // ============================================
+
+        // Active Pack Context for dynamic titles
+        let activePackContext = null;
+
+        function getActiveIndexName() {
+            if (activePackContext && activePackContext.id) {
+                return activePackContext.name;
+            }
+            return 'FYS Index';
+        }
+
+        // ============================================
+        // TOOLS VIEW FUNCTIONS
+        // ============================================
+        
+        function openPerformanceReport() {
+            if (!isPro) {
+                showUpgradeModal();
+                return;
+            }
+            generatePDFReport();
+        }
+
+        function openStatistics() {
+            alert('📈 Detailed statistics dashboard coming soon!');
+        }
+
+        function openProFeatures() {
+            if (!isPro) {
+                showUpgradeModal();
+            } else {
+                alert('⭐ You already have Pro! Explore all features in the app.');
+            }
+        }
+
+        function showUpgradeModal() {
+            const modal = safeGetElement('upgradeModal');
+            if (modal) modal.classList.add('active');
+        }
+
+        function closeUpgradeModal() {
+            const modal = safeGetElement('upgradeModal');
+            if (modal) modal.classList.remove('active');
+        }
+
+        function activateProFromModal() {
+            togglePro();
+            closeUpgradeModal();
+            alert('🎉 FYS Pro aktiviert! Alle Features sind jetzt freigeschaltet.');
+        }
+
+        // ============================================
+        // PDF EXPORT FUNCTION
+        // ============================================
+        
+        async function generatePDFReport() {
+            try {
+                // Check if jsPDF is available
+                if (typeof window.jspdf === 'undefined') {
+                    alert('⚠️ PDF Bibliothek wird geladen...\n\nBitte versuche es in wenigen Sekunden erneut.');
+                    return;
+                }
+                
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF();
+                
+                // ===== HEADER =====
+                doc.setFontSize(24);
+                doc.setFont('helvetica', 'bold');
+                doc.setTextColor(255, 107, 53); // Orange
+                doc.text('FYS Performance Report', 20, 20);
+                
+                // Active Index Name
+                const indexName = getActiveIndexName();
+                doc.setFontSize(16);
+                doc.setFont('helvetica', 'normal');
+                doc.setTextColor(0, 0, 0);
+                doc.text(indexName, 20, 35);
+                
+                // Date Range
+                const entries = performanceData.entries;
+                if (entries.length > 0) {
+                    const first = new Date(entries[0].date);
+                    const last = new Date(entries[entries.length - 1].date);
+                    const dateRange = `${first.toLocaleDateString('de-DE')} - ${last.toLocaleDateString('de-DE')}`;
+                    
+                    doc.setFontSize(10);
+                    doc.setTextColor(128, 128, 128);
+                    doc.text(dateRange, 20, 45);
+                    doc.setTextColor(0, 0, 0);
+                }
+                
+                // ===== CHART IMAGE =====
+                const chartCanvas = document.getElementById('mainChart');
+                if (chartCanvas) {
+                    try {
+                        const chartImage = chartCanvas.toDataURL('image/png');
+                        doc.addImage(chartImage, 'PNG', 20, 55, 170, 80);
+                    } catch (e) {
+                        console.error('Chart image error:', e);
+                    }
+                }
+                
+                // ===== PERFORMANCE TABLE =====
+                doc.setFontSize(14);
+                doc.setFont('helvetica', 'bold');
+                doc.text('Performance Overview', 20, 145);
+                
+                const tableData = [];
+                if (entries.length > 0) {
+                    const latest = entries[entries.length - 1];
+                    const previous = entries.length > 1 ? entries[entries.length - 2] : null;
+                    
+                    categories.forEach(cat => {
+                        const current = latest.categoryValues?.[cat.id] || 100;
+                        const prev = previous ? (previous.categoryValues?.[cat.id] || 100) : 100;
+                        const change = current - prev;
+                        const trend = change > 0 ? '↑' : change < 0 ? '↓' : '→';
+                        
+                        tableData.push([
+                            cat.name.de || cat.name,
+                            current.toFixed(1),
+                            `${change >= 0 ? '+' : ''}${change.toFixed(1)}`,
+                            trend
+                        ]);
+                    });
+                }
+                
+                doc.autoTable({
+                    startY: 155,
+                    head: [['Category', 'Current', 'Change', 'Trend']],
+                    body: tableData,
+                    theme: 'grid',
+                    styles: { 
+                        fontSize: 9,
+                        font: 'helvetica'
+                    },
+                    headStyles: { 
+                        fillColor: [255, 107, 53],
+                        textColor: [255, 255, 255],
+                        fontStyle: 'bold'
+                    },
+                    alternateRowStyles: {
+                        fillColor: [245, 245, 245]
+                    }
+                });
+                
+                // ===== FOOTER =====
+                const pageCount = doc.internal.getNumberOfPages();
+                for (let i = 1; i <= pageCount; i++) {
+                    doc.setPage(i);
+                    doc.setFontSize(8);
+                    doc.setTextColor(128, 128, 128);
+                    doc.text(
+                        `Page ${i} of ${pageCount} | Generated: ${new Date().toLocaleString('de-DE')}`,
+                        doc.internal.pageSize.width / 2,
+                        doc.internal.pageSize.height - 10,
+                        { align: 'center' }
+                    );
+                }
+                
+                // ===== SAVE =====
+                const filename = `FYS_Report_${indexName.replace(/\s+/g, '_')}_${Date.now()}.pdf`;
+                doc.save(filename);
+                
+                alert('✅ PDF Report erfolgreich heruntergeladen!');
+                
+            } catch (error) {
+                console.error('PDF generation error:', error);
+                alert('❌ Fehler beim Erstellen des PDFs. Bitte versuche es erneut.');
+            }
+        }
+
+        // ============================================
+        // AUTO 1D TIMEFRAME AFTER CHECK-IN
+        // ============================================
+        
+        // Update saveWizardCheckIn to include auto 1D switch
+        const originalSaveWizardCheckIn = saveWizardCheckIn;
+        saveWizardCheckIn = function() {
+            // Call original function
+            if (typeof originalSaveWizardCheckIn === 'function') {
+                originalSaveWizardCheckIn();
+            }
+            
+            // Set flags for post-checkin behavior
+            sessionStorage.setItem('fysCheckInCompleted', 'true');
+            sessionStorage.setItem('fysAutoTimeframe', '1d');
+            
+            // Navigate to home and apply 1D
+            setTimeout(() => {
+                switchView('home');
+                changeTimeRange('1d');
+                highlightLatestDataPoint();
+            }, 300);
+        };
+
+        function highlightLatestDataPoint() {
+            if (mainChart && mainChart.data.datasets[0]) {
+                const lastIndex = mainChart.data.datasets[0].data.length - 1;
+                if (lastIndex >= 0) {
+                    // Reset all points
+                    mainChart.data.datasets[0].pointRadius = Array(lastIndex + 1).fill(0);
+                    mainChart.data.datasets[0].pointBackgroundColor = Array(lastIndex + 1).fill('transparent');
+                    
+                    // Highlight latest
+                    mainChart.data.datasets[0].pointRadius[lastIndex] = 6;
+                    mainChart.data.datasets[0].pointBackgroundColor[lastIndex] = '#ff6b35';
+                    mainChart.data.datasets[0].pointBorderColor = Array(lastIndex + 1).fill('transparent');
+                    mainChart.data.datasets[0].pointBorderColor[lastIndex] = '#ffffff';
+                    mainChart.data.datasets[0].pointBorderWidth = Array(lastIndex + 1).fill(0);
+                    mainChart.data.datasets[0].pointBorderWidth[lastIndex] = 2;
+                    
+                    mainChart.update();
+                }
+            }
+        }
+
+        // ============================================
+        // DYNAMIC TITLE UPDATES
+        // ============================================
+        
+        // Override openPackDetails to set active pack context
+        const originalOpenPackDetails = openPackDetails;
+        openPackDetails = function(packId) {
+            const pack = performancePacks.find(p => p.id === packId);
+            if (pack) {
+                activePackContext = { id: pack.id, name: pack.name };
+            }
+            
+            if (typeof originalOpenPackDetails === 'function') {
+                originalOpenPackDetails(packId);
+            }
+        };
+
+        // Override closeChartDetails to reset context
+        const originalCloseChartDetails = closeChartDetails;
+        closeChartDetails = function() {
+            activePackContext = null;
+            
+            if (typeof originalCloseChartDetails === 'function') {
+                originalCloseChartDetails();
+            }
+        };
+
     </script>
 </body>
 </html>
