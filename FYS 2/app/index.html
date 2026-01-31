@@ -6,10 +6,10 @@
     <title>FYS - For Yourself</title>
     
     <!-- Favicon -->
-    <link rel="icon" type="image/jpeg" href="./favicon.jpg">
+    <link rel="icon" type="image/jpeg" href="favicon.jpg">
     
     <!-- Apple Touch Icon -->
-    <link rel="apple-touch-icon" href="./apple-touch-icon.jpg">
+    <link rel="apple-touch-icon" href="apple-touch-icon.jpg">
     
     <!-- PWA Manifest -->
     <link rel="manifest" href="./manifest.json">
@@ -219,71 +219,65 @@
         .loading-content {
             text-align: center;
             position: relative;
+            z-index: 1;
         }
 
         .loading-logo {
-            width: 240px;
-            height: 120px;
+            width: 200px;
+            height: 200px;
+            margin: 0 auto 40px auto;
             position: relative;
-            margin: 0 auto;
         }
         
-        /* Professional FYS Loading Logo */
-        .fys-loading-svg {
+        .loading-logo-img {
             width: 100%;
             height: 100%;
-            filter: drop-shadow(0 12px 40px rgba(255, 107, 53, 0.4));
-            animation: logoFloat 4s ease-in-out infinite;
+            object-fit: contain;
+            filter: drop-shadow(0 12px 40px rgba(255, 107, 53, 0.5));
+            animation: logoGlow 3s ease-in-out infinite;
         }
         
-        @keyframes logoFloat {
+        @keyframes logoGlow {
             0%, 100% {
-                transform: translateY(0px);
+                filter: drop-shadow(0 12px 40px rgba(255, 107, 53, 0.4));
             }
             50% {
-                transform: translateY(-10px);
+                filter: drop-shadow(0 16px 50px rgba(255, 107, 53, 0.7));
             }
         }
         
-        /* Animated Arrow in Loading Screen */
-        .loading-arrow-anim path {
-            animation: loadingArrowDraw 2.5s cubic-bezier(0.65, 0, 0.35, 1) infinite;
+        .loading-text {
+            font-size: 28px;
+            font-weight: 700;
+            color: #ff6b35;
+            letter-spacing: 3px;
+            white-space: nowrap;
+            overflow: hidden;
+            border-right: 3px solid #ff6b35;
+            width: 0;
+            animation: typing 1.5s steps(20) 0.3s forwards, blink 0.75s step-end infinite;
         }
         
-        .loading-arrow-anim polyline {
-            animation: loadingArrowFade 2.5s cubic-bezier(0.65, 0, 0.35, 1) infinite;
-        }
-        
-        @keyframes loadingArrowDraw {
-            0% {
-                stroke-dashoffset: 60;
-                opacity: 0;
+        @keyframes typing {
+            from {
+                width: 0;
             }
-            20% {
-                opacity: 1;
-            }
-            60% {
-                stroke-dashoffset: 0;
-            }
-            85%, 100% {
-                stroke-dashoffset: 0;
-                opacity: 0;
+            to {
+                width: 100%;
             }
         }
         
-        @keyframes loadingArrowFade {
-            0%, 50% {
-                opacity: 0;
-                transform: translateY(3px);
+        @keyframes blink {
+            from, to {
+                border-color: transparent;
             }
-            60% {
-                opacity: 1;
-                transform: translateY(0);
+            50% {
+                border-color: #ff6b35;
             }
-            85%, 100% {
-                opacity: 0;
-                transform: translateY(-3px);
-            }
+        }
+        
+        .loading-text-word {
+            display: inline;
         }
 
         /* Legacy loading styles removed */
@@ -3152,33 +3146,24 @@
     </style>
 </head>
 <body>
+    <!-- Loading Screen with Real Logo -->
+    <div class="loading-screen" id="loadingScreen">
+        <div class="loading-content">
+            <div class="loading-logo">
+                <img src="fys-logo.jpg" alt="FYS Logo" class="loading-logo-img">
+            </div>
+            <div class="loading-text">Do it for yourself!</div>
+        </div>
+    </div>
+
     <!-- Premium Loading Screen - Bitpanda Style -->
 
 <div class="app-container">
         <!-- Header with Logo -->
         <div class="header">
             <div class="logo-fys-header">
-                <!-- FYS Logo - Inline SVG -->
-                <svg viewBox="0 0 120 50" xmlns="http://www.w3.org/2000/svg" class="fys-logo-img" style="height: 45px; width: auto;">
-                    <!-- F -->
-                    <path d="M 12 12 L 12 38 M 12 12 L 28 12 M 12 25 L 24 25" 
-                          stroke="#ff6b35" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-                    
-                    <!-- Y -->
-                    <path d="M 35 12 L 43 25 L 43 38 M 51 12 L 43 25" 
-                          stroke="#ff6b35" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-                    
-                    <!-- Arrow diagonal -->
-                    <line x1="38" y1="36" x2="52" y2="14" 
-                          stroke="#ff6b35" stroke-width="3.5" stroke-linecap="round"/>
-                    <polyline points="47,17 52,14 50,19" 
-                              stroke="#ff6b35" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"
-                              fill="none"/>
-                    
-                    <!-- S -->
-                    <path d="M 73 15 C 67 11, 60 13, 59 18 C 58 23, 63 25, 68 27 C 73 29, 78 31, 77 36 C 76 41, 69 43, 63 40" 
-                          stroke="#ff6b35" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-                </svg>
+                <!-- FYS Logo - Actual Image -->
+                <img src="fys-logo.jpg" alt="FYS" class="fys-logo-img">
             </div>
             
             <div class="header-progress-badges">
@@ -7264,6 +7249,14 @@
         // Initialize
         document.addEventListener('DOMContentLoaded', function() {
             console.log('=== PAGE LOAD ===');
+            
+            // Hide loading screen after 3 seconds
+            setTimeout(() => {
+                const loadingScreen = document.getElementById('loadingScreen');
+                if (loadingScreen) {
+                    loadingScreen.classList.add('hidden');
+                }
+            }, 3000);
             
             // Load saved timeRange
             const savedTimeRange = localStorage.getItem('fys_timeRange');
