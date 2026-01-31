@@ -6,13 +6,16 @@
     <title>FYS - For Yourself</title>
     
     <!-- Favicon -->
-    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="icon" type="image/jpeg" href="./favicon.jpg">
     
     <!-- Apple Touch Icon -->
-    <link rel="apple-touch-icon" href="apple-touch-icon.png">
+    <link rel="apple-touch-icon" href="./apple-touch-icon.jpg">
     
     <!-- PWA Manifest -->
-    <link rel="manifest" href="manifest.json">
+    <link rel="manifest" href="./manifest.json">
+    
+    <!-- Theme Color -->
+    <meta name="theme-color" content="#ff6b35">
     
     <!-- iOS Meta Tags -->
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -117,6 +120,21 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+        }
+
+        :root {
+            --bg-primary: #000000;
+            --bg-secondary: #0a0a0a;
+            --bg-card: #111111;
+            --bg-elevated: #1a1a1a;
+            --text-primary: #ffffff;
+            --text-secondary: #6b6b6b;
+            --text-tertiary: #404040;
+            --accent-primary: #ff6b35;
+            --accent-up: #00ff88;
+            --accent-down: #ff3366;
+            --border: #1a1a1a;
+            --border-light: #2a2a2a;
         }
 
         :root[data-theme="dark"] {
@@ -394,53 +412,6 @@
             }
         }
 
-        /* ============================================ */
-        /* HEADER PROGRESS BADGES - COMPACT */
-        /* ============================================ */
-        .header-progress-badges {
-            display: flex;
-            gap: 6px;
-            align-items: center;
-        }
-        
-        .progress-badge-compact {
-            width: 24px;
-            height: 24px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.3s;
-            pointer-events: none; /* Not clickable */
-        }
-        
-        /* Incomplete state */
-        .progress-badge-compact.incomplete {
-            background: rgba(255, 255, 255, 0.1);
-            border: 1.5px solid var(--border);
-        }
-        
-        /* Complete state - ORANGE with glow (SAME in both modes) */
-        .progress-badge-compact.complete {
-            background: var(--accent-primary); /* Orange */
-            border: 1.5px solid var(--accent-primary);
-            box-shadow: 0 0 12px rgba(255, 107, 53, 0.6);
-        }
-        
-        .progress-badge-icon-compact {
-            width: 14px;
-            height: 14px;
-            opacity: 0.4;
-            color: var(--text-secondary);
-        }
-        
-        .progress-badge-compact.complete .progress-badge-icon-compact {
-            color: #000; /* Black icon on orange (BOTH modes) */
-            opacity: 1;
-            stroke-width: 2.5;
-        }
-        
-        /* Adjust app-container for header */
         .app-container {
             max-width: 480px;
             margin: 0 auto;
@@ -456,10 +427,50 @@
             position: sticky;
             top: 0;
             z-index: 100;
-            backdrop-filter: blur(20px);
             display: flex;
             justify-content: space-between;
             align-items: center;
+        }
+
+        /* Progress Badges */
+        .header-progress-badges {
+            display: flex;
+            gap: 6px;
+            align-items: center;
+        }
+        
+        .progress-badge-compact {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+            pointer-events: none;
+        }
+        
+        .progress-badge-compact.incomplete {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1.5px solid var(--border);
+        }
+        
+        .progress-badge-compact.complete {
+            background: var(--accent-primary);
+            border: 1.5px solid var(--accent-primary);
+            box-shadow: 0 0 12px rgba(255, 107, 53, 0.6);
+        }
+        
+        .progress-badge-compact svg {
+            width: 14px;
+            height: 14px;
+            opacity: 0.4;
+            color: var(--text-secondary);
+        }
+        
+        .progress-badge-compact.complete svg {
+            color: #000;
+            opacity: 1;
         }
 
         /* ============================================ */
@@ -470,48 +481,40 @@
             align-items: center;
         }
 
+        .fys-logo-img {
+            height: 45px;
+            width: auto;
+            filter: drop-shadow(0 2px 8px rgba(255, 107, 53, 0.3));
+            transition: transform 0.3s ease;
+        }
+        
+        .fys-logo-img:hover {
+            transform: scale(1.05);
+        }
+
+        /* Keep SVG styles for other uses */
         .fys-logo-svg {
             width: 80px;
             height: 40px;
             filter: drop-shadow(0 2px 8px rgba(255, 107, 53, 0.3));
         }
 
-        /* Subtle Arrow Animation in Logo */
-        .arrow-animated path {
-            animation: arrowDraw 3s ease-in-out infinite;
+        /* Subtle Pulse Animation for Arrow */
+        .arrow-pulse {
+            animation: arrowPulse 2s ease-in-out infinite;
         }
 
-        .arrow-animated polyline {
-            animation: arrowFade 3s ease-in-out infinite;
-        }
-
-        @keyframes arrowDraw {
+        @keyframes arrowPulse {
             0%, 100% {
-                stroke-dashoffset: 30;
-                opacity: 0;
+                opacity: 0.6;
+                transform: translateY(0);
             }
-            30% {
+            50% {
                 opacity: 1;
-            }
-            60% {
-                stroke-dashoffset: 0;
-            }
-            90% {
-                opacity: 0;
+                transform: translateY(-3px);
             }
         }
 
-        @keyframes arrowFade {
-            0%, 50% {
-                opacity: 0;
-            }
-            60% {
-                opacity: 1;
-            }
-            90%, 100% {
-                opacity: 0;
-            }
-        }
 
         .header-date {
             font-size: 13px;
@@ -595,95 +598,34 @@
             justify-content: center;
             gap: 8px;
             margin-bottom: 20px;
-            position: sticky;
-            top: 118px; /* Below header (60px) + check-in (~58px) */
-            z-index: 80;
-            padding: 12px 10px;
-            
-            /* Glassmorphism Premium */
-            background: rgba(17, 17, 17, 0.75);
-            backdrop-filter: blur(40px) saturate(200%) brightness(1.1);
-            -webkit-backdrop-filter: blur(40px) saturate(200%) brightness(1.1);
-            
-            border-radius: 20px;
-            
-            /* Glow Effect */
-            box-shadow: 
-                0 0 0 1px rgba(255, 255, 255, 0.05) inset,
-                0 4px 20px rgba(0, 0, 0, 0.15),
-                0 8px 40px rgba(0, 0, 0, 0.1),
-                inset 0 1px 0 rgba(255, 255, 255, 0.08);
-            
-            border: 1.5px solid rgba(255, 255, 255, 0.08);
-            
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        
-        .time-selector:hover {
-            box-shadow: 
-                0 0 0 1px rgba(255, 255, 255, 0.08) inset,
-                0 6px 24px rgba(0, 0, 0, 0.18),
-                0 12px 48px rgba(0, 0, 0, 0.12),
-                inset 0 1px 0 rgba(255, 255, 255, 0.1);
-            border-color: rgba(255, 255, 255, 0.12);
-        }
-        
-        [data-theme="light"] .time-selector {
-            background: rgba(255, 255, 255, 0.85);
-            backdrop-filter: blur(40px) saturate(200%);
-            -webkit-backdrop-filter: blur(40px) saturate(200%);
-            
-            box-shadow: 
-                0 0 0 1px rgba(0, 0, 0, 0.04) inset,
-                0 4px 20px rgba(0, 0, 0, 0.08),
-                0 8px 40px rgba(0, 0, 0, 0.05),
-                inset 0 1px 0 rgba(255, 255, 255, 0.9);
-            
-            border: 1.5px solid rgba(0, 0, 0, 0.06);
-        }
-        
-        [data-theme="light"] .time-selector:hover {
-            box-shadow: 
-                0 0 0 1px rgba(0, 0, 0, 0.06) inset,
-                0 6px 24px rgba(0, 0, 0, 0.12),
-                0 12px 48px rgba(0, 0, 0, 0.08),
-                inset 0 1px 0 rgba(255, 255, 255, 1);
-            border-color: rgba(0, 0, 0, 0.1);
+            position: relative; /* NEW: Enable stacking */
+            z-index: 10; /* NEW: Above other content */
+            padding: 4px;
+            background: var(--bg-secondary);
+            border-radius: 16px;
         }
 
         .time-btn {
             padding: 8px 16px;
-            background: transparent;
+            background: var(--bg-card);
             border: 1px solid var(--border);
             color: var(--text-secondary);
-            border-radius: 12px;
+            border-radius: 20px;
             cursor: pointer;
             font-size: 13px;
             font-weight: 600;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: all 0.2s;
             font-family: inherit;
             display: flex;
             flex-direction: column;
             align-items: center;
             gap: 2px;
         }
-        
-        .time-btn:hover:not(.active) {
-            background: rgba(255, 107, 53, 0.1);
-            border-color: rgba(255, 107, 53, 0.3);
-            color: var(--accent-primary);
-            transform: translateY(-1px);
-        }
 
         .time-btn.active {
             background: var(--accent-primary);
-            color: #000;
+            color: #000; /* Dark text in dark mode */
             border-color: var(--accent-primary);
-            box-shadow: 
-                0 0 20px rgba(255, 107, 53, 0.4),
-                0 4px 12px rgba(255, 107, 53, 0.3),
-                inset 0 1px 0 rgba(255, 255, 255, 0.2);
-            transform: translateY(-2px);
         }
         
         /* Light Mode: White text on orange */
@@ -691,7 +633,7 @@
             color: #ffffff;
         }
 
-        /* Glassmorphism für alle Cards */
+        /* Solid backgrounds for all Cards */
         .widget-card,
         .main-chart-section,
         .chart-card,
@@ -699,27 +641,9 @@
         .journal-calendar,
         .journal-entry-section,
         .category-chart-card {
-            background: rgba(17, 17, 17, 0.6) !important;
-            backdrop-filter: blur(20px) saturate(180%);
-            -webkit-backdrop-filter: blur(20px) saturate(180%);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3),
-                        inset 0 1px 0 rgba(255, 255, 255, 0.05);
-        }
-
-        [data-theme="light"] .widget-card,
-        [data-theme="light"] .main-chart-section,
-        [data-theme="light"] .chart-card,
-        [data-theme="light"] .stock-list-container,
-        [data-theme="light"] .journal-calendar,
-        [data-theme="light"] .journal-entry-section,
-        [data-theme="light"] .category-chart-card {
-            background: rgba(255, 255, 255, 0.7) !important;
-            backdrop-filter: blur(20px) saturate(180%);
-            -webkit-backdrop-filter: blur(20px) saturate(180%);
-            border: 1px solid rgba(0, 0, 0, 0.06);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08),
-                        inset 0 1px 0 rgba(255, 255, 255, 0.9);
+            background: var(--bg-card) !important;
+            border: 1px solid var(--border);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
         }
 
         /* Widget Cards */
@@ -1420,6 +1344,89 @@
             display: flex;
         }
 
+        /* Confirm Modal */
+        .confirm-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.85);
+            z-index: 200;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .confirm-modal.active {
+            display: flex;
+        }
+
+        .confirm-dialog {
+            background: var(--bg-card);
+            border-radius: 20px;
+            padding: 32px 24px;
+            max-width: 380px;
+            width: 100%;
+            border: 1px solid var(--border);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+        }
+
+        .confirm-icon {
+            font-size: 48px;
+            text-align: center;
+            margin-bottom: 16px;
+        }
+
+        .confirm-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--text-primary);
+            text-align: center;
+            margin-bottom: 12px;
+        }
+
+        .confirm-message {
+            font-size: 14px;
+            color: var(--text-secondary);
+            text-align: center;
+            line-height: 1.6;
+            margin-bottom: 24px;
+        }
+
+        .confirm-buttons {
+            display: flex;
+            gap: 12px;
+        }
+
+        .confirm-btn {
+            flex: 1;
+            padding: 14px;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            font-family: inherit;
+            transition: all 0.2s;
+        }
+
+        .confirm-btn-cancel {
+            background: var(--bg-elevated);
+            color: var(--text-primary);
+            border: 1px solid var(--border);
+        }
+
+        .confirm-btn-confirm {
+            background: #ff3366;
+            color: #fff;
+        }
+
+        .confirm-btn:active {
+            transform: scale(0.98);
+        }
+
         .journal-header {
             padding: 20px;
             border-bottom: 1px solid var(--border);
@@ -1950,9 +1957,6 @@
 
         .view-section {
             display: none;
-            overflow-y: auto; /* Enable scrolling */
-            height: 100vh; /* Full viewport height */
-            padding-bottom: 120px; /* Space for bottom nav */
         }
 
         .view-section.active {
@@ -2411,36 +2415,6 @@
             display: flex;
             align-items: center;
             gap: 12px;
-            flex: 1;
-        }
-        
-        .review-item-right-wizard {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-        
-        .review-value-wizard {
-            font-size: 18px;
-            font-weight: 700;
-            color: var(--accent-primary);
-        }
-        
-        .review-edit-btn {
-            width: 32px;
-            height: 32px;
-            border-radius: 8px;
-            background: rgba(255, 107, 53, 0.1);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--accent-primary);
-            transition: all 0.2s;
-        }
-        
-        .review-item-wizard:hover .review-edit-btn {
-            background: rgba(255, 107, 53, 0.2);
-            transform: scale(1.1);
         }
 
         .review-icon-wizard {
@@ -2473,6 +2447,11 @@
             color: var(--text-secondary);
         }
 
+        .review-value-wizard {
+            font-size: 24px;
+            font-weight: 800;
+            color: var(--accent-primary);
+        }
 
         .wizard-actions {
             padding: 20px 24px calc(80px + 20px); /* Bottom nav height + padding */
@@ -2742,12 +2721,6 @@
             background: var(--bg-elevated);
             border-radius: 12px;
         }
-        
-        .tool-icon svg {
-            width: 24px;
-            height: 24px;
-            stroke: var(--text-primary);
-        }
 
         .tool-info {
             flex: 1;
@@ -2870,75 +2843,64 @@
         }
 
         /* ============================================ */
-        /* DAILY CHECK-IN WIDGET - PREMIUM GLOW DESIGN */
+        /* DAILY CHECK-IN WIDGET */
         /* ============================================ */
         .checkin-widget {
-            position: sticky;
-            top: 60px;
-            z-index: 85;
+            position: sticky; /* Sticky on scroll */
+            top: 0; /* Stick to top */
+            z-index: 50; /* Above content, below modals */
             
-            /* Premium Gradient Background */
-            background: linear-gradient(135deg, 
-                rgba(255, 107, 53, 0.95) 0%, 
-                rgba(255, 143, 95, 0.92) 50%,
-                rgba(255, 107, 53, 0.95) 100%
-            );
-            backdrop-filter: blur(40px) saturate(200%);
-            -webkit-backdrop-filter: blur(40px) saturate(200%);
+            background: rgba(255, 107, 53, 0.95); /* Semi-transparent for glass effect */
+            backdrop-filter: blur(20px) saturate(180%); /* Glassmorphism */
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
             
-            border-radius: 20px;
-            padding: 14px 18px;
-            margin: 10px 0;
+            border-radius: 16px;
+            padding: 20px;
+            margin: 20px 0 16px 0; /* Top margin for breathing room */
             cursor: pointer;
             
-            /* Multi-Layer Glow Effect */
-            box-shadow: 
-                0 0 0 1px rgba(255, 107, 53, 0.4) inset,
-                0 4px 20px rgba(255, 107, 53, 0.4),
-                0 8px 40px rgba(255, 107, 53, 0.25),
-                0 16px 60px rgba(255, 107, 53, 0.15),
-                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+            box-shadow: 0 4px 12px rgba(255, 107, 53, 0.2),
+                        0 8px 24px rgba(255, 107, 53, 0.1);
             
-            border: 1.5px solid rgba(255, 255, 255, 0.15);
-            
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            
-            /* Subtle animation */
-            animation: checkin-pulse 3s ease-in-out infinite;
-        }
-        
-        @keyframes checkin-pulse {
-            0%, 100% {
-                box-shadow: 
-                    0 0 0 1px rgba(255, 107, 53, 0.4) inset,
-                    0 4px 20px rgba(255, 107, 53, 0.4),
-                    0 8px 40px rgba(255, 107, 53, 0.25),
-                    0 16px 60px rgba(255, 107, 53, 0.15),
-                    inset 0 1px 0 rgba(255, 255, 255, 0.2);
-            }
-            50% {
-                box-shadow: 
-                    0 0 0 1px rgba(255, 107, 53, 0.5) inset,
-                    0 6px 24px rgba(255, 107, 53, 0.5),
-                    0 12px 48px rgba(255, 107, 53, 0.3),
-                    0 20px 70px rgba(255, 107, 53, 0.2),
-                    inset 0 1px 0 rgba(255, 255, 255, 0.25);
-            }
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .checkin-widget:hover {
-            transform: translateY(-3px) scale(1.01);
-            box-shadow: 
-                0 0 0 1px rgba(255, 107, 53, 0.6) inset,
-                0 8px 28px rgba(255, 107, 53, 0.55),
-                0 16px 56px rgba(255, 107, 53, 0.35),
-                0 24px 80px rgba(255, 107, 53, 0.25),
-                inset 0 1px 0 rgba(255, 255, 255, 0.3);
-            border-color: rgba(255, 255, 255, 0.25);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(255, 107, 53, 0.3),
+                        0 12px 36px rgba(255, 107, 53, 0.15);
         }
         
-        .checkin-widget:active {
-            transform: translateY(-1px) scale(0.99);
+        /* Compact mode when sticky (smaller) */
+        .checkin-widget.is-sticky {
+            padding: 14px 18px; /* Slightly bigger for better look */
+            margin: 0; /* No margin when sticky */
+            border-radius: 16px; /* Fully rounded, not cut off */
+            box-shadow: 0 8px 24px rgba(255, 107, 53, 0.35),
+                        0 16px 48px rgba(255, 107, 53, 0.2);
+            backdrop-filter: blur(30px) saturate(200%);
+            -webkit-backdrop-filter: blur(30px) saturate(200%);
+        }
+        
+        /* Hide subtitle when sticky */
+        .checkin-widget.is-sticky .checkin-widget-subtitle {
+            display: none;
+        }
+        
+        /* Smaller icon when sticky */
+        .checkin-widget.is-sticky .checkin-widget-icon {
+            width: 40px; /* Slightly bigger: 36 → 40 */
+            height: 40px;
+        }
+        
+        .checkin-widget.is-sticky .checkin-widget-icon svg {
+            width: 20px; /* Slightly bigger: 18 → 20 */
+            height: 20px;
+        }
+        
+        /* Smaller title when sticky */
+        .checkin-widget.is-sticky .checkin-widget-title {
+            font-size: 16px; /* Slightly bigger: 15 → 16 */
         }
 
         .checkin-widget-header {
@@ -3191,76 +3153,43 @@
 </head>
 <body>
     <!-- Premium Loading Screen - Bitpanda Style -->
-    <div id="loadingScreen">
-        <div class="loading-logo-container">
-            <svg viewBox="0 0 240 120" class="loading-logo">
-                <!-- F -->
-                <path d="M 20 20 L 20 100 M 20 20 L 60 20 M 20 60 L 50 60" 
-                      stroke="url(#gradientLoading)" stroke-width="8" stroke-linecap="round" fill="none"/>
-                
-                <!-- Y with Arrow -->
-                <path d="M 80 20 L 100 60 L 100 100 M 120 20 L 100 60" 
-                      stroke="url(#gradientLoading)" stroke-width="8" stroke-linecap="round" fill="none"/>
-                
-                <!-- Arrow in Y -->
-                <path d="M 100 85 L 100 45 L 95 50 M 100 45 L 105 50" 
-                      stroke="#ff8f5f" stroke-width="4" stroke-linecap="round" fill="none"/>
-                
-                <!-- S -->
-                <path d="M 170 30 Q 150 20, 140 30 T 150 50 Q 160 60, 170 70 Q 180 80, 170 90 Q 160 100, 140 90" 
-                      stroke="url(#gradientLoading)" stroke-width="8" stroke-linecap="round" fill="none"/>
-                
-                <!-- Gradient -->
-                <defs>
-                    <linearGradient id="gradientLoading" x1="0%" y1="0%" x2="100%" y2="0%">
-                        <stop offset="0%" style="stop-color:#ff6b35;stop-opacity:1" />
-                        <stop offset="100%" style="stop-color:#ffb088;stop-opacity:1" />
-                    </linearGradient>
-                </defs>
-            </svg>
-        </div>
-    </div>
 
 <div class="app-container">
         <!-- Header with Logo -->
         <div class="header">
             <div class="logo-fys-header">
-                <!-- FYS Logo SVG - Professionell -->
-                <svg viewBox="0 0 120 60" class="fys-logo-svg">
+                <!-- FYS Logo - Inline SVG -->
+                <svg viewBox="0 0 120 50" xmlns="http://www.w3.org/2000/svg" class="fys-logo-img" style="height: 45px; width: auto;">
                     <!-- F -->
-                    <path d="M 10 10 L 10 50 M 10 10 L 30 10 M 10 30 L 25 30" 
-                          stroke="#ff6b35" stroke-width="4" stroke-linecap="round" fill="none"/>
+                    <path d="M 12 12 L 12 38 M 12 12 L 28 12 M 12 25 L 24 25" 
+                          stroke="#ff6b35" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
                     
-                    <!-- Y mit Pfeil -->
-                    <path d="M 40 10 L 50 30 L 50 50 M 60 10 L 50 30" 
-                          stroke="#ff6b35" stroke-width="4" stroke-linecap="round" fill="none"/>
+                    <!-- Y -->
+                    <path d="M 35 12 L 43 25 L 43 38 M 51 12 L 43 25" 
+                          stroke="#ff6b35" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
                     
-                    <!-- Pfeil im Y -->
-                    <g class="arrow-animated">
-                        <path d="M 50 45 L 50 20" 
-                              stroke="#ff8f5f" stroke-width="3" stroke-linecap="round" 
-                              stroke-dasharray="30" stroke-dashoffset="30" fill="none"/>
-                        <polyline points="45,25 50,20 55,25" 
-                                  stroke="#ff8f5f" stroke-width="3" stroke-linecap="round" 
-                                  fill="none" opacity="0"/>
-                    </g>
+                    <!-- Arrow diagonal -->
+                    <line x1="38" y1="36" x2="52" y2="14" 
+                          stroke="#ff6b35" stroke-width="3.5" stroke-linecap="round"/>
+                    <polyline points="47,17 52,14 50,19" 
+                              stroke="#ff6b35" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"
+                              fill="none"/>
                     
                     <!-- S -->
-                    <path d="M 85 15 Q 75 10, 70 15 T 75 25 Q 80 30, 85 35 Q 90 40, 85 45 Q 80 50, 70 45" 
-                          stroke="#ff6b35" stroke-width="4" stroke-linecap="round" fill="none"/>
+                    <path d="M 73 15 C 67 11, 60 13, 59 18 C 58 23, 63 25, 68 27 C 73 29, 78 31, 77 36 C 76 41, 69 43, 63 40" 
+                          stroke="#ff6b35" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
                 </svg>
             </div>
             
-            <!-- Daily Progress Badges (between logo and date) -->
             <div class="header-progress-badges">
                 <div class="progress-badge-compact incomplete" id="checkinBadge">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="progress-badge-icon-compact">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                         <polyline points="22 7 13.5 15.5 8.5 10.5 2 17"></polyline>
                         <polyline points="16 7 22 7 22 13"></polyline>
                     </svg>
                 </div>
                 <div class="progress-badge-compact incomplete" id="journalBadge">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="progress-badge-icon-compact">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
                         <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
                     </svg>
@@ -3279,9 +3208,9 @@
                 <div class="checkin-widget" onclick="switchView('checkin')">
                     <div class="checkin-widget-header">
                         <div class="checkin-widget-icon">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                                <polyline points="22 7 13.5 15.5 8.5 10.5 2 17"></polyline>
-                                <polyline points="16 7 22 7 22 13"></polyline>
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                                <polyline points="22 4 12 14.01 9 11.01"></polyline>
                             </svg>
                         </div>
                         <div class="checkin-widget-info">
@@ -3295,7 +3224,7 @@
                 <div class="time-selector">
                     <button class="time-btn" onclick="changeTimeRange('1d')" data-range="1d">1D</button>
                     <button class="time-btn" onclick="changeTimeRange('7d')" data-range="7d">7D</button>
-                    <button class="time-btn active" onclick="changeTimeRange('1m')" data-range="1m">1M</button>
+                    <button class="time-btn" onclick="changeTimeRange('1m')" data-range="1m">1M</button>
                     <button class="time-btn" onclick="changeTimeRange('6m')" data-range="6m">6M</button>
                     <button class="time-btn" onclick="changeTimeRange('1y')" data-range="1y">1Y</button>
                     <button class="time-btn" onclick="changeTimeRange('all')" data-range="all">MAX</button>
@@ -3343,6 +3272,29 @@
                     <div class="stock-list-header">
                         <div class="stock-list-title" id="categoriesOverview">Kategorien-Übersicht</div>
                     </div>
+                    
+                    <!-- Time Selector for Categories -->
+                    <div class="time-selector" style="margin: 16px 0;">
+                        <button class="time-btn" onclick="changeTimeRange('1d')" data-range="1d">
+                            <span>1D</span>
+                        </button>
+                        <button class="time-btn" onclick="changeTimeRange('7d')" data-range="7d">
+                            <span>7D</span>
+                        </button>
+                        <button class="time-btn" onclick="changeTimeRange('1m')" data-range="1m">
+                            <span>1M</span>
+                        </button>
+                        <button class="time-btn" onclick="changeTimeRange('6m')" data-range="6m">
+                            <span>6M</span>
+                        </button>
+                        <button class="time-btn" onclick="changeTimeRange('1y')" data-range="1y">
+                            <span>1Y</span>
+                        </button>
+                        <button class="time-btn" onclick="changeTimeRange('all')" data-range="all">
+                            <span>MAX</span>
+                        </button>
+                    </div>
+                    
                     <div id="stockListItems"></div>
                 </div>
 
@@ -3476,64 +3428,10 @@
                     </div>
                 </div>
 
-                <!-- Pro Toggle with Benefits -->
+                <!-- Pro Toggle -->
                 <div class="setting-item" style="text-align: center;">
                     <div class="setting-label">🌟 FYS Pro</div>
-                    <div class="setting-description" id="proStatusDesc">Unlock your full potential</div>
-                    
-                    <!-- Pro Benefits Showcase (shown when not Pro) -->
-                    <div id="proBenefitsShowcase" style="display: none; margin: 20px 0; text-align: left;">
-                        <div style="background: rgba(255, 107, 53, 0.1); border: 1px solid rgba(255, 107, 53, 0.3); border-radius: 16px; padding: 20px;">
-                            <div style="font-size: 16px; font-weight: 700; color: var(--accent-primary); margin-bottom: 16px; text-align: center;">
-                                ✨ Was du mit FYS Pro bekommst:
-                            </div>
-                            
-                            <!-- Performance Packs -->
-                            <div style="margin-bottom: 14px; display: flex; align-items: flex-start; gap: 12px;">
-                                <div style="font-size: 20px; margin-top: 2px;">📊</div>
-                                <div>
-                                    <div style="font-weight: 600; margin-bottom: 4px;">Performance Packs</div>
-                                    <div style="font-size: 13px; color: var(--text-secondary); line-height: 1.4;">
-                                        Finance, Health & Entrepreneurship Tracking mit spezialisierten Kategorien
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <!-- Advanced Tools -->
-                            <div style="margin-bottom: 14px; display: flex; align-items: flex-start; gap: 12px;">
-                                <div style="font-size: 20px; margin-top: 2px;">🛠️</div>
-                                <div>
-                                    <div style="font-weight: 600; margin-bottom: 4px;">Premium Tools</div>
-                                    <div style="font-size: 13px; color: var(--text-secondary); line-height: 1.4;">
-                                        Performance Reports, Tagebuch Export, Task Manager & mehr
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <!-- AI Features -->
-                            <div style="margin-bottom: 14px; display: flex; align-items: flex-start; gap: 12px;">
-                                <div style="font-size: 20px; margin-top: 2px;">🤖</div>
-                                <div>
-                                    <div style="font-weight: 600; margin-bottom: 4px;">AI-Powered Features</div>
-                                    <div style="font-size: 13px; color: var(--text-secondary); line-height: 1.4;">
-                                        Personalisierte Insights, Trend-Analyse & Smart Recommendations
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <!-- Advanced Analytics -->
-                            <div style="display: flex; align-items: flex-start; gap: 12px;">
-                                <div style="font-size: 20px; margin-top: 2px;">📈</div>
-                                <div>
-                                    <div style="font-weight: 600; margin-bottom: 4px;">Advanced Analytics</div>
-                                    <div style="font-size: 13px; color: var(--text-secondary); line-height: 1.4;">
-                                        Detaillierte Charts, Custom Timeframes & Correlation Analysis
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
+                    <div class="setting-description" id="proStatusDesc">Performance Packs & Advanced Features</div>
                     <button onclick="togglePro()" id="proToggleBtn" style="
                         width: 100%;
                         margin-top: 16px;
@@ -3548,6 +3446,26 @@
                         font-family: inherit;
                         transition: all 0.3s;
                     ">Activate FYS Pro</button>
+                </div>
+
+                <!-- Reset Data -->
+                <div class="setting-item" style="text-align: center;">
+                    <div class="setting-label">🔄 Daten zurücksetzen</div>
+                    <div class="setting-description">Setze alle Werte auf 100 und starte neu ab heute</div>
+                    <button onclick="resetData()" style="
+                        width: 100%;
+                        margin-top: 16px;
+                        padding: 14px;
+                        background: var(--bg-card);
+                        border: 1px solid var(--border);
+                        border-radius: 12px;
+                        color: var(--text-primary);
+                        font-size: 15px;
+                        font-weight: 600;
+                        cursor: pointer;
+                        font-family: inherit;
+                        transition: all 0.3s;
+                    ">Neu starten (alle Daten löschen)</button>
                 </div>
 
                 <!-- Performance Packs Management -->
@@ -3570,12 +3488,7 @@
                 
                 <!-- Tagebuch (Journal) -->
                 <div class="tool-card" onclick="openJournal()">
-                    <div class="tool-icon">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 24px; height: 24px;">
-                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
-                            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
-                        </svg>
-                    </div>
+                    <div class="tool-icon">📔</div>
                     <div class="tool-info">
                         <div class="tool-title">Tagebuch</div>
                         <div class="tool-description">Dokumentiere deine Gedanken</div>
@@ -3609,7 +3522,7 @@
                         <div class="tool-description">Verfolge deine Erfolge</div>
                     </div>
                 </div>
-                
+
                 <!-- FEATURES SECTION -->
                 <div class="section-title" style="margin-top: 32px;">✨ Features</div>
                 
@@ -3734,7 +3647,7 @@
             <div class="category-time-selector">
                 <button class="category-time-btn" onclick="changeCategoryTimeRange('1d')" data-cat-range="1d">1D</button>
                 <button class="category-time-btn" onclick="changeCategoryTimeRange('7d')" data-cat-range="7d">7D</button>
-                <button class="category-time-btn active" onclick="changeCategoryTimeRange('1m')" data-cat-range="1m">1M</button>
+                <button class="category-time-btn" onclick="changeCategoryTimeRange('1m')" data-cat-range="1m">1M</button>
                 <button class="category-time-btn" onclick="changeCategoryTimeRange('6m')" data-cat-range="6m">6M</button>
                 <button class="category-time-btn" onclick="changeCategoryTimeRange('1y')" data-cat-range="1y">1Y</button>
                 <button class="category-time-btn" onclick="changeCategoryTimeRange('all')" data-cat-range="all">MAX</button>
@@ -3767,6 +3680,19 @@
                 <div class="journal-entry-date" id="journalEntryDate"></div>
                 <textarea class="journal-textarea" id="journalTextarea" placeholder="Schreibe deine Gedanken..."></textarea>
                 <button class="journal-save-btn" onclick="saveJournalEntry()">Speichern</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Confirm Modal -->
+    <div class="confirm-modal" id="confirmModal">
+        <div class="confirm-dialog">
+            <div class="confirm-icon" id="confirmIcon">⚠️</div>
+            <div class="confirm-title" id="confirmTitle">Bestätigung erforderlich</div>
+            <div class="confirm-message" id="confirmMessage">Sind Sie sicher?</div>
+            <div class="confirm-buttons">
+                <button class="confirm-btn confirm-btn-cancel" onclick="closeConfirmModal()">Abbrechen</button>
+                <button class="confirm-btn confirm-btn-confirm" id="confirmButton" onclick="confirmAction()">Bestätigen</button>
             </div>
         </div>
     </div>
@@ -3976,20 +3902,9 @@
         let isPro = localStorage.getItem('fysPro') === 'true'; // Pro status
         let performanceData = JSON.parse(localStorage.getItem('fysData')) || { entries: [], activePacks: [] };
         
-        // IMPORTANT: Always load activePacks from dedicated storage (not from fysData)
-        // This ensures activePacks are always up-to-date
-        const initialActivePacks = localStorage.getItem('fys_activePacks');
-        if (initialActivePacks) {
-            try {
-                performanceData.activePacks = JSON.parse(initialActivePacks);
-                console.log('🎯 Init: Loaded activePacks from fys_activePacks:', performanceData.activePacks);
-            } catch (e) {
-                performanceData.activePacks = [];
-                console.error('Init: Error loading activePacks:', e);
-            }
-        } else {
+        // Ensure activePacks exists in loaded data
+        if (!performanceData.activePacks) {
             performanceData.activePacks = [];
-            console.log('Init: No activePacks in fys_activePacks, using empty array');
         }
         
         let mainChart = null;
@@ -4014,11 +3929,11 @@
                 icon: '💰',
                 description: 'Track your financial health and wealth building',
                 categories: [
-                    { id: 'savings', name: 'Savings', emoji: '💵', color: '#2ecc71', isPro: true },
-                    { id: 'investments', name: 'Investments', emoji: '📈', color: '#3498db', isPro: true },
-                    { id: 'budget', name: 'Budget Discipline', emoji: '🎯', color: '#e74c3c', isPro: true },
-                    { id: 'income', name: 'Income Growth', emoji: '💼', color: '#f39c12', isPro: true },
-                    { id: 'financial_education', name: 'Financial Education', emoji: '📚', color: '#9b59b6', isPro: true }
+                    { id: 'savings', name: { de: 'Ersparnisse', en: 'Savings', es: 'Ahorros' }, emoji: '💵', color: '#2ecc71', isPro: true },
+                    { id: 'investments', name: { de: 'Investitionen', en: 'Investments', es: 'Inversiones' }, emoji: '📈', color: '#3498db', isPro: true },
+                    { id: 'budget', name: { de: 'Budget-Disziplin', en: 'Budget Discipline', es: 'Disciplina Presupuestaria' }, emoji: '🎯', color: '#e74c3c', isPro: true },
+                    { id: 'income', name: { de: 'Einkommenswachstum', en: 'Income Growth', es: 'Crecimiento de Ingresos' }, emoji: '💼', color: '#f39c12', isPro: true },
+                    { id: 'financial_education', name: { de: 'Finanzbildung', en: 'Financial Education', es: 'Educación Financiera' }, emoji: '📚', color: '#9b59b6', isPro: true }
                 ]
             },
             {
@@ -4027,10 +3942,10 @@
                 icon: '🏥',
                 description: 'Monitor your physical and mental wellness',
                 categories: [
-                    { id: 'cardio', name: 'Cardio Fitness', emoji: '🏃', color: '#e67e22', isPro: true },
-                    { id: 'strength', name: 'Strength Training', emoji: '💪', color: '#c0392b', isPro: true },
-                    { id: 'flexibility', name: 'Flexibility', emoji: '🧘', color: '#1abc9c', isPro: true },
-                    { id: 'mental_health', name: 'Mental Health', emoji: '🧠', color: '#8e44ad', isPro: true }
+                    { id: 'cardio', name: { de: 'Ausdauer', en: 'Cardio Fitness', es: 'Fitness Cardiovascular' }, emoji: '🏃', color: '#e67e22', isPro: true },
+                    { id: 'strength', name: { de: 'Krafttraining', en: 'Strength Training', es: 'Entrenamiento de Fuerza' }, emoji: '💪', color: '#c0392b', isPro: true },
+                    { id: 'flexibility', name: { de: 'Flexibilität', en: 'Flexibility', es: 'Flexibilidad' }, emoji: '🧘', color: '#1abc9c', isPro: true },
+                    { id: 'mental_health', name: { de: 'Mentale Gesundheit', en: 'Mental Health', es: 'Salud Mental' }, emoji: '🧠', color: '#8e44ad', isPro: true }
                 ]
             },
             {
@@ -4039,11 +3954,11 @@
                 icon: '🚀',
                 description: 'Build and scale your business ventures',
                 categories: [
-                    { id: 'networking', name: 'Networking', emoji: '🤝', color: '#16a085', isPro: true },
-                    { id: 'product_development', name: 'Product Development', emoji: '🛠️', color: '#2980b9', isPro: true },
-                    { id: 'marketing', name: 'Marketing', emoji: '📣', color: '#d35400', isPro: true },
-                    { id: 'sales', name: 'Sales', emoji: '💸', color: '#27ae60', isPro: true },
-                    { id: 'leadership', name: 'Leadership', emoji: '👑', color: '#8e44ad', isPro: true }
+                    { id: 'networking', name: { de: 'Networking', en: 'Networking', es: 'Networking' }, emoji: '🤝', color: '#16a085', isPro: true },
+                    { id: 'product_development', name: { de: 'Produktentwicklung', en: 'Product Development', es: 'Desarrollo de Producto' }, emoji: '🛠️', color: '#2980b9', isPro: true },
+                    { id: 'marketing', name: { de: 'Marketing', en: 'Marketing', es: 'Marketing' }, emoji: '📣', color: '#d35400', isPro: true },
+                    { id: 'sales', name: { de: 'Vertrieb', en: 'Sales', es: 'Ventas' }, emoji: '💸', color: '#27ae60', isPro: true },
+                    { id: 'leadership', name: { de: 'Führung', en: 'Leadership', es: 'Liderazgo' }, emoji: '👑', color: '#8e44ad', isPro: true }
                 ]
             }
         ];
@@ -4523,12 +4438,23 @@
             // Save to localStorage
             localStorage.setItem('fys_timeRange', range);
             
+            // Update all time buttons
             document.querySelectorAll('.time-btn').forEach(btn => btn.classList.remove('active'));
-            const targetBtn = document.querySelector(`[data-range="${range}"]`);
+            const targetBtn = document.querySelector(`.time-btn[data-range="${range}"]`);
             if (targetBtn) targetBtn.classList.add('active');
             
             updateMainChart();
-            createStockList(); // Update category list
+            
+            // Reload the correct stock list based on what's currently displayed
+            if (currentStockListType === 'fys') {
+                createStockList(); // FYS categories
+            } else {
+                // Performance Pack categories
+                const pack = performancePacks.find(p => p.id === currentStockListType);
+                if (pack) {
+                    createPackStockList(pack);
+                }
+            }
             
             // Update Performance Pack charts (synchronized!)
             if (isPro && performanceData.activePacks && performanceData.activePacks.length > 0) {
@@ -4548,6 +4474,14 @@
             // Öffne View auch wenn keine Daten vorhanden (für Demo)
             document.getElementById('homeView').classList.remove('active');
             document.getElementById('chartDetailsView').classList.add('active');
+            
+            // Activate correct time button in categories overview
+            document.querySelectorAll('.time-btn').forEach(btn => btn.classList.remove('active'));
+            const activeBtn = document.querySelector(`.time-btn[data-range="${currentTimeRange}"]`);
+            if (activeBtn) {
+                activeBtn.classList.add('active');
+                console.log('✓ Activated time button in categories overview:', currentTimeRange);
+            }
             
             // Update FYS Index Summary
             const entries = getFilteredEntries();
@@ -4601,6 +4535,8 @@
 
         // Create Flatex-Style Stock List
         function createStockList() {
+            currentStockListType = 'fys'; // Mark that FYS categories are displayed
+            
             const t = translations[currentLang];
             const container = document.getElementById('stockListItems');
             
@@ -4630,6 +4566,7 @@
                 categories.forEach(cat => {
                     const stockItem = document.createElement('div');
                     stockItem.className = 'stock-item';
+                    stockItem.onclick = () => showCategoryDetail(cat.id);
                     
                     stockItem.innerHTML = `
                         <div class="stock-item-left">
@@ -4638,7 +4575,6 @@
                             </div>
                             <div class="stock-info">
                                 <div class="stock-name">${t.categories[cat.id]}</div>
-                                <div class="stock-symbol">${cat.id.toUpperCase()}</div>
                             </div>
                         </div>
                         <div class="stock-item-right">
@@ -4681,7 +4617,6 @@
                         </div>
                         <div class="stock-info">
                             <div class="stock-name">${t.categories[cat.id]}</div>
-                            <div class="stock-symbol">${cat.id.toUpperCase()}</div>
                         </div>
                     </div>
                     <div class="stock-item-right">
@@ -4698,7 +4633,31 @@
         }
 
         // Create Stock List for Performance Pack Categories (1:1 copy)
+        function createPackStockList(pack) {
+            currentStockListType = pack.id; // Mark which pack is displayed
+            
+            const container = document.getElementById('stockListItems');
+            const categoriesOverview = document.getElementById('categoriesOverview');
+            
+            if (!container) {
+                console.error('stockListItems container not found!');
+                return;
+            }
+            
+            // Update title
+            if (categoriesOverview) {
+                categoriesOverview.textContent = `${pack.name} Kategorien`;
+            }
+            
+            container.innerHTML = '';
 
+            const entries = getFilteredEntries().filter(e => 
+                e.packIndices && e.packIndices[pack.id] !== undefined
+            );
+
+            console.log('createPackStockList entries:', entries.length);
+
+            // SVG Icons for pack categories (same as in settings)
             const packCategoryIcons = {
                 // Finance Pack
                 savings: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path></svg>`,
@@ -4706,11 +4665,13 @@
                 budget: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"></path><path d="M12 18V6"></path></svg>`,
                 income: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg>`,
                 financial_education: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>`,
+                
                 // Health Pack
                 cardio: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"></path></svg>`,
                 strength: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6.5 6.5v11M17.5 6.5v11M3 9.5h3M18 9.5h3M3 14.5h3M18 14.5h3M9 3v3M15 3v3M9 18v3M15 18v3"></path></svg>`,
                 flexibility: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"></path></svg>`,
                 mental_health: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 1 1 7.072 0l-.548.547A3.374 3.374 0 0 0 14 18.469V19a2 2 0 1 1-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path></svg>`,
+                
                 // Entrepreneurship Pack
                 networking: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>`,
                 product_development: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path></svg>`,
@@ -4719,88 +4680,90 @@
                 leadership: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 20h20M5 20V9l7-5 7 5v11M9 20v-6h6v6"></path></svg>`
             };
 
-            // Update Header (use existing modal elements)
-            const iconContainer = document.getElementById('categoryDetailIcon');
-            iconContainer.style.background = `${category.color}20`;
-            iconContainer.style.color = category.color;
-            iconContainer.innerHTML = packCategoryIcons[categoryId] || category.emoji || '📊';
-            
-            document.getElementById('categoryDetailName').textContent = category.name;
-            document.getElementById('categoryDetailSymbol').textContent = categoryId.toUpperCase();
-
-            // Update Price (use pack values, not categoryValues)
-            updatePackCategoryDetailData(packId, categoryId);
-
-            // Show Modal
-            document.getElementById('categoryDetailModal').classList.add('active');
-
-            // Initialize Chart
-            if (!categoryDetailChart) {
-                initCategoryDetailChart();
-            }
-            updatePackCategoryDetailChart(packId, categoryId);
-        }
-
-        // Update pack category data display
-        function updatePackCategoryDetailData(packId, categoryId) {
-            const pack = performancePacks.find(p => p.id === packId);
-            if (!pack) return;
-
-            const entries = getCategoryFilteredEntries();
+            // If no data, show demo values
             if (entries.length === 0) {
-                document.getElementById('categoryDetailPrice').textContent = '5.0';
-                document.getElementById('categoryDetailChange').innerHTML = '<span>—</span> 0.0%';
-                document.getElementById('categoryDetailChange').className = 'category-detail-change neutral';
+                pack.categories.forEach(cat => {
+                    const stockItem = document.createElement('div');
+                    stockItem.className = 'stock-item';
+                    stockItem.onclick = () => openPackCategoryDetail(pack.id, cat.id);
+                    stockItem.style.cursor = 'pointer';
+                    
+                    stockItem.innerHTML = `
+                        <div class="stock-item-left">
+                            <div class="stock-icon" style="background: ${cat.color}20; color: ${cat.color};">
+                                ${packCategoryIcons[cat.id] || cat.emoji}
+                            </div>
+                            <div class="stock-info">
+                                <div class="stock-name">${cat.name[currentLang] || cat.name.en}</div>
+                            </div>
+                        </div>
+                        <div class="stock-item-right">
+                            <div class="stock-price">5.0</div>
+                            <div class="stock-change neutral">
+                                <span class="stock-arrow">—</span>
+                                0.0%
+                            </div>
+                        </div>
+                    `;
+                    
+                    container.appendChild(stockItem);
+                });
                 return;
             }
 
             const latest = entries[entries.length - 1];
             const first = entries[0];
-            
-            // Use raw values (1-10 scale) for pack categories
-            const latestValue = latest.values ? latest.values[categoryId] : 5;
-            const firstValue = first.values ? first.values[categoryId] : 5;
-            const change = latestValue - firstValue;
-            const changePercent = firstValue !== 0 ? ((change / firstValue) * 100).toFixed(1) : '0.0';
-            
-            const priceEl = document.getElementById('categoryDetailPrice');
-            const changeEl = document.getElementById('categoryDetailChange');
-            
-            if (priceEl) priceEl.textContent = latestValue.toFixed(1);
-            
-            if (changeEl) {
+
+            pack.categories.forEach(cat => {
+                const latestValue = latest.values ? latest.values[cat.id] : 5;
+                const firstValue = first.values ? first.values[cat.id] : 5;
+                const change = latestValue - firstValue;
+                const changePercent = firstValue !== 0 ? ((change / firstValue) * 100).toFixed(1) : '0.0';
+                
                 const isPositive = change > 0;
                 const isNegative = change < 0;
+                const changeClass = isPositive ? 'positive' : isNegative ? 'negative' : 'neutral';
                 const arrow = isPositive ? '▲' : isNegative ? '▼' : '—';
+
+                const stockItem = document.createElement('div');
+                stockItem.className = 'stock-item';
+                stockItem.onclick = () => openPackCategoryDetail(pack.id, cat.id);
+                stockItem.style.cursor = 'pointer';
                 
-                changeEl.innerHTML = `<span>${arrow}</span> ${Math.abs(parseFloat(changePercent)).toFixed(1)}%`;
-                changeEl.className = `category-detail-change ${isPositive ? 'positive' : isNegative ? 'negative' : 'neutral'}`;
-            }
+                stockItem.innerHTML = `
+                    <div class="stock-item-left">
+                        <div class="stock-icon" style="background: ${cat.color}20; color: ${cat.color};">
+                            ${packCategoryIcons[cat.id] || cat.emoji}
+                        </div>
+                        <div class="stock-info">
+                            <div class="stock-name">${cat.name[currentLang] || cat.name.en}</div>
+                        </div>
+                    </div>
+                    <div class="stock-item-right">
+                        <div class="stock-price">${latestValue.toFixed(1)}</div>
+                        <div class="stock-change ${changeClass}">
+                            <span class="stock-arrow">${arrow}</span>
+                            ${Math.abs(parseFloat(changePercent)).toFixed(1)}%
+                        </div>
+                    </div>
+                `;
+                
+                container.appendChild(stockItem);
+            });
         }
 
-        // Update pack category chart
-        function updatePackCategoryDetailChart(packId, categoryId) {
-            if (!categoryDetailChart) return;
-            
-            const entries = getCategoryFilteredEntries();
-            
-            const labels = entries.map(e => {
-                const d = new Date(e.date);
-                return d.toLocaleDateString('de-DE', { month: 'short', day: 'numeric' });
-            });
-            
-            // Use raw values (1-10 scale)
-            const data = entries.map(e => e.values ? e.values[categoryId] : 5);
-            
-            categoryDetailChart.data.labels = labels;
-            categoryDetailChart.data.datasets[0].data = data;
-            categoryDetailChart.update('none');
+        // Show individual pack category detail
+        function showPackCategoryDetail(packId, categoryId) {
+            // For now, just log - can be extended like showCategoryDetail
+            console.log('Show pack category detail:', packId, categoryId);
+            // TODO: Implement modal for pack category details (like FYS Index categories)
         }
 
         // Category Detail View
         let categoryDetailChart = null;
         let currentCategoryTimeRange = '1m';
         let currentCategoryId = null;
+        let currentStockListType = 'fys'; // 'fys' or packId
 
         // Show individual category detail
         function showCategoryDetail(categoryId) {
@@ -4834,6 +4797,11 @@
 
             // Show Modal
             document.getElementById('categoryDetailModal').classList.add('active');
+            
+            // Activate correct time button
+            document.querySelectorAll('.category-time-btn').forEach(btn => btn.classList.remove('active'));
+            const activeCatBtn = document.querySelector(`.category-time-btn[data-cat-range="${currentCategoryTimeRange}"]`);
+            if (activeCatBtn) activeCatBtn.classList.add('active');
 
             // Initialize Chart
             if (!categoryDetailChart) {
@@ -5290,26 +5258,51 @@
         function updateProButton() {
             const btn = document.getElementById('proToggleBtn');
             const desc = document.getElementById('proStatusDesc');
-            const showcase = document.getElementById('proBenefitsShowcase');
             
             if (btn && desc) {
                 if (isPro) {
                     btn.textContent = 'Deactivate FYS Pro';
                     btn.style.background = 'linear-gradient(135deg, #666, #888)';
                     desc.textContent = 'Pro Status: Active ✓';
-                    // Hide benefits when Pro is active
-                    if (showcase) showcase.style.display = 'none';
                 } else {
                     btn.textContent = 'Activate FYS Pro';
                     btn.style.background = 'linear-gradient(135deg, #ff6b35, #ff8f5f)';
-                    desc.textContent = 'Unlock your full potential';
-                    // Show benefits when Pro is not active
-                    if (showcase) showcase.style.display = 'block';
+                    desc.textContent = 'Performance Packs & Advanced Features';
                 }
             }
             
             // Show/hide pack settings
             renderPackSettings();
+        }
+
+        function resetData() {
+            showConfirmModal(
+                'Daten zurücksetzen?',
+                'Alle deine Check-Ins, Tagebucheinträge und Performance Packs werden gelöscht. Du startest komplett neu und dein erster Check-In wird die erste Messung sein.',
+                '⚠️',
+                function() {
+                    // This runs after both confirmations
+                    performanceData = {
+                        entries: [],
+                        activePacks: []
+                    };
+                    
+                    localStorage.setItem('fysData', JSON.stringify(performanceData));
+                    localStorage.removeItem('fys_activePacks');
+                    localStorage.removeItem('fysJournal');
+                    localStorage.removeItem('fysWizardDraft');
+                    localStorage.removeItem('fys_timeRange');
+                    sessionStorage.removeItem('fysCheckInCompleted');
+                    sessionStorage.removeItem('fysAutoTimeframe');
+                    
+                    journalData = {};
+                    currentTimeRange = '1d';
+                    localStorage.setItem('fys_timeRange', '1d');
+                    
+                    alert('✅ Alle Daten gelöscht!\n\nMache jetzt deinen ersten Check-In um zu starten.');
+                    location.reload();
+                }
+            );
         }
 
         // Update UI
@@ -5385,7 +5378,8 @@
             console.log('  Active packs:', performanceData.activePacks);
             
             renderPackSettings();
-            renderPerformancePacks(); // Update home view (single call)
+            renderPerformancePacks();
+            renderPerformancePacks(); // Update home view
             updateUI(); // Update check-in question count
         }
 
@@ -5456,7 +5450,7 @@
                                     display: inline-flex;
                                     align-items: center;
                                     gap: 4px;
-                                ">${packCategoryIcons[cat.id] || ''} ${cat.name}</span>
+                                ">${packCategoryIcons[cat.id] || ''} ${cat.name[currentLang] || cat.name.en || cat.name}</span>
                             `).join('')}
                         </div>
                     </div>
@@ -5480,28 +5474,19 @@
         function renderPerformancePacks() {
             const container = document.getElementById('performancePacksContainer');
             const listContainer = document.getElementById('performancePacksList');
-            
-            console.log('=== renderPerformancePacks DEBUG ===');
-            console.log('isPro:', isPro);
-            console.log('performanceData.activePacks:', performanceData.activePacks);
-            console.log('container:', container);
 
             if (!isPro) {
-                console.log('❌ Pro not active, hiding packs');
                 container.style.display = 'none';
                 return;
             }
 
             const activePacks = performanceData.activePacks || [];
-            console.log('activePacks:', activePacks);
             
             if (activePacks.length === 0) {
-                console.log('❌ No active packs, hiding container');
                 container.style.display = 'none';
                 return;
             }
 
-            console.log('✓ Showing packs container');
             container.style.display = 'block';
             listContainer.innerHTML = '';
 
@@ -5542,9 +5527,9 @@
                             <span style="font-size: 20px;">${pack.icon}</span>
                             <span>${pack.name}</span>
                         </div>
-                        <div class="index-value-number" style="color: ${changeValue >= 0 ? 'var(--accent-up)' : 'var(--accent-down)'};">${packIndexValue.toFixed(1)}</div>
-                        <div class="index-change-text" style="color: ${changeValue >= 0 ? 'var(--accent-up)' : 'var(--accent-down)'};">
-                            ${changeValue >= 0 ? '▲' : '▼'} ${Math.abs(changeValue).toFixed(2)} (${changePercent >= 0 ? '+' : ''}${changePercent.toFixed(2)}%)
+                        <div class="index-value-number" style="color: ${changeValue > 0 ? 'var(--accent-up)' : changeValue < 0 ? 'var(--accent-down)' : 'var(--text-secondary)'};">${packIndexValue.toFixed(1)}</div>
+                        <div class="index-change-text" style="color: ${changeValue > 0 ? 'var(--accent-up)' : changeValue < 0 ? 'var(--accent-down)' : 'var(--text-secondary)'};">
+                            ${changeValue > 0 ? '▲' : changeValue < 0 ? '▼' : '—'} ${Math.abs(changeValue).toFixed(2)} (${changeValue > 0 ? '+' : changeValue < 0 ? '' : ''}${changePercent.toFixed(2)}%)
                         </div>
                     </div>
                     <div class="tap-hint">Tippen für Details</div>
@@ -5669,6 +5654,14 @@
             if (homeView) homeView.classList.remove('active');
             if (detailsView) detailsView.classList.add('active');
             
+            // Activate correct time button in categories overview
+            document.querySelectorAll('.time-btn').forEach(btn => btn.classList.remove('active'));
+            const activeBtn = document.querySelector(`.time-btn[data-range="${currentTimeRange}"]`);
+            if (activeBtn) {
+                activeBtn.classList.add('active');
+                console.log('✓ Activated time button for pack:', currentTimeRange);
+            }
+            
             // Update FYS-INDEX label to PACK NAME
             const indexLabel = document.querySelector('#chartDetailsView .fys-index-label');
             if (indexLabel) {
@@ -5782,6 +5775,8 @@
         }
 
         function createPackStockList(pack) {
+            currentStockListType = pack.id; // Mark which pack is displayed
+            
             const container = document.getElementById('stockListItems');
             if (!container) return;
             
@@ -5840,8 +5835,7 @@
                             ${packCategoryIcons[cat.id] || cat.emoji}
                         </div>
                         <div class="stock-info">
-                            <div class="stock-name">${cat.name}</div>
-                            <div class="stock-symbol">${cat.id.toUpperCase()}</div>
+                            <div class="stock-name">${cat.name[currentLang] || cat.name.en}</div>
                         </div>
                     </div>
                     <div class="stock-item-right">
@@ -5945,23 +5939,39 @@
 
         function openPackCategoryDetail(packId, categoryId) {
             const pack = performancePacks.find(p => p.id === packId);
-            if (!pack) return;
+            if (!pack) {
+                console.error('Pack not found:', packId);
+                return;
+            }
             
             const category = pack.categories.find(c => c.id === categoryId);
-            if (!category) return;
+            if (!category) {
+                console.error('Category not found:', categoryId);
+                return;
+            }
             
             if (!performanceData.activePacks.includes(packId)) {
                 alert('Bitte aktiviere zuerst dieses Performance Pack um Details zu sehen.');
                 return;
             }
             
-            // Pack Category Icons (WICHTIG: nicht categoryIcons!)
+            // Set current category ID for the modal
+            currentCategoryId = categoryId;
+            
+            // Get modal elements
+            const modal = document.getElementById('categoryDetailModal');
+            if (!modal) {
+                console.error('Modal not found');
+                return;
+            }
+            
+            // Get icon HTML
             const packCategoryIcons = {
                 // Finance Pack
                 savings: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path></svg>`,
                 investments: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>`,
                 budget: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"></path><path d="M12 18V6"></path></svg>`,
-                income: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 12H4M20 12l-4-4M20 12l-4 4"></path></svg>`,
+                income: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg>`,
                 financial_education: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>`,
                 // Health Pack
                 cardio: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"></path></svg>`,
@@ -5970,90 +5980,39 @@
                 mental_health: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 1 1 7.072 0l-.548.547A3.374 3.374 0 0 0 14 18.469V19a2 2 0 1 1-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path></svg>`,
                 // Entrepreneurship Pack
                 networking: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>`,
-                product_development: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>`,
+                product_development: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path></svg>`,
                 marketing: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.3 15.3a2.4 2.4 0 0 1 0 3.4l-2.6 2.6a2.4 2.4 0 0 1-3.4 0L2.7 8.7a2.41 2.41 0 0 1 0-3.4l2.6-2.6a2.41 2.41 0 0 1 3.4 0L21.3 15.3z"></path><path d="M7.5 10.5L14 17"></path></svg>`,
                 sales: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>`,
                 leadership: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 20h20M5 20V9l7-5 7 5v11M9 20v-6h6v6"></path></svg>`
             };
             
-            // Use EXACT SAME LAYOUT as FYS Index category details
-            const modal = safeGetElement('categoryDetailModal');
-            const header = safeGetElement('categoryDetailHeader');
-            const content = safeGetElement('categoryDetailContent');
-            
-            if (!modal || !header || !content) return;
-            
-            // Get icon HTML (Pack Categories!)
             const iconHtml = packCategoryIcons[categoryId] || `<div style="font-size: 24px;">${category.emoji}</div>`;
             
-            // IDENTICAL HEADER STRUCTURE TO FYS INDEX
-            header.innerHTML = `
-                <div class="category-detail-icon" style="background: ${category.color}20; color: ${category.color};">
-                    ${iconHtml}
-                </div>
-                <div class="category-detail-info">
-                    <div class="category-detail-name">${category.name}</div>
-                    <div class="category-detail-symbol" style="display: flex; align-items: center; gap: 6px;">
-                        <span style="color: var(--text-secondary); font-size: 12px;">${pack.name}</span>
-                        <span style="background: linear-gradient(135deg, #ffd700, #ffed4e); color: #000; padding: 2px 5px; border-radius: 3px; font-size: 8px; font-weight: 800; letter-spacing: 0.5px;">PRO</span>
-                    </div>
-                </div>
-                <button class="close-btn" onclick="closeCategoryDetail()">×</button>
-            `;
+            // Update header
+            const iconContainer = document.getElementById('categoryDetailIcon');
+            iconContainer.style.background = `${category.color}20`;
+            iconContainer.style.color = category.color;
+            iconContainer.innerHTML = iconHtml;
             
-            // Get data (same calculation as FYS Index)
-            const entries = getFilteredEntries();
-            let currentValue = 100;
-            let changeValue = 0;
-            let changePercent = 0;
+            document.getElementById('categoryDetailName').textContent = category.name[currentLang] || category.name.en || category.name;
+            document.getElementById('categoryDetailSymbol').textContent = pack.name;
             
-            if (entries.length > 0) {
-                const lastEntry = entries[entries.length - 1];
-                currentValue = lastEntry.categoryValues?.[categoryId] || 100;
-                
-                if (entries.length > 1) {
-                    const firstEntry = entries[0];
-                    const firstValue = firstEntry.categoryValues?.[categoryId] || 100;
-                    changeValue = currentValue - firstValue;
-                    changePercent = (changeValue / firstValue) * 100;
-                }
-            }
+            // Update price data
+            updateCategoryDetailData();
             
-            // IDENTICAL CONTENT STRUCTURE TO FYS INDEX
-            content.innerHTML = `
-                <div class="category-detail-price-section">
-                    <div class="category-detail-price" style="color: ${changeValue >= 0 ? 'var(--accent-up)' : 'var(--accent-down)'};">${currentValue.toFixed(1)}</div>
-                    <div class="category-detail-change" style="background: ${changeValue >= 0 ? 'rgba(0, 255, 136, 0.1)' : 'rgba(255, 51, 102, 0.1)'}; color: ${changeValue >= 0 ? 'var(--accent-up)' : 'var(--accent-down)'};">
-                        ${changeValue >= 0 ? '▲' : '▼'} ${Math.abs(changePercent).toFixed(2)}%
-                    </div>
-                </div>
-                
-                <div class="category-time-selector">
-                    <button class="category-time-btn active" onclick="changePackCategoryTimeRange('${categoryId}', '1d')" data-range="1d">1D</button>
-                    <button class="category-time-btn" onclick="changePackCategoryTimeRange('${categoryId}', '7d')" data-range="7d">7D</button>
-                    <button class="category-time-btn" onclick="changePackCategoryTimeRange('${categoryId}', '1m')" data-range="1m">1M</button>
-                    <button class="category-time-btn" onclick="changePackCategoryTimeRange('${categoryId}', '6m')" data-range="6m">6M</button>
-                    <button class="category-time-btn" onclick="changePackCategoryTimeRange('${categoryId}', '1y')" data-range="1y">1Y</button>
-                    <button class="category-time-btn" onclick="changePackCategoryTimeRange('${categoryId}', 'all')" data-range="all">MAX</button>
-                </div>
-                
-                <div class="category-chart-card">
-                    <div class="category-chart-container">
-                        <canvas id="packCategoryDetailChart"></canvas>
-                    </div>
-                </div>
-                
-                <div class="category-chart-card" style="margin-top: 16px;">
-                    <div id="packCategoryValuesTable"></div>
-                </div>
-            `;
-            
+            // Show modal
             modal.classList.add('active');
             
-            setTimeout(() => {
-                createPackCategoryDetailChart(categoryId, 'all');
-                renderPackCategoryValuesTable(categoryId);
-            }, 100);
+            // Activate correct time button
+            document.querySelectorAll('.category-time-btn').forEach(btn => btn.classList.remove('active'));
+            const activeCatBtn = document.querySelector(`.category-time-btn[data-cat-range="${currentCategoryTimeRange}"]`);
+            if (activeCatBtn) activeCatBtn.classList.add('active');
+            
+            // Initialize and update chart
+            if (!categoryDetailChart) {
+                initCategoryDetailChart();
+            }
+            updateCategoryDetailChart();
         }
 
         function renderPackCategoryValuesTable(categoryId) {
@@ -6246,38 +6205,6 @@
             createPackCategoryDetailChart(categoryId, range);
         }
 
-        // Update daily progress badges
-        function updateDailyProgress() {
-            const today = new Date().toISOString().split('T')[0];
-            
-            // Check if check-in done today
-            const hasCheckinToday = performanceData.entries.some(entry => {
-                const entryDate = new Date(entry.date).toISOString().split('T')[0];
-                return entryDate === today;
-            });
-            
-            // Check if journal entry exists today
-            const hasJournalToday = performanceData.journalEntries && 
-                performanceData.journalEntries.some(entry => {
-                    const entryDate = new Date(entry.date).toISOString().split('T')[0];
-                    return entryDate === today;
-                });
-            
-            // Update badges
-            const checkinBadge = document.getElementById('checkinBadge');
-            const journalBadge = document.getElementById('journalBadge');
-            
-            if (checkinBadge) {
-                checkinBadge.classList.toggle('complete', hasCheckinToday);
-                checkinBadge.classList.toggle('incomplete', !hasCheckinToday);
-            }
-            
-            if (journalBadge) {
-                journalBadge.classList.toggle('complete', hasJournalToday);
-                journalBadge.classList.toggle('incomplete', !hasJournalToday);
-            }
-        }
-
         function updateUI() {
             const t = translations[currentLang];
             
@@ -6294,7 +6221,6 @@
             };
             
             updateHeaderDate();
-            updateDailyProgress(); // Update progress badges
             
             // Update Check-in Widget with correct question count
             const totalQuestions = baseWizardCategories.length + (isPro ? getActivePackCategories().length : 0);
@@ -6341,7 +6267,46 @@
             updateProButton();
             
             updateCheckinView();
+            updateDailyProgress();
             renderPerformancePacks(); // Render active pack cards
+        }
+        
+        function updateDailyProgress() {
+            // Use actual today date (not header date which is always current)
+            const today = new Date();
+            const todayStr = today.toISOString().split('T')[0];
+            
+            const checkinBadge = document.getElementById('checkinBadge');
+            const journalBadge = document.getElementById('journalBadge');
+            
+            if (checkinBadge) {
+                const hasCheckin = performanceData.entries && performanceData.entries.some(e => {
+                    const entryDate = new Date(e.date).toISOString().split('T')[0];
+                    return entryDate === todayStr;
+                });
+                if (hasCheckin) {
+                    checkinBadge.classList.remove('incomplete');
+                    checkinBadge.classList.add('complete');
+                } else {
+                    checkinBadge.classList.remove('complete');
+                    checkinBadge.classList.add('incomplete');
+                }
+            }
+            
+            if (journalBadge) {
+                const hasJournal = performanceData.journalEntries && 
+                                 performanceData.journalEntries.some(e => {
+                                     const entryDate = new Date(e.date).toISOString().split('T')[0];
+                                     return entryDate === todayStr;
+                                 });
+                if (hasJournal) {
+                    journalBadge.classList.remove('incomplete');
+                    journalBadge.classList.add('complete');
+                } else {
+                    journalBadge.classList.remove('complete');
+                    journalBadge.classList.add('incomplete');
+                }
+            }
         }
 
         // Switch view with haptic feedback
@@ -6356,29 +6321,24 @@
             document.getElementById('categoryDetailModal').classList.remove('active');
             document.getElementById('journalModal').classList.remove('active');
             
-            // Auto-Scroll: Wenn bereits auf der View, scroll to top
+            // Auto-scroll: If already on this view, scroll to top
             const viewElement = document.getElementById(`${view}View`);
             if (viewElement && viewElement.classList.contains('active')) {
-                // Bereits auf dieser View - scroll to top
                 window.scrollTo({ top: 0, behavior: 'smooth' });
-                viewElement.scrollTo({ top: 0, behavior: 'smooth' });
                 return;
             }
             
             document.querySelectorAll('.view-section').forEach(s => s.classList.remove('active'));
             document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
 
-            viewElement.classList.add('active');
+            if (viewElement) viewElement.classList.add('active');
             const navItem = document.querySelector(`[data-view="${view}"]`);
             if (navItem) {
                 navItem.classList.add('active');
             }
             
-            // Scroll new view to top
-            setTimeout(() => {
-                window.scrollTo({ top: 0, behavior: 'instant' });
-                viewElement.scrollTo({ top: 0, behavior: 'instant' });
-            }, 10);
+            // Scroll to top when switching views
+            window.scrollTo({ top: 0, behavior: 'instant' });
             
             if (view === 'checkin') {
                 console.log('🔧 CHECK-IN VIEW ACTIVATED');
@@ -6542,6 +6502,45 @@
             document.getElementById('journalEntrySection').classList.remove('active');
         }
 
+        // Confirm Modal Functions
+        let confirmCallback = null;
+        let confirmStep = 1;
+
+        function showConfirmModal(title, message, icon, callback) {
+            confirmCallback = callback;
+            confirmStep = 1;
+            
+            document.getElementById('confirmIcon').textContent = icon;
+            document.getElementById('confirmTitle').textContent = title;
+            document.getElementById('confirmMessage').textContent = message;
+            document.getElementById('confirmButton').textContent = 'Weiter';
+            document.getElementById('confirmModal').classList.add('active');
+        }
+
+        function closeConfirmModal() {
+            document.getElementById('confirmModal').classList.remove('active');
+            confirmCallback = null;
+            confirmStep = 1;
+        }
+
+        function confirmAction() {
+            if (confirmStep === 1) {
+                // First confirmation passed, show second
+                confirmStep = 2;
+                document.getElementById('confirmIcon').textContent = '🔥';
+                document.getElementById('confirmTitle').textContent = 'LETZTE WARNUNG!';
+                document.getElementById('confirmMessage').textContent = 'Alle Daten werden permanent gelöscht und können nicht wiederhergestellt werden. Dies ist deine letzte Chance abzubrechen!';
+                document.getElementById('confirmButton').textContent = 'Endgültig löschen';
+                document.getElementById('confirmButton').style.background = '#ff0000';
+            } else if (confirmStep === 2) {
+                // Second confirmation passed, execute callback
+                closeConfirmModal();
+                if (confirmCallback) {
+                    confirmCallback();
+                }
+            }
+        }
+
         function openTaskManager() {
             alert('✓ Task Manager\n\nDiese Funktion wird gerade entwickelt und ist bald verfügbar!');
         }
@@ -6629,18 +6628,24 @@
         }
 
         function saveJournalEntry() {
-            const text = document.getElementById('journalTextarea').value;
-            
-            if (text.trim()) {
-                journalData[selectedJournalDate] = text;
-            } else {
-                delete journalData[selectedJournalDate];
+            try {
+                const text = document.getElementById('journalTextarea').value;
+                
+                if (text.trim()) {
+                    journalData[selectedJournalDate] = text;
+                } else {
+                    delete journalData[selectedJournalDate];
+                }
+                
+                localStorage.setItem('fysJournal', JSON.stringify(journalData));
+                showToast();
+                renderCalendar();
+                updateJournalStats();
+                updateDailyProgress();
+            } catch(e) {
+                console.error('Save journal error:', e);
+                alert('Fehler beim Speichern');
             }
-            
-            localStorage.setItem('fysJournal', JSON.stringify(journalData));
-            showToast();
-            renderCalendar();
-            updateJournalStats();
         }
 
         function updateJournalStats() {
@@ -6685,14 +6690,16 @@
                     if (packCats && packCats.length > 0) {
                         packCats.forEach(packCat => {
                             if (packCat && packCat.id && packCat.name && packCat.color) {
+                                const nameObj = typeof packCat.name === 'object' ? packCat.name : { de: packCat.name, en: packCat.name, es: packCat.name };
+                                
                                 wizardCats.push({
                                     id: packCat.id,
-                                    name: { de: packCat.name, en: packCat.name, es: packCat.name },
+                                    name: nameObj,
                                     color: packCat.color,
                                     hint: { 
-                                        de: `Wie würdest du dein ${packCat.name} heute bewerten?`, 
-                                        en: `How would you rate your ${packCat.name} today?`, 
-                                        es: `¿Cómo calificarías tu ${packCat.name} hoy?` 
+                                        de: `Wie würdest du dein ${nameObj.de} heute bewerten?`, 
+                                        en: `How would you rate your ${nameObj.en} today?`, 
+                                        es: `¿Cómo calificarías tu ${nameObj.es} hoy?` 
                                     }
                                 });
                                 
@@ -7050,15 +7057,7 @@
                             <div class="review-hint-wizard">${cat.hint[currentLang]}</div>
                         </div>
                     </div>
-                    <div class="review-item-right-wizard">
-                        <div class="review-value-wizard">${wizardDraft[cat.id] || (cat.id === 'sleep' ? '8.0' : '5')}</div>
-                        <div class="review-edit-btn">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 16px; height: 16px;">
-                                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
-                                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
-                            </svg>
-                        </div>
-                    </div>
+                    <div class="review-value-wizard">${wizardDraft[cat.id] || (cat.id === 'sleep' ? '8.0' : '5')}</div>
                 </div>
             `).join('');
         }
@@ -7249,6 +7248,7 @@
             }
 
             showToast();
+            updateDailyProgress(); // Update badges after check-in
 
             setTimeout(() => {
                 wizardDraft = {};
@@ -7272,9 +7272,25 @@
                 console.log('✓ Loaded saved timeRange:', savedTimeRange);
             }
             
-            // Active Performance Packs are already loaded at init (line ~3870)
-            console.log('🔧 isPro status:', isPro);
-            console.log('🔧 performanceData.activePacks:', performanceData.activePacks);
+            // Activate correct time button
+            document.querySelectorAll('.time-btn').forEach(btn => btn.classList.remove('active'));
+            const timeBtns = document.querySelectorAll(`.time-btn[data-range="${currentTimeRange}"]`);
+            console.log('Found time buttons to activate:', timeBtns.length, 'for range:', currentTimeRange);
+            timeBtns.forEach(btn => {
+                btn.classList.add('active');
+                console.log('✓ Activated button:', btn.textContent.trim());
+            });
+            
+            // Load active Performance Packs
+            const savedActivePacks = localStorage.getItem('fys_activePacks');
+            if (savedActivePacks) {
+                try {
+                    performanceData.activePacks = JSON.parse(savedActivePacks);
+                    console.log('✓ Loaded active packs:', performanceData.activePacks);
+                } catch (e) {
+                    console.error('Error loading active packs:', e);
+                }
+            }
             
             let postCheckinFlag = false;
             try {
@@ -7284,17 +7300,6 @@
                 console.error('SessionStorage error:', e);
             }
             
-            // Hide loading screen after content loads
-            setTimeout(() => {
-                const loadingScreen = document.getElementById('loadingScreen');
-                if (loadingScreen) {
-                    loadingScreen.classList.add('hidden');
-                }
-            }, 800);
-            
-            document.documentElement.setAttribute('data-theme', currentTheme);
-            
-            document.querySelectorAll('[data-theme-btn]').forEach(el => el.classList.remove('active'));
             const themeBtn = document.querySelector(`[data-theme-btn="${currentTheme}"]`);
             if (themeBtn) themeBtn.classList.add('active');
             
@@ -7303,11 +7308,13 @@
                 if (toggle) toggle.classList.add('active');
             }
             
-            initMainChart();
-            updateUI();
-            updateProButton(); // Update Pro button and show/hide benefits
-            renderPackSettings(); // Populate pack settings
-            renderPerformancePacks(); // Show active packs immediately
+            try {
+                initMainChart();
+                updateUI();
+                renderPerformancePacks();
+            } catch(e) {
+                console.error('Init error:', e);
+            }
             
             // Check if we just completed a check-in
             if (postCheckinFlag) {
@@ -7345,7 +7352,30 @@
             
             createStockList();
             updateJournalStats();
-            // renderPerformancePacks() already called above at line 7174
+            renderPerformancePacks(); // Render Performance Packs on home
+            
+            // Setup IntersectionObserver for sticky checkin widget
+            const checkinWidget = document.querySelector('.checkin-widget');
+            if (checkinWidget && 'IntersectionObserver' in window) {
+                const observerOptions = {
+                    root: null,
+                    threshold: [0, 1],
+                    rootMargin: '-1px 0px 0px 0px'
+                };
+                
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.intersectionRatio < 1) {
+                            entry.target.classList.add('is-sticky');
+                        } else {
+                            entry.target.classList.remove('is-sticky');
+                        }
+                    });
+                }, observerOptions);
+                
+                observer.observe(checkinWidget);
+                console.log('✓ IntersectionObserver setup for sticky widget');
+            }
         });
         // ============================================
         // PERFORMANCE PACK CARD ON HOME
@@ -7784,6 +7814,8 @@
             // Set flags for post-checkin behavior
             sessionStorage.setItem('fysCheckInCompleted', 'true');
             sessionStorage.setItem('fysAutoTimeframe', '1d');
+            
+            updateDailyProgress(); // Update badges
             
             // Navigate to home and apply 1D
             setTimeout(() => {
