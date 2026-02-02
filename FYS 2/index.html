@@ -504,7 +504,7 @@ body {
           <option value="es">🇪🇸 ES</option>
         </select>
         <a href="index.html" class="btn-login" data-i18n="nav_login">Login</a>
-        <button class="btn-primary" onclick="scrollToSection('pricing')" data-i18n="nav_get_started">Get Started</button>
+        <a href="#pricing" class="btn-primary" onclick="scrollToSection('pricing'); return false;" data-i18n="nav_get_started">Get Started</a>
       </div>
     </div>
   </div>
@@ -522,7 +522,7 @@ body {
     </h1>
     <p data-i18n="hero_subtitle">Track. Improve. Compound. Become your best investment — every single day.</p>
     <div class="hero-ctas">
-      <button class="btn-primary btn-large" onclick="scrollToSection('pricing')" data-i18n="hero_cta_start">Get Started Free</button>
+      <a href="#pricing" class="btn-primary btn-large" onclick="scrollToSection('pricing'); return false;" data-i18n="hero_cta_start">Get Started Free</a>
       <a href="index.html" class="btn-login btn-large" data-i18n="hero_cta_login">Login to App</a>
     </div>
   </div>
@@ -612,11 +612,11 @@ body {
   <nav class="navbar">
     <div class="container">
       <div class="nav-content">
-        <a href="#" class="nav-logo" onclick="hideLegalPage(); return false;">
+        <a href="#" onclick="hideLegalPage(); return false;" class="nav-logo">
           <span>🎯</span>
           <span>FYS</span>
         </a>
-        <button class="btn-primary" onclick="hideLegalPage()" data-i18n="back_to_home">← Back to Home</button>
+        <a href="#" onclick="hideLegalPage(); return false;" class="btn-primary" data-i18n="back_to_home">← Back to Home</a>
       </div>
     </div>
   </nav>
@@ -634,7 +634,7 @@ body {
       <h2 data-i18n="impressum_contact">Contact</h2>
       <p>
         <span data-i18n="impressum_phone">Phone:</span> +49 (0) 123 456789<br>
-        E-Mail: info@fys-app.com
+        E-Mail: <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="11787f777e517768623c7061613f727e7c">[email&#160;protected]</a>
       </p>
 
       <h2 data-i18n="impressum_responsible">Responsible for content according to § 55 Abs. 2 RStV</h2>
@@ -661,7 +661,7 @@ body {
       <p data-i18n="privacy_storage_text">Your data is stored securely using industry-standard encryption. We retain your data as long as you maintain an active account.</p>
       
       <h2 data-i18n="privacy_rights_title">5. Your Rights</h2>
-      <p data-i18n="privacy_rights_text">You have the right to access, modify, or delete your personal data at any time. Contact us at privacy@fys-app.com for any privacy-related requests.</p>
+      <p data-i18n="privacy_rights_text">You have the right to access, modify, or delete your personal data at any time. Contact us at <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="4737352e3126243e07213e346a2637376924282a">[email&#160;protected]</a> for any privacy-related requests.</p>
     </div>
 
     <div id="aboutPage" class="legal-page hidden">
@@ -677,12 +677,12 @@ body {
       <p data-i18n="about_vision_text">We envision a world where everyone has the tools to become their best selves. FYS is just the beginning of making self-optimization simple, effective, and engaging.</p>
       
       <h2 data-i18n="about_contact_title">Contact Us</h2>
-      <p data-i18n="about_contact_text">Have questions or feedback? We'd love to hear from you at hello@fys-app.com</p>
+      <p data-i18n="about_contact_text">Have questions or feedback? We'd love to hear from you at <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="4f272a2323200f29363c622e3f3f612c2022">[email&#160;protected]</a></p>
     </div>
   </div>
 </div>
 
-<script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
 // Translations
 const translations = {
   en: {
@@ -1015,28 +1015,4 @@ function hideLegalPage() {
 function scrollToSection(id) {
   const element = document.getElementById(id);
   if (element) {
-    element.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  }
-}
-
-// Navbar scroll effect
-window.addEventListener('scroll', () => {
-  const navbar = document.getElementById('navbar');
-  if (window.scrollY > 40) {
-    navbar.classList.add('scrolled');
-  } else {
-    navbar.classList.remove('scrolled');
-  }
-});
-
-// Init
-window.addEventListener('DOMContentLoaded', () => {
-  const savedLang = localStorage.getItem('fys_language');
-  if (savedLang) {
-    setLanguage(savedLang);
-  }
-});
-</script>
-
-</body>
-</html>
+    element.scrollIntoView({ behavior: 'smooth', blo
