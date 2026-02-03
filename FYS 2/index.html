@@ -578,6 +578,36 @@ img { max-width: 100%; display: block; }
    ======================================== */
 .chart-gradient-fill { opacity: 0.15; }
 .hidden { display: none !important; }
+
+/* Login Button */
+.login-btn {
+  padding: 8px 18px;
+  border-radius: 8px;
+  border: 1px solid rgba(255,255,255,0.15);
+  background: transparent;
+  color: #f5f5f7 !important;
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none !important;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s;
+  display: inline-block;
+  position: relative;
+  z-index: 10;
+}
+.login-btn:hover {
+  border-color: #ff6b35;
+  background: rgba(255,107,53,0.1);
+  color: #f5f5f7 !important;
+}
+[data-theme="light"] .login-btn {
+  border-color: rgba(0,0,0,0.15);
+  color: #1a1a1a !important;
+}
+[data-theme="light"] .login-btn:hover {
+  border-color: #ff6b35;
+  color: #1a1a1a !important;
+}
 </style>
 </head>
 <body data-theme="dark">
@@ -607,7 +637,7 @@ img { max-width: 100%; display: block; }
       <a href="#pro">Pro</a>
       <a href="#faq">FAQ</a>
       <div class="theme-toggle" id="themeToggle"><div class="knob"></div></div>
-      <a href="index.html" style="padding:8px 18px;border-radius:8px;border:1px solid rgba(255,255,255,0.15);background:transparent;color:#f5f5f7;font-size:14px;font-weight:600;text-decoration:none;transition:border-color 0.2s,background 0.2s;" onmouseover="this.style.borderColor='#ff6b35';this.style.background='rgba(255,107,53,0.1)'" onmouseout="this.style.borderColor='rgba(255,255,255,0.15)';this.style.background='transparent'">Login</a>
+      <a href="app/index.html" id="loginBtn" class="login-btn">Login</a>
       <button class="nav-cta" onclick="document.getElementById('waitlist-modal').classList.add('active')">Get Early Access</button>
     </div>
     <div class="nav-mobile-toggle" id="mobileToggle">
@@ -1041,6 +1071,36 @@ img { max-width: 100%; display: block; }
 <style>
   #waitlist-modal.active { display: flex !important; }
 .hidden { display: none !important; }
+
+/* Login Button */
+.login-btn {
+  padding: 8px 18px;
+  border-radius: 8px;
+  border: 1px solid rgba(255,255,255,0.15);
+  background: transparent;
+  color: #f5f5f7 !important;
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none !important;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s;
+  display: inline-block;
+  position: relative;
+  z-index: 10;
+}
+.login-btn:hover {
+  border-color: #ff6b35;
+  background: rgba(255,107,53,0.1);
+  color: #f5f5f7 !important;
+}
+[data-theme="light"] .login-btn {
+  border-color: rgba(0,0,0,0.15);
+  color: #1a1a1a !important;
+}
+[data-theme="light"] .login-btn:hover {
+  border-color: #ff6b35;
+  color: #1a1a1a !important;
+}
 </style>
 
 <!-- ========================================
