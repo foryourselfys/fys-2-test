@@ -1613,7 +1613,7 @@
             width: 100%;
             padding: 14px;
             background: var(--accent-primary);
-            color: #000;
+            color: #000; /* Dark Mode: schwarz auf orange */
             border: none;
             border-radius: 12px;
             font-size: 15px;
@@ -1621,6 +1621,11 @@
             cursor: pointer;
             margin-top: 12px;
             font-family: inherit;
+        }
+        
+        /* Light Mode: dunkler Text auf orange Button */
+        [data-theme="light"] .journal-save-btn {
+            color: #fff; /* Weiß auf orange im Light Mode */
         }
 
         .category-detail-header {
@@ -6326,9 +6331,12 @@
         }
         
         function updateDailyProgress() {
+            console.log('🎯 updateDailyProgress called');
+            
             // Use actual today date (not header date which is always current)
             const today = new Date();
             const todayStr = today.toISOString().split('T')[0];
+            console.log('📅 Today string:', todayStr);
             
             const checkinBadge = document.getElementById('checkinBadge');
             const journalBadge = document.getElementById('journalBadge');
@@ -6338,6 +6346,7 @@
                     const entryDate = new Date(e.date).toISOString().split('T')[0];
                     return entryDate === todayStr;
                 });
+                console.log('✅ Has check-in today:', hasCheckin);
                 if (hasCheckin) {
                     checkinBadge.classList.remove('incomplete');
                     checkinBadge.classList.add('complete');
@@ -6349,12 +6358,18 @@
             
             if (journalBadge) {
                 // Prüfe journalData (als Objekt mit Datum-Keys: "YYYY-MM-DD")
+                console.log('📔 journalData:', journalData);
+                console.log('📔 journalData[todayStr]:', journalData[todayStr]);
+                
                 const hasJournal = journalData && journalData[todayStr] && journalData[todayStr].trim().length > 0;
+                console.log('✅ Has journal today:', hasJournal);
                 
                 if (hasJournal) {
+                    console.log('🟠 Setting badge to COMPLETE (orange)');
                     journalBadge.classList.remove('incomplete');
                     journalBadge.classList.add('complete');
                 } else {
+                    console.log('⚪ Setting badge to INCOMPLETE (gray)');
                     journalBadge.classList.remove('complete');
                     journalBadge.classList.add('incomplete');
                 }
@@ -6688,26 +6703,92 @@
         }
 
         function saveJournalEntry() {
+            console.log('💾 saveJournalEntry called');
             try {
-                const text = document.getElementById('journalTextarea').value;
+                const textarea = document.getElementById('journalTextarea');
+                if (!textarea) {
+                    console.error('❌ Textarea not found!');
+                    alert('Fehler: Textfeld nicht gefunden');
+                    return;
+                }
+                
+                const text = textarea.value;
+                console.log('📝 Text length:', text.length);
+                console.log('📅 Selected date:', selectedJournalDate);
                 
                 if (text.trim()) {
                     journalData[selectedJournalDate] = text;
+                    console.log('✅ Saved to journalData');
                 } else {
                     delete journalData[selectedJournalDate];
+                    console.log('🗑️ Deleted empty entry');
                 }
                 
-                localStorage.setItem('fysJournal', JSON.stringify(journalData));
-                showToast();
-                renderCalendar();
-                updateJournalStats();
-                updateDailyProgress();
+                try {
+                    localStorage.setItem('fysJournal', JSON.stringify(journalData));
+                    console.log('💾 Saved to localStorage');
+                } catch(storageError) {
+                    console.error('❌ localStorage error:', storageError);
+                    // Weiter machen auch wenn localStorage fehlschlägt
+                }
                 
-                // Popup schließen
-                closeJournalEntry();
+                try {
+                    showToast();
+                    console.log('🎉 Toast shown');
+                } catch(toastError) {
+                    console.warn('⚠️ Toast error (non-critical):', toastError);
+                }
+                
+                try {
+                    renderCalendar();
+                    console.log('📆 Calendar rendered');
+                } catch(calError) {
+                    console.warn('⚠️ Calendar render error:', calError);
+                }
+                
+                try {
+                    updateJournalStats();
+                    console.log('📊 Stats updated');
+                } catch(statsError) {
+                    console.warn('⚠️ Stats error:', statsError);
+                }
+                
+                try {
+                    updateDailyProgress();
+                    console.log('🎯 Progress badges updated');
+                } catch(progressError) {
+                    console.warn('⚠️ Progress error:', progressError);
+                }
+                
+                // Popup schließen - KRITISCH, muss funktionieren
+                console.log('🚪 Closing popup...');
+                try {
+                    const backdrop = document.getElementById('journalEntryBackdrop');
+                    const section = document.getElementById('journalEntrySection');
+                    
+                    if (backdrop) {
+                        backdrop.classList.remove('active');
+                        console.log('✅ Backdrop closed');
+                    } else {
+                        console.error('❌ Backdrop element not found!');
+                    }
+                    
+                    if (section) {
+                        section.classList.remove('active');
+                        console.log('✅ Section closed');
+                    } else {
+                        console.error('❌ Section element not found!');
+                    }
+                } catch(closeError) {
+                    console.error('❌ Error closing popup:', closeError);
+                }
+                
+                console.log('✅ Save complete!');
+                
             } catch(e) {
-                console.error('Save journal error:', e);
-                alert('Fehler beim Speichern');
+                console.error('❌ Save journal error:', e);
+                console.error('Stack:', e.stack);
+                alert('Fehler beim Speichern: ' + e.message);
             }
         }
 
