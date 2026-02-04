@@ -54,7 +54,8 @@
         #loadingScreen.hidden {
             opacity: 0;
             visibility: hidden;
-            pointer-events: none;
+            pointer-events: auto; /* Klickbar */
+            cursor: pointer;
         }
         
         .loading-logo-container {
@@ -113,7 +114,8 @@
             height: 28px;
             width: auto;
             z-index: 999; /* Above all views except modals */
-            pointer-events: none; /* Logo is decorative, not clickable */
+            pointer-events: auto; /* Klickbar */
+            cursor: pointer; /* Logo is decorative, not clickable */
         }
 
         * {
@@ -195,7 +197,8 @@
             height: 500px;
             background: radial-gradient(circle, rgba(255, 107, 53, 0.08), transparent 65%);
             border-radius: 50%;
-            pointer-events: none;
+            pointer-events: auto; /* Klickbar */
+            cursor: pointer;
             animation: glowPulse 5s ease-in-out infinite;
         }
 
@@ -213,7 +216,8 @@
         .loading-screen.hidden {
             opacity: 0;
             visibility: hidden;
-            pointer-events: none;
+            pointer-events: auto; /* Klickbar */
+            cursor: pointer;
         }
 
         .loading-content {
@@ -312,7 +316,8 @@
         @keyframes fadeOut {
             to {
                 opacity: 0;
-                pointer-events: none;
+                pointer-events: auto; /* Klickbar */
+            cursor: pointer;
             }
         }
 
@@ -443,7 +448,8 @@
             align-items: center;
             justify-content: center;
             transition: all 0.3s;
-            pointer-events: none;
+            pointer-events: auto; /* Klickbar */
+            cursor: pointer;
         }
         
         .progress-badge-compact.incomplete {
@@ -1516,7 +1522,8 @@
         }
 
         .calendar-day.empty {
-            pointer-events: none;
+            pointer-events: auto; /* Klickbar */
+            cursor: pointer;
             opacity: 0;
         }
 
@@ -1540,14 +1547,44 @@
         }
 
         .journal-entry-section {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0.95);
             background: var(--bg-card);
             border-radius: 20px;
             border: 1px solid var(--border);
-            padding: 20px;
+            padding: 24px;
             display: none;
+            z-index: 10000;
+            max-width: 500px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            opacity: 0;
+            transition: opacity 0.2s, transform 0.2s;
         }
 
         .journal-entry-section.active {
+            display: block;
+            opacity: 1;
+            transform: translate(-50%, -50%) scale(1);
+        }
+        
+        /* Backdrop */
+        .journal-entry-backdrop {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 9999;
+            display: none;
+        }
+        
+        .journal-entry-backdrop.active {
             display: block;
         }
 
@@ -2276,7 +2313,8 @@
             transform: translateX(100%);
             transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             overflow-y: auto; /* Allow scrolling if needed */
-            pointer-events: none; /* Disable interaction when not active */
+            pointer-events: auto; /* Klickbar */
+            cursor: pointer; /* Disable interaction when not active */
         }
 
         .step-container-wizard.active {
@@ -2289,7 +2327,8 @@
         .step-container-wizard.prev {
             display: none; /* Completely hide previous steps */
             transform: translateX(-100%);
-            pointer-events: none;
+            pointer-events: auto; /* Klickbar */
+            cursor: pointer;
         }
 
         .category-icon-wizard {
@@ -2639,7 +2678,8 @@
 
         .performance-pack-card.locked .pack-toggle {
             opacity: 0.5;
-            pointer-events: none;
+            pointer-events: auto; /* Klickbar */
+            cursor: pointer;
         }
 
         .lock-overlay {
@@ -3173,13 +3213,13 @@
             </div>
             
             <div class="header-progress-badges">
-                <div class="progress-badge-compact incomplete" id="checkinBadge">
+                <div class="progress-badge-compact incomplete" id="checkinBadge" onclick="switchView('checkin')" title="Daily Check-In">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                         <polyline points="22 7 13.5 15.5 8.5 10.5 2 17"></polyline>
                         <polyline points="16 7 22 7 22 13"></polyline>
                     </svg>
                 </div>
-                <div class="progress-badge-compact incomplete" id="journalBadge">
+                <div class="progress-badge-compact incomplete" id="journalBadge" onclick="openJournal()" title="Tagebuch">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
                         <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
@@ -3668,12 +3708,15 @@
                 </div>
                 <div class="calendar-grid" id="calendarGrid"></div>
             </div>
-            <div class="journal-entry-section" id="journalEntrySection">
-                <div class="journal-entry-date" id="journalEntryDate"></div>
-                <textarea class="journal-textarea" id="journalTextarea" placeholder="Schreibe deine Gedanken..."></textarea>
-                <button class="journal-save-btn" onclick="saveJournalEntry()">Speichern</button>
-            </div>
         </div>
+    </div>
+    
+    <!-- Journal Entry Popup (außerhalb des Kalenders) -->
+    <div class="journal-entry-backdrop" id="journalEntryBackdrop" onclick="closeJournalEntry()"></div>
+    <div class="journal-entry-section" id="journalEntrySection">
+        <div class="journal-entry-date" id="journalEntryDate"></div>
+        <textarea class="journal-textarea" id="journalTextarea" placeholder="Schreibe deine Gedanken..."></textarea>
+        <button class="journal-save-btn" onclick="saveJournalEntry()">Speichern</button>
     </div>
 
     <!-- Confirm Modal -->
@@ -4327,10 +4370,31 @@
             
             if (!mainChart) {
                 console.log('mainChart is null, skipping chart update');
+                return;
             }
             
             if (performanceData.entries.length === 0) {
-                console.log('No entries, skipping chart update');
+                console.log('No entries - showing starting point at 100');
+                
+                // Zeige Startpunkt bei 100
+                const today = new Date();
+                mainChart.data.labels = [`${today.getDate()}.${today.getMonth()+1}.${today.getFullYear()}`];
+                mainChart.data.datasets[0].data = [100];
+                mainChart.update('none');
+                
+                // Zeige 100.0 als aktuellen Wert
+                const valueEl = document.getElementById('mainIndexValue');
+                if (valueEl) {
+                    valueEl.textContent = '100.0';
+                    valueEl.className = 'index-value-number';
+                }
+                
+                const changeText = document.getElementById('mainChangeText');
+                if (changeText) {
+                    changeText.textContent = '+0.00%';
+                    changeText.style.color = 'var(--text-secondary)';
+                }
+                
                 return;
             }
 
@@ -5282,6 +5346,7 @@
                     localStorage.removeItem('fysJournal');
                     localStorage.removeItem('fysWizardDraft');
                     localStorage.removeItem('fys_timeRange');
+                    localStorage.removeItem('lastCheckInDate'); // Check-In Datum zurücksetzen
                     sessionStorage.removeItem('fysCheckInCompleted');
                     sessionStorage.removeItem('fysAutoTimeframe');
                     
@@ -6283,11 +6348,9 @@
             }
             
             if (journalBadge) {
-                const hasJournal = performanceData.journalEntries && 
-                                 performanceData.journalEntries.some(e => {
-                                     const entryDate = new Date(e.date).toISOString().split('T')[0];
-                                     return entryDate === todayStr;
-                                 });
+                // Prüfe journalData (als Objekt mit Datum-Keys: "YYYY-MM-DD")
+                const hasJournal = journalData && journalData[todayStr] && journalData[todayStr].trim().length > 0;
+                
                 if (hasJournal) {
                     journalBadge.classList.remove('incomplete');
                     journalBadge.classList.add('complete');
@@ -6488,7 +6551,7 @@
 
         function closeJournal() {
             document.getElementById('journalModal').classList.remove('active');
-            document.getElementById('journalEntrySection').classList.remove('active');
+            closeJournalEntry();
         }
 
         // Confirm Modal Functions
@@ -6605,7 +6668,7 @@
         }
 
         function selectDate(day) {
-            selectedJournalDate = `${currentJournalMonth.getFullYear()}-${currentJournalMonth.getMonth() + 1}-${day}`;
+            selectedJournalDate = `${currentJournalMonth.getFullYear()}-${String(currentJournalMonth.getMonth() + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
             
             const dateObj = new Date(currentJournalMonth.getFullYear(), currentJournalMonth.getMonth(), day);
             const dateStr = `${day}. ${['Januar', 'Februar', 'März', 'April', 'Mai', 'Juni', 
@@ -6613,7 +6676,15 @@
             
             document.getElementById('journalEntryDate').textContent = dateStr;
             document.getElementById('journalTextarea').value = journalData[selectedJournalDate] || '';
+            
+            // Popup öffnen
+            document.getElementById('journalEntryBackdrop').classList.add('active');
             document.getElementById('journalEntrySection').classList.add('active');
+        }
+        
+        function closeJournalEntry() {
+            document.getElementById('journalEntryBackdrop').classList.remove('active');
+            document.getElementById('journalEntrySection').classList.remove('active');
         }
 
         function saveJournalEntry() {
@@ -6631,6 +6702,9 @@
                 renderCalendar();
                 updateJournalStats();
                 updateDailyProgress();
+                
+                // Popup schließen
+                closeJournalEntry();
             } catch(e) {
                 console.error('Save journal error:', e);
                 alert('Fehler beim Speichern');
@@ -7091,6 +7165,23 @@
             console.log('=== SAVE WIZARD CHECK-IN START ===');
             console.log('Raw wizardDraft:', wizardDraft);
             
+            // 1 Check-In pro Tag - Prüfe ob heute bereits eingecheckt wurde
+            const today = new Date().toDateString();
+            const lastCheckInDate = localStorage.getItem('lastCheckInDate');
+            
+            let isEditingToday = false;
+            
+            if (isPro && lastCheckInDate === today) {
+                // Pro-User dürfen heutigen Check-In bis 23:59 bearbeiten (überschreiben)
+                isEditingToday = true;
+                console.log('✏️ Pro-User bearbeitet heutigen Check-In');
+            } else if (lastCheckInDate === today) {
+                // Free-User: Nur 1 Check-In pro Tag
+                alert('⚠️ Du hast heute bereits eingecheckt!\n\nNur 1 Check-In pro Tag möglich.\n\nMit FYS Pro kannst du deinen heutigen Check-In bis Mitternacht bearbeiten.');
+                closeWizard();
+                return;
+            }
+            
             // Get all values
             const values = {};
             const sleepHoursValue = parseFloat(wizardDraft.sleep) || 8.0;
@@ -7216,14 +7307,29 @@
             console.log('Final Pack Indices:', packIndices);
             console.log('=== END DEBUG ===');
 
-            performanceData.entries.push({
+            // Edit-Logik für Pro-User
+            const newEntry = {
                 date: entryDate.toISOString(),
                 values: values,
                 categoryValues: categoryValues,
                 sleepHours: sleepHoursValue,
                 fysIndex: fysIndex,
-                packIndices: packIndices // Add pack indices to entry
-            });
+                packIndices: packIndices
+            };
+            
+            if (isEditingToday) {
+                // Pro-User bearbeitet heutigen Check-In - überschreiben statt neu anlegen
+                performanceData.entries[performanceData.entries.length - 1] = newEntry;
+                console.log('✏️ Heutiger Check-In wurde überschrieben (Pro)');
+            } else {
+                // Neuer Check-In
+                performanceData.entries.push(newEntry);
+                console.log('✅ Neuer Check-In hinzugefügt');
+            }
+            
+            // Datum des letzten Check-Ins speichern
+            localStorage.setItem('lastCheckInDate', today);
+            console.log('✓ lastCheckInDate gespeichert:', today);
 
             localStorage.setItem('fysData', JSON.stringify(performanceData));
             localStorage.removeItem('fysWizardDraft');
@@ -7309,6 +7415,7 @@
                 initMainChart();
                 updateUI();
                 renderPerformancePacks();
+                updateDailyProgress(); // Badge Status beim Start aktualisieren
             } catch(e) {
                 console.error('Init error:', e);
             }
