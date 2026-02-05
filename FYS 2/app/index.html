@@ -425,7 +425,7 @@
         .header {
             background: var(--bg-secondary);
             padding: 12px 20px 16px 20px;
-            position: fixed; /* fixed statt sticky */
+            position: fixed;
             top: 0;
             left: 0;
             right: 0;
@@ -434,6 +434,18 @@
             justify-content: space-between;
             align-items: center;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+        
+        /* Header Hintergrund bis ganz nach oben (auch über safe area) */
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -200px;
+            left: 0;
+            right: 0;
+            height: 200px;
+            background: var(--bg-secondary);
+            z-index: -1;
         }
         
         /* iOS safe area support */
@@ -456,14 +468,14 @@
         }
         
         .progress-badge-compact {
-            width: 24px;
-            height: 24px;
+            width: 28px;
+            height: 28px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             transition: all 0.3s;
-            pointer-events: auto; /* Klickbar */
+            pointer-events: auto;
             cursor: pointer;
         }
         
@@ -479,8 +491,8 @@
         }
         
         .progress-badge-compact svg {
-            width: 14px;
-            height: 14px;
+            width: 16px;
+            height: 16px;
             opacity: 0.4;
             color: var(--text-secondary);
         }
@@ -2326,15 +2338,15 @@
             left: 0;
             right: 0;
             bottom: 0;
-            display: none; /* Hide by default */
+            display: none;
             flex-direction: column;
-            padding: 20px 24px 140px; /* Extra bottom padding to clear button area */
+            padding: 20px 24px 140px;
             opacity: 0;
             transform: translateX(100%);
             transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            overflow-y: auto; /* Allow scrolling if needed */
-            pointer-events: auto; /* Klickbar */
-            cursor: pointer; /* Disable interaction when not active */
+            overflow-y: auto;
+            overflow-x: hidden;
+            -webkit-overflow-scrolling: touch;
         }
 
         .step-container-wizard.active {
@@ -2450,7 +2462,10 @@
         .review-list-wizard {
             flex: 1;
             overflow-y: auto;
+            overflow-x: hidden;
+            -webkit-overflow-scrolling: touch;
             margin-top: 24px;
+            padding-bottom: 20px;
         }
 
         .review-item-wizard {
@@ -7378,6 +7393,14 @@
             console.log('  Current step after:', wizardCurrentStep);
             updateWizardUI();
             console.log('  ✓ UI updated - should show step', step);
+            
+            // Scroll to top of the step container
+            setTimeout(() => {
+                const activeStep = document.querySelector('.step-container-wizard.active');
+                if (activeStep) {
+                    activeStep.scrollTop = 0;
+                }
+            }, 100);
         }
 
         document.addEventListener('click', function(e) {
