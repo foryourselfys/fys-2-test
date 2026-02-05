@@ -3218,7 +3218,7 @@
             </div>
             
             <div class="header-progress-badges">
-                <div class="progress-badge-compact incomplete" id="checkinBadge" onclick="switchView('checkin')" title="Daily Check-In">
+                <div class="progress-badge-compact incomplete" id="checkinBadge" onclick="openCheckIn()" title="Daily Check-In">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                         <polyline points="22 7 13.5 15.5 8.5 10.5 2 17"></polyline>
                         <polyline points="16 7 22 7 22 13"></polyline>
@@ -3240,7 +3240,7 @@
             <div class="home-content">
                 
                 <!-- Daily Check-in Widget (MOVED TO TOP) -->
-                <div class="checkin-widget" onclick="switchView('checkin')">
+                <div class="checkin-widget" onclick="openCheckIn()">
                     <div class="checkin-widget-header">
                         <div class="checkin-widget-icon">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -4383,7 +4383,8 @@
                 
                 // Zeige Startpunkt bei 100
                 const today = new Date();
-                mainChart.data.labels = [`${today.getDate()}.${today.getMonth()+1}.${today.getFullYear()}`];
+                const todayLabel = `${today.getDate()}.${today.getMonth()+1}.${today.getFullYear()}`;
+                mainChart.data.labels = [todayLabel];
                 mainChart.data.datasets[0].data = [100];
                 mainChart.update('none');
                 
@@ -4394,10 +4395,10 @@
                     valueEl.className = 'index-value-number';
                 }
                 
+                // Keine Prozent-Änderung anzeigen (leer lassen)
                 const changeText = document.getElementById('mainChangeText');
                 if (changeText) {
-                    changeText.textContent = '+0.00%';
-                    changeText.style.color = 'var(--text-secondary)';
+                    changeText.textContent = '';
                 }
                 
                 return;
@@ -4426,6 +4427,7 @@
                 const first = entries[0];
                 const change = latest.fysIndex - first.fysIndex;
                 
+                // Zeige aktuellen Wert
                 const valueEl = document.getElementById('mainIndexValue');
                 if (valueEl) {
                     valueEl.textContent = latest.fysIndex.toFixed(1);
@@ -7016,6 +7018,72 @@
             if (container) container.classList.remove('active');
             if (confirmDialog) confirmDialog.classList.remove('active');
             switchView('home');
+        }
+        
+        // Intelligente Check-In Funktion: Erkennt ob Pro-User heute bereits eingecheckt hat
+        function openCheckIn() {
+            const today = new Date().toDateString();
+            const lastCheckInDate = localStorage.getItem('lastCheckInDate');
+            
+            // Pro-User der heute bereits eingecheckt hat → direkt zum Bearbeiten
+            if (isPro && lastCheckInDate === today) {
+                console.log('🔧 Pro user editing today\'s check-in');
+                startWizardEdit();
+            } else {
+                // Normaler Check-In Flow
+                switchView('checkin');
+            }
+        }
+        
+        // Funktion für Pro-User: Check-In bearbeiten (direkt zur Zusammenfassung)
+        function startWizardEdit() {
+            console.log('🔧 Starting Wizard in EDIT MODE');
+            
+            try {
+                // Lade heutigen Check-In
+                const today = new Date().toISOString().split('T')[0];
+                const todayEntry = performanceData.entries.find(e => {
+                    const entryDate = new Date(e.date).toISOString().split('T')[0];
+                    return entryDate === today;
+                });
+                
+                if (!todayEntry) {
+                    console.error('No entry found for today!');
+                    alert('Fehler: Kein Check-In für heute gefunden.');
+                    return;
+                }
+                
+                console.log('✓ Found today entry:', todayEntry);
+                
+                // Fülle wizardDraft mit heutigen Werten
+                wizardDraft = {};
+                wizardCategories = getWizardCategories();
+                
+                // Fülle alle Kategoriewerte
+                wizardCategories.forEach(cat => {
+                    if (cat.isSleep) {
+                        wizardDraft[cat.id] = todayEntry.sleepHours || 8.0;
+                    } else {
+                        wizardDraft[cat.id] = todayEntry.values[cat.id] || 5;
+                    }
+                    console.log(`Loaded ${cat.id}:`, wizardDraft[cat.id]);
+                });
+                
+                // Starte normalen Wizard
+                startWizard();
+                
+                // Spring direkt zur Zusammenfassung (nach kurzer Verzögerung)
+                setTimeout(() => {
+                    wizardCurrentStep = wizardCategories.length; // Letzter Step = Review
+                    updateWizardUI();
+                    renderWizardReview();
+                    console.log('✓ Jumped to review step');
+                }, 100);
+                
+            } catch (error) {
+                console.error('Error starting wizard edit:', error);
+                alert('Fehler beim Laden des Check-Ins: ' + error.message);
+            }
         }
 
         function closeWizard() {
