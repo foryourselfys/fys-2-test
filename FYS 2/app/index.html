@@ -423,7 +423,7 @@
         /* Header with Logo */
         .header {
             background: var(--bg-secondary);
-            padding: 20px 20px 16px 20px;
+            padding: 12px 20px 16px 20px; /* Oben weniger Padding für Mobile */
             position: sticky;
             top: 0;
             z-index: 100;
@@ -431,12 +431,25 @@
             justify-content: space-between;
             align-items: center;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            position: relative; /* Für absolute Positionierung der Badges */
+        }
+        
+        /* iOS safe area support */
+        @supports (padding-top: env(safe-area-inset-top)) {
+            .header {
+                padding-top: max(12px, env(safe-area-inset-top));
+            }
         }
 
         /* Progress Badges */
         .header-progress-badges {
             display: flex;
             gap: 6px;
+            align-items: center;
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+        }
             align-items: center;
         }
         
@@ -3540,6 +3553,7 @@
                         <div class="tool-title">Task Manager</div>
                         <div class="tool-description">Verwalte deine Aufgaben</div>
                     </div>
+                    <div class="pro-badge-small">PRO</div>
                 </div>
                 
                 <!-- Habit Tracker -->
@@ -3549,6 +3563,7 @@
                         <div class="tool-title">Habit Tracker</div>
                         <div class="tool-description">Tracke deine Gewohnheiten</div>
                     </div>
+                    <div class="pro-badge-small">PRO</div>
                 </div>
                 
                 <!-- Sober Tracker -->
@@ -3558,6 +3573,7 @@
                         <div class="tool-title">Sober Tracker</div>
                         <div class="tool-description">Verfolge deine Erfolge</div>
                     </div>
+                    <div class="pro-badge-small">PRO</div>
                 </div>
 
                 <!-- FEATURES SECTION -->
@@ -3580,6 +3596,7 @@
                         <div class="tool-title">Data & Statistics</div>
                         <div class="tool-description">Detailed analytics dashboard</div>
                     </div>
+                    <div class="pro-badge-small">PRO</div>
                 </div>
                 
                 <!-- Pro Features Overview -->
