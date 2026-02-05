@@ -423,15 +423,16 @@
         /* Header with Logo */
         .header {
             background: var(--bg-secondary);
-            padding: 12px 20px 16px 20px; /* Oben weniger Padding für Mobile */
-            position: sticky;
+            padding: 12px 20px 16px 20px;
+            position: fixed; /* fixed statt sticky */
             top: 0;
+            left: 0;
+            right: 0;
             z-index: 100;
             display: flex;
             justify-content: space-between;
             align-items: center;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-            position: relative; /* Für absolute Positionierung der Badges */
         }
         
         /* iOS safe area support */
@@ -439,6 +440,11 @@
             .header {
                 padding-top: max(12px, env(safe-area-inset-top));
             }
+        }
+        
+        /* Body padding to compensate for fixed header */
+        body {
+            padding-top: 60px; /* Adjust based on header height */
         }
 
         /* Progress Badges */
@@ -3543,7 +3549,6 @@
                         <div class="tool-title">Tagebuch</div>
                         <div class="tool-description">Dokumentiere deine Gedanken</div>
                     </div>
-                    <div class="pro-badge-small">PRO</div>
                 </div>
                 
                 <!-- Task Manager -->
@@ -4442,7 +4447,14 @@
             if (entries.length > 0) {
                 const latest = entries[entries.length - 1];
                 const first = entries[0];
-                const change = latest.fysIndex - first.fysIndex;
+                
+                // Bei nur 1 echtem Check-In: vergleiche mit Startwert 100
+                let baseValue = first.fysIndex;
+                if (performanceData.entries.length === 1) {
+                    baseValue = 100;
+                }
+                
+                const change = latest.fysIndex - baseValue;
                 
                 // Zeige aktuellen Wert
                 const valueEl = document.getElementById('mainIndexValue');
@@ -4459,7 +4471,7 @@
                     valueEl.className = 'index-value-number';
                 }
 
-                const changePercent = ((change / first.fysIndex) * 100).toFixed(2);
+                const changePercent = ((change / baseValue) * 100).toFixed(2);
                 const changeText = document.getElementById('mainChangeText');
                 if (changeText) {
                     changeText.textContent = `${change >= 0 ? '+' : ''}${changePercent}%`;
@@ -7042,6 +7054,12 @@
             const today = new Date().toDateString();
             const lastCheckInDate = localStorage.getItem('lastCheckInDate');
             
+            // Free-User der heute bereits eingecheckt hat → Meldung
+            if (!isPro && lastCheckInDate === today) {
+                alert('⚠️ Du hast heute bereits eingecheckt!\n\nNur 1 Check-In pro Tag möglich.\n\nMit FYS Pro kannst du deinen heutigen Check-In bis Mitternacht bearbeiten.');
+                return;
+            }
+            
             // Pro-User der heute bereits eingecheckt hat → direkt zum Bearbeiten
             if (isPro && lastCheckInDate === today) {
                 console.log('🔧 Pro user editing today\'s check-in');
@@ -7049,6 +7067,36 @@
             } else {
                 // Normaler Check-In Flow
                 switchView('checkin');
+            }
+        }
+        
+        // Update Check-In Widget basierend auf Status
+        function updateCheckInWidget() {
+            const today = new Date().toDateString();
+            const lastCheckInDate = localStorage.getItem('lastCheckInDate');
+            const hasCheckedInToday = lastCheckInDate === today;
+            
+            const subtitle = document.getElementById('checkinWidgetSubtitle');
+            const widget = document.querySelector('.checkin-widget');
+            
+            if (!subtitle || !widget) return;
+            
+            if (hasCheckedInToday) {
+                if (isPro) {
+                    subtitle.textContent = '✏️ Bearbeite deinen heutigen Check-In';
+                    widget.style.background = 'linear-gradient(135deg, rgba(255, 107, 53, 0.15), rgba(255, 107, 53, 0.05))';
+                    widget.style.borderColor = 'rgba(255, 107, 53, 0.3)';
+                } else {
+                    subtitle.textContent = '✅ Heute bereits eingecheckt';
+                    widget.style.background = 'linear-gradient(135deg, rgba(0, 201, 109, 0.15), rgba(0, 201, 109, 0.05))';
+                    widget.style.borderColor = 'rgba(0, 201, 109, 0.3)';
+                    widget.style.opacity = '0.7';
+                }
+            } else {
+                subtitle.textContent = 'Beantworte 8 Fragen zu deinem Tag';
+                widget.style.background = '';
+                widget.style.borderColor = '';
+                widget.style.opacity = '';
             }
         }
         
@@ -7510,6 +7558,7 @@
 
             showToast();
             updateDailyProgress(); // Update badges after check-in
+            updateCheckInWidget(); // Widget aktualisieren
 
             setTimeout(() => {
                 wizardDraft = {};
@@ -7582,6 +7631,7 @@
                 updateUI();
                 renderPerformancePacks();
                 updateDailyProgress(); // Badge Status beim Start aktualisieren
+                updateCheckInWidget(); // Widget Status aktualisieren
             } catch(e) {
                 console.error('Init error:', e);
             }
