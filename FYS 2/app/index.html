@@ -4529,8 +4529,23 @@
                     const startLabel = `${today.getDate()}.${today.getMonth()+1}.${today.getFullYear()}`;
                     chartLabels = [startLabel];
                     chartData = [100];
+                } else if (performanceData.entries.length === 1) {
+                    // ALLERERSTER ENTRY: Zeige 100 → Entry
+                    const today = new Date();
+                    const startLabel = `${today.getDate()}.${today.getMonth()+1}.${today.getFullYear()}`;
+                    chartLabels.push(startLabel);
+                    chartData.push(100);
+                    
+                    // Dann der erste Entry
+                    const e = entries[0];
+                    const date = new Date(e.date);
+                    const label = `${date.getDate()}.${date.getMonth() + 1}.${date.getFullYear()}`;
+                    chartLabels.push(label);
+                    chartData.push(e.fysIndex);
+                    
+                    console.log('First entry ever: showing 100 → entry');
                 } else {
-                    // Zeige NUR die gefilterten Entries (kein extra Startpunkt!)
+                    // Normale Entries: Zeige NUR die gefilterten Entries
                     entries.forEach(e => {
                         const date = new Date(e.date);
                         const label = `${date.getDate()}.${date.getMonth() + 1}.${date.getFullYear()}`;
@@ -4549,8 +4564,16 @@
                 const latest = entries[entries.length - 1];
                 const first = entries[0];
                 
-                // Basis für Prozent-Berechnung ist der ERSTE Wert im Zeitfenster
-                const baseValue = first.fysIndex;
+                // Basis für Prozent-Berechnung
+                let baseValue;
+                if (performanceData.entries.length === 1) {
+                    // ALLERERSTER ENTRY: Vergleich mit 100
+                    baseValue = 100;
+                } else {
+                    // Normale Entries: Vergleich mit erstem Wert im Zeitfenster
+                    baseValue = first.fysIndex;
+                }
+                
                 const change = latest.fysIndex - baseValue;
                 
                 // Zeige aktuellen Wert
@@ -4679,8 +4702,16 @@
                 const latest = entries[entries.length - 1];
                 const first = entries[0];
                 
-                // Basis für Prozent-Berechnung ist der ERSTE Wert im Zeitfenster
-                const baseValue = first.fysIndex;
+                // Basis für Prozent-Berechnung
+                let baseValue;
+                if (performanceData.entries.length === 1) {
+                    // ALLERERSTER ENTRY: Vergleich mit 100
+                    baseValue = 100;
+                } else {
+                    // Normale Entries: Vergleich mit erstem Wert im Zeitfenster
+                    baseValue = first.fysIndex;
+                }
+                
                 const change = latest.fysIndex - baseValue;
                 const changePercent = baseValue !== 0 ? ((change / baseValue) * 100).toFixed(2) : '0.00';
                 
@@ -4688,7 +4719,7 @@
                 document.getElementById('detailIndexChange').textContent = 
                     `${change >= 0 ? '+' : ''}${changePercent}%`;
                     
-                console.log(`FYS Index: ${first.fysIndex} → ${latest.fysIndex} (${changePercent}%)`);
+                console.log(`FYS Index: ${baseValue} → ${latest.fysIndex} (${changePercent}%)`);
             } else {
                 // Demo-Werte wenn keine Daten
                 document.getElementById('detailIndexValue').textContent = '100.0';
@@ -4792,8 +4823,16 @@
                 const latestValue = latest.categoryValues ? latest.categoryValues[cat.id] : 100;
                 const firstValue = first.categoryValues ? first.categoryValues[cat.id] : 100;
                 
-                // Basis für Prozent-Berechnung ist der ERSTE Wert im Zeitfenster
-                const baseValue = firstValue;
+                // Basis für Prozent-Berechnung
+                let baseValue;
+                if (performanceData.entries.length === 1) {
+                    // ALLERERSTER ENTRY: Vergleich mit 100
+                    baseValue = 100;
+                } else {
+                    // Normale Entries: Vergleich mit erstem Wert im Zeitfenster
+                    baseValue = firstValue;
+                }
+                
                 const change = latestValue - baseValue;
                 const changePercent = baseValue !== 0 ? ((change / baseValue) * 100).toFixed(1) : '0.0';
                 
@@ -5029,8 +5068,16 @@
             const latestValue = latest.categoryValues ? latest.categoryValues[currentCategoryId] : 100;
             const firstValue = first.categoryValues ? first.categoryValues[currentCategoryId] : 100;
             
-            // Basis für Prozent-Berechnung ist der ERSTE Wert im Zeitfenster
-            const baseValue = firstValue;
+            // Basis für Prozent-Berechnung
+            let baseValue;
+            if (performanceData.entries.length === 1) {
+                // ALLERERSTER ENTRY: Vergleich mit 100
+                baseValue = 100;
+            } else {
+                // Normale Entries: Vergleich mit erstem Wert im Zeitfenster
+                baseValue = firstValue;
+            }
+            
             const change = latestValue - baseValue;
             const changePercent = baseValue !== 0 ? ((change / baseValue) * 100).toFixed(1) : '0.0';
 
@@ -5189,19 +5236,36 @@
                 return;
             }
 
-            // Zeige NUR die gefilterten Entries (kein extra Startpunkt!)
             let chartLabels = [];
             let chartData = [];
             
-            entries.forEach(e => {
+            if (performanceData.entries.length === 1) {
+                // ALLERERSTER ENTRY: Zeige 100 → Entry
+                const today = new Date();
+                const startLabel = `${today.getDate()}.${today.getMonth()+1}.${today.getFullYear()}`;
+                chartLabels.push(startLabel);
+                chartData.push(100);
+                
+                // Dann der erste Entry
+                const e = entries[0];
                 const date = new Date(e.date);
                 const label = `${date.getDate()}.${date.getMonth() + 1}.${date.getFullYear()}`;
                 chartLabels.push(label);
                 
-                // Verwende categoryValues
                 const value = e.categoryValues ? e.categoryValues[currentCategoryId] : 100;
                 chartData.push(value);
-            });
+            } else {
+                // Normale Entries: Zeige NUR die gefilterten Entries
+                entries.forEach(e => {
+                    const date = new Date(e.date);
+                    const label = `${date.getDate()}.${date.getMonth() + 1}.${date.getFullYear()}`;
+                    chartLabels.push(label);
+                    
+                    // Verwende categoryValues
+                    const value = e.categoryValues ? e.categoryValues[currentCategoryId] : 100;
+                    chartData.push(value);
+                });
+            }
             
             categoryDetailChart.data.labels = chartLabels;
             categoryDetailChart.data.datasets[0].data = chartData;
