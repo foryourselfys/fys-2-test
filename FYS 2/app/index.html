@@ -5411,29 +5411,45 @@
         function resetData() {
             showConfirmModal(
                 'Daten zurücksetzen?',
-                'Alle deine Check-Ins, Tagebucheinträge und Performance Packs werden gelöscht. Du startest komplett neu und dein erster Check-In wird die erste Messung sein.',
+                'Alle deine Check-Ins, Tagebucheinträge und Performance Packs werden gelöscht. Du startest komplett neu bei 100 Punkten.',
                 '⚠️',
                 function() {
-                    // This runs after both confirmations
-                    performanceData = {
-                        entries: [],
-                        activePacks: []
-                    };
+                    // KOMPLETT RESET - App-Status wie beim ersten Öffnen
                     
-                    localStorage.setItem('fysData', JSON.stringify(performanceData));
+                    // Lösche ALLE localStorage Einträge von FYS
+                    localStorage.removeItem('fysData');
                     localStorage.removeItem('fys_activePacks');
                     localStorage.removeItem('fysJournal');
                     localStorage.removeItem('fysWizardDraft');
                     localStorage.removeItem('fys_timeRange');
-                    localStorage.removeItem('lastCheckInDate'); // Check-In Datum zurücksetzen
+                    localStorage.removeItem('lastCheckInDate');
+                    localStorage.removeItem('fysSleepGoal');
+                    localStorage.removeItem('fysCoachData');
+                    // Pro-Status NICHT löschen - der bleibt erhalten
+                    
+                    // Lösche sessionStorage
                     sessionStorage.removeItem('fysCheckInCompleted');
                     sessionStorage.removeItem('fysAutoTimeframe');
                     
+                    // Reset in-memory Variablen
+                    performanceData = {
+                        entries: [],
+                        activePacks: []
+                    };
                     journalData = {};
                     currentTimeRange = '1d';
-                    localStorage.setItem('fys_timeRange', '1d');
+                    wizardDraft = {};
                     
-                    alert('✅ Alle Daten gelöscht!\n\nMache jetzt deinen ersten Check-In um zu starten.');
+                    // Speichere leere Datenstruktur
+                    localStorage.setItem('fysData', JSON.stringify(performanceData));
+                    localStorage.setItem('fys_timeRange', '1d');
+                    localStorage.setItem('fysSleepGoal', '8.0');
+                    
+                    console.log('✅ Complete reset - app state like first launch');
+                    
+                    alert('✅ Alle Daten gelöscht!\n\nDie App wurde zurückgesetzt. Dein nächster Check-In startet bei 100 Punkten.');
+                    
+                    // Seite neu laden für frischen Start
                     location.reload();
                 }
             );
