@@ -7604,18 +7604,42 @@
                 console.error('Could not set sessionStorage flag:', e);
             }
 
-            showToast();
+            // SOFORT Charts aktualisieren (bevor Toast/Navigation)
+            console.log('🔄 Updating charts immediately after check-in...');
+            currentTimeRange = '1d'; // Setze Zeitbereich auf 1D
+            localStorage.setItem('fys_timeRange', '1d');
+            updateMainChart(); // Haupt-Chart sofort aktualisieren
+            
+            // Stock-Liste aktualisieren
+            if (currentStockListType === 'fys') {
+                createStockList();
+            }
+            
+            // Performance Pack Charts aktualisieren
+            if (isPro && performanceData.activePacks && performanceData.activePacks.length > 0) {
+                performanceData.activePacks.forEach(packId => {
+                    createPackMiniChart(packId);
+                });
+            }
+            
             updateDailyProgress(); // Update badges after check-in
             updateCheckInWidget(); // Widget aktualisieren
+            
+            console.log('✅ Charts updated with new data!');
+
+            showToast();
 
             setTimeout(() => {
                 wizardDraft = {};
-                // Navigate to home and set 1D timeframe
+                // Navigate to home
                 switchView('home');
+                // Time buttons aktualisieren
+                document.querySelectorAll('.time-btn').forEach(btn => btn.classList.remove('active'));
+                document.querySelectorAll('.time-btn[data-range="1d"]').forEach(btn => btn.classList.add('active'));
+                // Latest data point highlighten
                 setTimeout(() => {
-                    changeTimeRange('1d');
                     highlightLatestDataPoint();
-                }, 300);
+                }, 100);
             }, 1000);
         }
 
