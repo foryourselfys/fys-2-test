@@ -7545,7 +7545,11 @@
             
             let isEditingToday = false;
             
-            if (isPro && lastCheckInDate === today) {
+            // TEST MODE: Erlaube immer neue CheckIns (überschreibe nicht, erstelle neu)
+            if (testMode) {
+                console.log('🧪 TEST MODE: Bypassing date check - creating new entry');
+                isEditingToday = false; // Immer neuer Entry im Test-Mode
+            } else if (isPro && lastCheckInDate === today) {
                 // Pro-User dürfen heutigen Check-In bis 23:59 bearbeiten (überschreiben)
                 isEditingToday = true;
                 console.log('✏️ Pro-User bearbeitet heutigen Check-In');
@@ -7732,16 +7736,16 @@
                 console.log('✅ Neuer Check-In hinzugefügt');
             }
             
-            // Datum des letzten Check-Ins speichern
-            localStorage.setItem('lastCheckInDate', today);
-            console.log('✓ lastCheckInDate gespeichert:', today);
+            // Datum des letzten Check-Ins speichern (NICHT im Test-Mode!)
+            if (!testMode) {
+                localStorage.setItem('lastCheckInDate', today);
+                console.log('✓ lastCheckInDate gespeichert:', today);
+            } else {
+                console.log('🧪 TEST MODE: Skipping lastCheckInDate update');
+            }
 
             localStorage.setItem('fysData', JSON.stringify(performanceData));
             localStorage.removeItem('fysWizardDraft');
-
-            // Datum des letzten Check-Ins speichern
-            localStorage.setItem('lastCheckInDate', today);
-            console.log('✓ lastCheckInDate gespeichert:', today);
 
             // Set flag for post-reload actions
             try {
