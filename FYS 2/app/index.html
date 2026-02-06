@@ -3572,6 +3572,20 @@
                     ">Activate FYS Pro</button>
                 </div>
 
+                <!-- Test Mode (TEMPORARY - Remove in Production) -->
+                <div class="setting-item" style="text-align: center; border: 2px dashed var(--accent-primary); border-radius: 12px; padding: 16px;">
+                    <div class="setting-label">🧪 TEST MODE</div>
+                    <div class="setting-description">Erlaube mehrere Check-Ins pro Tag (nur zum Testen)</div>
+                    <div style="display: flex; justify-content: center; margin-top: 14px;">
+                        <div class="toggle-switch" id="testModeToggle" onclick="toggleTestMode()">
+                            <div class="toggle-slider"></div>
+                        </div>
+                    </div>
+                    <div style="margin-top: 12px; font-size: 12px; color: var(--text-tertiary); font-style: italic;">
+                        ⚠️ Nur für Entwicklung & Testing
+                    </div>
+                </div>
+
                 <!-- Reset Data -->
                 <div class="setting-item" style="text-align: center;">
                     <div class="setting-label">🔄 Daten zurücksetzen</div>
@@ -4030,6 +4044,7 @@
         let sleepHours = 8.0;
         let coachDataAccess = localStorage.getItem('fysCoachData') === 'true';
         let isPro = localStorage.getItem('fysPro') === 'true'; // Pro status
+        let testMode = localStorage.getItem('fysTestMode') === 'true'; // Test Mode für unbegrenzte CheckIns
         let performanceData = JSON.parse(localStorage.getItem('fysData')) || { entries: [], activePacks: [] };
         
         // Ensure activePacks exists in loaded data
@@ -5435,6 +5450,29 @@
                 alert('🎉 FYS Pro aktiviert! Performance Packs sind jetzt auf dem Startbildschirm verfügbar.');
             } else {
                 alert('FYS Pro deaktiviert. Performance Packs wurden ausgeblendet.');
+            }
+        }
+        
+        // TEST MODE: Toggle für unbegrenzte CheckIns (TEMPORARY)
+        function toggleTestMode() {
+            testMode = !testMode;
+            localStorage.setItem('fysTestMode', testMode);
+            
+            // Update toggle UI
+            const toggle = document.getElementById('testModeToggle');
+            if (toggle) {
+                if (testMode) {
+                    toggle.classList.add('active');
+                } else {
+                    toggle.classList.remove('active');
+                }
+            }
+            
+            // Show message
+            if (testMode) {
+                alert('🧪 TEST MODE AKTIVIERT\n\nDu kannst jetzt mehrere Check-Ins pro Tag machen.\n\nNur für Testing & Entwicklung!');
+            } else {
+                alert('✅ TEST MODE DEAKTIVIERT\n\nNormaler Modus: 1 Check-In pro Tag.');
             }
         }
 
@@ -7164,6 +7202,13 @@
             const today = new Date().toDateString();
             const lastCheckInDate = localStorage.getItem('lastCheckInDate');
             
+            // TEST MODE: Erlaube immer neue CheckIns
+            if (testMode) {
+                console.log('🧪 TEST MODE: Unlimited check-ins enabled');
+                switchView('checkin');
+                return;
+            }
+            
             // Free-User der heute bereits eingecheckt hat → Meldung
             if (!isPro && lastCheckInDate === today) {
                 alert('⚠️ Du hast heute bereits eingecheckt!\n\nNur 1 Check-In pro Tag möglich.\n\nMit FYS Pro kannst du deinen heutigen Check-In bis Mitternacht bearbeiten.');
@@ -7822,6 +7867,13 @@
             if (coachDataAccess) {
                 const toggle = document.getElementById('coachDataToggle');
                 if (toggle) toggle.classList.add('active');
+            }
+            
+            // Initialize Test Mode Toggle
+            if (testMode) {
+                const testToggle = document.getElementById('testModeToggle');
+                if (testToggle) testToggle.classList.add('active');
+                console.log('🧪 Test Mode is ACTIVE');
             }
             
             try {
