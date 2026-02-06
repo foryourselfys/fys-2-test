@@ -5414,42 +5414,43 @@
                 'Alle deine Check-Ins, Tagebucheinträge und Performance Packs werden gelöscht. Du startest komplett neu bei 100 Punkten.',
                 '⚠️',
                 function() {
-                    // KOMPLETT RESET - App-Status wie beim ersten Öffnen
+                    console.log('🔄 Starting complete data reset...');
                     
-                    // Lösche ALLE localStorage Einträge von FYS
-                    localStorage.removeItem('fysData');
-                    localStorage.removeItem('fys_activePacks');
-                    localStorage.removeItem('fysJournal');
-                    localStorage.removeItem('fysWizardDraft');
-                    localStorage.removeItem('fys_timeRange');
-                    localStorage.removeItem('lastCheckInDate');
-                    localStorage.removeItem('fysSleepGoal');
-                    localStorage.removeItem('fysCoachData');
-                    // Pro-Status NICHT löschen - der bleibt erhalten
+                    // KOMPLETT RESET - Lösche ALLES aus localStorage
+                    // WICHTIG: Wir speichern NICHTS neu, damit beim Reload die Default-Werte { entries: [], activePacks: [] } greifen
+                    
+                    const keysToRemove = [
+                        'fysData',              // <- WICHTIG: Wird NICHT neu gespeichert!
+                        'fys_activePacks',
+                        'fysJournal',
+                        'fysWizardDraft',
+                        'fys_timeRange',        // <- Wird NICHT neu gespeichert!
+                        'lastCheckInDate',
+                        'fysSleepGoal',         // <- Wird NICHT neu gespeichert!
+                        'fysCoachData',
+                        'fysLanguage'
+                        // 'fysPro' und 'fysTheme' bleiben erhalten
+                    ];
+                    
+                    keysToRemove.forEach(key => {
+                        localStorage.removeItem(key);
+                        console.log(`✓ Removed: ${key}`);
+                    });
                     
                     // Lösche sessionStorage
                     sessionStorage.removeItem('fysCheckInCompleted');
                     sessionStorage.removeItem('fysAutoTimeframe');
                     
-                    // Reset in-memory Variablen
-                    performanceData = {
-                        entries: [],
-                        activePacks: []
-                    };
-                    journalData = {};
-                    currentTimeRange = '1d';
-                    wizardDraft = {};
+                    // Setze Reset-Flag (wird nach Reload gelöscht)
+                    sessionStorage.setItem('fysDataReset', 'true');
                     
-                    // Speichere leere Datenstruktur
-                    localStorage.setItem('fysData', JSON.stringify(performanceData));
-                    localStorage.setItem('fys_timeRange', '1d');
-                    localStorage.setItem('fysSleepGoal', '8.0');
+                    console.log('✅ All localStorage keys removed');
+                    console.log('📊 After reload, app will initialize with: { entries: [], activePacks: [] }');
                     
-                    console.log('✅ Complete reset - app state like first launch');
+                    // Alert VOR dem Reload
+                    alert('✅ Alle Daten gelöscht!\n\nDie App startet jetzt komplett neu bei 100 Punkten.');
                     
-                    alert('✅ Alle Daten gelöscht!\n\nDie App wurde zurückgesetzt. Dein nächster Check-In startet bei 100 Punkten.');
-                    
-                    // Seite neu laden für frischen Start
+                    // Seite neu laden - performanceData wird dann mit Default-Werten initialisiert
                     location.reload();
                 }
             );
@@ -7612,7 +7613,11 @@
             localStorage.setItem('fysData', JSON.stringify(performanceData));
             localStorage.removeItem('fysWizardDraft');
 
-            // Set flag for post-reload actions (scroll + 1D reset)
+            // Datum des letzten Check-Ins speichern
+            localStorage.setItem('lastCheckInDate', today);
+            console.log('✓ lastCheckInDate gespeichert:', today);
+
+            // Set flag for post-reload actions
             try {
                 sessionStorage.setItem('fysCheckInCompleted', 'true');
                 console.log('Post-checkin flag set successfully');
@@ -7620,11 +7625,27 @@
                 console.error('Could not set sessionStorage flag:', e);
             }
 
-            // SOFORT Charts aktualisieren (bevor Toast/Navigation)
-            console.log('🔄 Updating charts immediately after check-in...');
+            // SOFORT zum Home-View wechseln
+            const container = document.getElementById('wizardContainer');
+            const confirmDialog = document.getElementById('wizardConfirm');
+            if (container) container.classList.remove('active');
+            if (confirmDialog) confirmDialog.classList.remove('active');
+            switchView('home');
+            
+            // Wizard Draft löschen
+            wizardDraft = {};
+
+            // JETZT Charts aktualisieren (im sichtbaren Home-View!)
+            console.log('🔄 Updating charts after view switch...');
             currentTimeRange = '1d'; // Setze Zeitbereich auf 1D
             localStorage.setItem('fys_timeRange', '1d');
-            updateMainChart(); // Haupt-Chart sofort aktualisieren
+            
+            // Time buttons aktualisieren
+            document.querySelectorAll('.time-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.time-btn[data-range="1d"]').forEach(btn => btn.classList.add('active'));
+            
+            // Charts aktualisieren
+            updateMainChart(); // Haupt-Chart aktualisieren
             
             // Stock-Liste aktualisieren
             if (currentStockListType === 'fys') {
@@ -7638,30 +7659,38 @@
                 });
             }
             
-            updateDailyProgress(); // Update badges after check-in
+            updateDailyProgress(); // Update badges
             updateCheckInWidget(); // Widget aktualisieren
             
             console.log('✅ Charts updated with new data!');
 
-            showToast();
-
+            // Kurze Verzögerung für Chart-Rendering, dann Toast
             setTimeout(() => {
-                wizardDraft = {};
-                // Navigate to home
-                switchView('home');
-                // Time buttons aktualisieren
-                document.querySelectorAll('.time-btn').forEach(btn => btn.classList.remove('active'));
-                document.querySelectorAll('.time-btn[data-range="1d"]').forEach(btn => btn.classList.add('active'));
+                showToast();
                 // Latest data point highlighten
                 setTimeout(() => {
                     highlightLatestDataPoint();
-                }, 100);
-            }, 1000);
+                }, 300);
+            }, 150);
         }
 
         // Initialize
         document.addEventListener('DOMContentLoaded', function() {
             console.log('=== PAGE LOAD ===');
+            
+            // Check if data was just reset
+            const wasReset = sessionStorage.getItem('fysDataReset') === 'true';
+            if (wasReset) {
+                console.log('🔄 DATA RESET DETECTED - Initializing fresh app state');
+                sessionStorage.removeItem('fysDataReset');
+                
+                // Stelle sicher dass wirklich KEINE Daten vorhanden sind
+                performanceData = { entries: [], activePacks: [] };
+                journalData = {};
+                currentTimeRange = '1d';
+                
+                console.log('✅ Fresh state initialized:', performanceData);
+            }
             
             // Hide loading screen after 3 seconds
             setTimeout(() => {
