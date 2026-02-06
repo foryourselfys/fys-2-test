@@ -7508,19 +7508,50 @@
             const packIndices = {}; // Add pack indices
 
             if (isFirstEntry) {
-                fysIndex = 100;
+                console.log('=== FIRST ENTRY - Calculating initial values ===');
+                
+                // WICHTIG: Auch beim ersten Check-In die Werte berücksichtigen!
+                // Erstelle adjustierte Werte mit Sleep Bonus für Energy
+                const adjustedValuesForFYS = {};
                 categories.forEach(cat => {
-                    categoryValues[cat.id] = 100;
+                    if (cat.id === 'energy') {
+                        adjustedValuesForFYS[cat.id] = (values[cat.id] || 5) + sleepBonus;
+                        console.log('Adjusted Energy for first entry:', adjustedValuesForFYS[cat.id]);
+                    } else {
+                        adjustedValuesForFYS[cat.id] = values[cat.id] || 5;
+                    }
+                });
+                
+                console.log('First Entry Adjusted Values:', adjustedValuesForFYS);
+                
+                // Berechne FYS Index basierend auf den Werten (startet bei 100 + Änderung)
+                fysIndex = calculateFYSIndex(adjustedValuesForFYS, 100);
+                console.log('First Entry FYS Index:', fysIndex);
+                
+                // Berechne Category Values (starten bei 100 + Änderung)
+                categories.forEach(cat => {
+                    if (cat.id === 'energy') {
+                        // Energy mit adjustiertem Wert
+                        const adjustedInput = adjustedValuesForFYS[cat.id];
+                        const dailyChange = adjustedInput - 5;
+                        categoryValues[cat.id] = Math.max(0, 100 + dailyChange);
+                        console.log(`First Entry ${cat.id}:`, categoryValues[cat.id]);
+                    } else {
+                        categoryValues[cat.id] = calculateCategoryValue(values[cat.id], 100);
+                        console.log(`First Entry ${cat.id}:`, categoryValues[cat.id]);
+                    }
                 });
                 
                 // Initialize pack categories
                 getActivePackCategories().forEach(cat => {
-                    categoryValues[cat.id] = 100;
+                    categoryValues[cat.id] = calculateCategoryValue(values[cat.id], 100);
+                    console.log(`First Entry Pack Category ${cat.id}:`, categoryValues[cat.id]);
                 });
                 
                 // Initialize pack indices
                 performanceData.activePacks.forEach(packId => {
-                    packIndices[packId] = 100;
+                    packIndices[packId] = calculatePackIndex(packId, values, 100);
+                    console.log(`First Entry Pack ${packId} Index:`, packIndices[packId]);
                 });
             } else {
                 const lastEntry = performanceData.entries[performanceData.entries.length - 1];
