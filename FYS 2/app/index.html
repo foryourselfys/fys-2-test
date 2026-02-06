@@ -4141,15 +4141,22 @@
         function calculateSleepBonus(sleepHours, sleepGoal) {
             const difference = sleepHours - sleepGoal;
             
-            if (Math.abs(difference) <= 0.5) {
-                return 3; // Ziel erreicht
-            } else if (difference > 0.5) {
-                return 4; // Ziel übertroffen
-            } else {
-                if (difference >= -1) return -0.5;
-                if (difference >= -2) return -1;
-                return -2;
-            }
+            // Für jede halbe Stunde Abweichung: ±0.25
+            // Beispiele (bei 8h Ziel):
+            // 8.0h → 0.0 → 0
+            // 7.5h → -0.5 → -0.25
+            // 7.0h → -1.0 → -0.5
+            // 6.0h → -2.0 → -1.0
+            // 4.0h → -4.0 → -2.0
+            // 0.0h → -8.0 → -4.0
+            // 9.0h → +1.0 → +0.5
+            // 10.0h → +2.0 → +1.0
+            
+            const bonus = (difference / 0.5) * 0.25;
+            
+            console.log(`Sleep Bonus: ${sleepHours}h sleep, ${sleepGoal}h goal → difference: ${difference}h → bonus: ${bonus}`);
+            
+            return bonus;
         }
 
         // Get today's entry (für Testing: immer neuer Tag)
@@ -4578,34 +4585,33 @@
         function getFilteredEntries() {
             if (performanceData.entries.length === 0) return [];
             
-            // Verwende das letzte Datum in den Daten, nicht heute
-            const lastEntry = performanceData.entries[performanceData.entries.length - 1];
-            const lastDate = new Date(lastEntry.date);
-            
-            let startDate;
+            let count;
             
             switch(currentTimeRange) {
                 case '1d':
-                    startDate = new Date(lastDate.getTime() - 1 * 24 * 60 * 60 * 1000);
+                    count = 1; // Nur der letzte Entry
                     break;
                 case '7d':
-                    startDate = new Date(lastDate.getTime() - 7 * 24 * 60 * 60 * 1000);
+                    count = 7; // Letzte 7 Entries
                     break;
                 case '1m':
-                    startDate = new Date(lastDate.getTime() - 30 * 24 * 60 * 60 * 1000);
+                    count = 30; // Letzte 30 Entries
                     break;
                 case '6m':
-                    startDate = new Date(lastDate.getTime() - 180 * 24 * 60 * 60 * 1000);
+                    count = 180; // Letzte 180 Entries
                     break;
                 case '1y':
-                    startDate = new Date(lastDate.getTime() - 365 * 24 * 60 * 60 * 1000);
+                    count = 365; // Letzte 365 Entries
                     break;
                 case 'all':
-                    return performanceData.entries;
+                    return performanceData.entries; // Alle Entries
             }
             
-            const filtered = performanceData.entries.filter(e => new Date(e.date) >= startDate);
-            console.log(`Filtered entries for ${currentTimeRange}:`, filtered.length, 'out of', performanceData.entries.length);
+            // Nimm die letzten X Entries
+            const startIndex = Math.max(0, performanceData.entries.length - count);
+            const filtered = performanceData.entries.slice(startIndex);
+            
+            console.log(`Filtered entries for ${currentTimeRange}: showing last ${count} entries (${filtered.length} available)`);
             return filtered;
         }
 
@@ -5043,32 +5049,31 @@
         function getCategoryFilteredEntries() {
             if (performanceData.entries.length === 0) return [];
             
-            // Verwende das letzte Datum in den Daten, nicht heute (wie bei Main Chart)
-            const lastEntry = performanceData.entries[performanceData.entries.length - 1];
-            const lastDate = new Date(lastEntry.date);
-            let startDate;
+            let count;
             
             switch(currentCategoryTimeRange) {
                 case '1d':
-                    startDate = new Date(lastDate.getTime() - 1 * 24 * 60 * 60 * 1000);
+                    count = 1; // Nur der letzte Entry
                     break;
                 case '7d':
-                    startDate = new Date(lastDate.getTime() - 7 * 24 * 60 * 60 * 1000);
+                    count = 7; // Letzte 7 Entries
                     break;
                 case '1m':
-                    startDate = new Date(lastDate.getTime() - 30 * 24 * 60 * 60 * 1000);
+                    count = 30; // Letzte 30 Entries
                     break;
                 case '6m':
-                    startDate = new Date(lastDate.getTime() - 180 * 24 * 60 * 60 * 1000);
+                    count = 180; // Letzte 180 Entries
                     break;
                 case '1y':
-                    startDate = new Date(lastDate.getTime() - 365 * 24 * 60 * 60 * 1000);
+                    count = 365; // Letzte 365 Entries
                     break;
                 case 'all':
-                    return performanceData.entries;
+                    return performanceData.entries; // Alle Entries
             }
             
-            return performanceData.entries.filter(e => new Date(e.date) >= startDate);
+            // Nimm die letzten X Entries
+            const startIndex = Math.max(0, performanceData.entries.length - count);
+            return performanceData.entries.slice(startIndex);
         }
 
         // Initialize Category Detail Chart with Interactive Tooltip
@@ -7597,9 +7602,15 @@
             if (isFirstEntry) {
                 entryDate = new Date();
             } else {
-                const lastEntry = performanceData.entries[performanceData.entries.length - 1];
-                entryDate = new Date(lastEntry.date);
-                entryDate.setDate(entryDate.getDate() + 1);
+                // TEST MODE: Verwende aktuellen Timestamp (nicht +1 Tag vom letzten)
+                if (testMode) {
+                    entryDate = new Date(); // Jeder CheckIn bekommt aktuellen Timestamp
+                    console.log('🧪 TEST MODE: Using current timestamp for entry');
+                } else {
+                    const lastEntry = performanceData.entries[performanceData.entries.length - 1];
+                    entryDate = new Date(lastEntry.date);
+                    entryDate.setDate(entryDate.getDate() + 1);
+                }
             }
 
             let fysIndex;
