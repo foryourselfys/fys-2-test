@@ -3281,10 +3281,56 @@
         :root[data-theme="light"] .btn-primary-wizard {
             color: #ffffff !important;
         }
+        
+        /* Pull-to-Refresh Indicator */
+        .pull-to-refresh {
+            position: fixed;
+            top: -80px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 40px;
+            height: 40px;
+            background: var(--bg-secondary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 1000;
+        }
+        
+        .pull-to-refresh.visible {
+            top: 20px;
+        }
+        
+        .pull-to-refresh.loading {
+            top: 20px;
+        }
+        
+        .pull-to-refresh-icon {
+            width: 24px;
+            height: 24px;
+            color: var(--accent-primary);
+            transition: transform 0.3s;
+        }
+        
+        .pull-to-refresh.loading .pull-to-refresh-icon {
+            animation: spin 1s linear infinite;
+        }
 
     </style>
 </head>
 <body>
+    <!-- Pull-to-Refresh Indicator -->
+    <div class="pull-to-refresh" id="pullToRefresh">
+        <svg class="pull-to-refresh-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="23 4 23 10 17 10"></polyline>
+            <polyline points="1 20 1 14 7 14"></polyline>
+            <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+        </svg>
+    </div>
+    
     <!-- Loading Screen with Real Logo -->
     <div class="loading-screen" id="loadingScreen">
         <div class="loading-content">
@@ -7882,6 +7928,76 @@
                 }, 300);
             }, 150);
         }
+        
+        // Pull-to-Refresh Functionality
+        let touchStartY = 0;
+        let touchCurrentY = 0;
+        let isPulling = false;
+        let isRefreshing = false;
+        
+        function initPullToRefresh() {
+            const pullIndicator = document.getElementById('pullToRefresh');
+            const homeView = document.getElementById('homeView');
+            
+            if (!homeView || !pullIndicator) return;
+            
+            homeView.addEventListener('touchstart', (e) => {
+                // Nur wenn am Anfang der Seite
+                if (homeView.scrollTop === 0) {
+                    touchStartY = e.touches[0].clientY;
+                    isPulling = false;
+                }
+            }, { passive: true });
+            
+            homeView.addEventListener('touchmove', (e) => {
+                if (isRefreshing) return;
+                
+                touchCurrentY = e.touches[0].clientY;
+                const pullDistance = touchCurrentY - touchStartY;
+                
+                // Wenn am Anfang und nach unten zieht
+                if (homeView.scrollTop === 0 && pullDistance > 0) {
+                    isPulling = true;
+                    
+                    // Zeige Indikator wenn mehr als 50px gezogen
+                    if (pullDistance > 50) {
+                        pullIndicator.classList.add('visible');
+                        
+                        // Rotiere Icon basierend auf Pull-Distanz
+                        const rotation = Math.min(pullDistance * 2, 360);
+                        pullIndicator.querySelector('.pull-to-refresh-icon').style.transform = `rotate(${rotation}deg)`;
+                    } else {
+                        pullIndicator.classList.remove('visible');
+                    }
+                }
+            }, { passive: true });
+            
+            homeView.addEventListener('touchend', () => {
+                if (!isPulling || isRefreshing) return;
+                
+                const pullDistance = touchCurrentY - touchStartY;
+                
+                // Wenn mehr als 80px gezogen → Refresh
+                if (pullDistance > 80) {
+                    isRefreshing = true;
+                    pullIndicator.classList.add('loading');
+                    
+                    console.log('🔄 Pull-to-Refresh triggered');
+                    
+                    // Reload nach kurzer Animation
+                    setTimeout(() => {
+                        location.reload();
+                    }, 500);
+                } else {
+                    // Verstecke Indikator
+                    pullIndicator.classList.remove('visible');
+                }
+                
+                isPulling = false;
+                touchStartY = 0;
+                touchCurrentY = 0;
+            });
+        }
 
         // Initialize
         document.addEventListener('DOMContentLoaded', function() {
@@ -7965,6 +8081,7 @@
                 renderPerformancePacks();
                 updateDailyProgress(); // Badge Status beim Start aktualisieren
                 updateCheckInWidget(); // Widget Status aktualisieren
+                initPullToRefresh(); // Pull-to-Refresh initialisieren
             } catch(e) {
                 console.error('Init error:', e);
             }
