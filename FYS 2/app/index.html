@@ -4965,13 +4965,14 @@
             }
 
             const latest = entries[entries.length - 1];
-            const first = entries[0];
             
             // Verwende categoryValues statt values * 10
             const latestValue = latest.categoryValues ? latest.categoryValues[currentCategoryId] : 100;
-            const firstValue = first.categoryValues ? first.categoryValues[currentCategoryId] : 100;
-            const change = latestValue - firstValue;
-            const changePercent = firstValue !== 0 ? ((change / firstValue) * 100).toFixed(1) : '0.0';
+            
+            // Basis für Prozent-Berechnung ist IMMER 100
+            const baseValue = 100;
+            const change = latestValue - baseValue;
+            const changePercent = ((change / baseValue) * 100).toFixed(1);
 
             const isPositive = change > 0;
             const isNegative = change < 0;
