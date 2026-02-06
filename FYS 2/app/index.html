@@ -424,7 +424,7 @@
         /* Header with Logo */
         .header {
             background: var(--bg-secondary);
-            padding: 12px 20px 16px 20px;
+            padding: 20px 20px 20px 20px;
             position: fixed;
             top: 0;
             left: 0;
@@ -434,6 +434,7 @@
             justify-content: space-between;
             align-items: center;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            min-height: 70px; /* Mindesthöhe für richtigen Header */
         }
         
         /* Header Hintergrund bis ganz nach oben (verhindert durchscheinen beim Scrollen) */
@@ -451,7 +452,8 @@
         /* iOS safe area support */
         @supports (padding-top: env(safe-area-inset-top)) {
             .header {
-                padding-top: calc(12px + env(safe-area-inset-top));
+                padding-top: calc(20px + env(safe-area-inset-top));
+                min-height: calc(70px + env(safe-area-inset-top));
             }
         }
         
@@ -2040,7 +2042,7 @@
         .chart-details-view,
         .settings-container,
         .tools-container {
-            padding-top: 80px; /* Platz für Header */
+            padding-top: 90px; /* Platz für größeren Header */
         }
         
         /* iOS safe area support für Content */
@@ -2049,7 +2051,7 @@
             .chart-details-view,
             .settings-container,
             .tools-container {
-                padding-top: calc(80px + env(safe-area-inset-top));
+                padding-top: calc(90px + env(safe-area-inset-top));
             }
         }
 
@@ -2943,8 +2945,8 @@
         /* ============================================ */
         .checkin-widget {
             position: sticky; /* Sticky on scroll */
-            top: 0; /* Stick to top */
-            z-index: 50; /* Above content, below modals */
+            top: 90px; /* Klebt unter dem Header (90px = Header Höhe) */
+            z-index: 50; /* Above content, below header */
             
             background: rgba(255, 107, 53, 0.95); /* Semi-transparent for glass effect */
             backdrop-filter: blur(20px) saturate(180%); /* Glassmorphism */
@@ -2959,6 +2961,13 @@
                         0 8px 24px rgba(255, 107, 53, 0.1);
             
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        /* iOS safe area support für sticky widget */
+        @supports (top: env(safe-area-inset-top)) {
+            .checkin-widget {
+                top: calc(90px + env(safe-area-inset-top));
+            }
         }
 
         .checkin-widget:hover {
