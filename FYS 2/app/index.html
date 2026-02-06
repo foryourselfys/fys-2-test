@@ -4622,9 +4622,11 @@
             
             if (entries.length > 0) {
                 const latest = entries[entries.length - 1];
-                const first = entries[0];
-                const change = latest.fysIndex - first.fysIndex;
-                const changePercent = ((change / first.fysIndex) * 100).toFixed(2);
+                
+                // Basis für Prozent-Berechnung ist IMMER 100
+                const baseValue = 100;
+                const change = latest.fysIndex - baseValue;
+                const changePercent = ((change / baseValue) * 100).toFixed(2);
                 
                 document.getElementById('detailIndexValue').textContent = latest.fysIndex.toFixed(1);
                 document.getElementById('detailIndexChange').textContent = 
@@ -4731,8 +4733,11 @@
                 // Verwende categoryValues (akkumuliert) statt values * 10
                 const latestValue = latest.categoryValues ? latest.categoryValues[cat.id] : 100;
                 const firstValue = first.categoryValues ? first.categoryValues[cat.id] : 100;
-                const change = latestValue - firstValue;
-                const changePercent = firstValue !== 0 ? ((change / firstValue) * 100).toFixed(1) : '0.0';
+                
+                // Basis für Prozent-Berechnung ist IMMER 100 (wie beim FYS-Index)
+                const baseValue = 100;
+                const change = latestValue - baseValue;
+                const changePercent = ((change / baseValue) * 100).toFixed(1);
                 
                 const isPositive = change > 0;
                 const isNegative = change < 0;
