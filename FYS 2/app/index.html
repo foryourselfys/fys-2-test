@@ -4520,15 +4520,17 @@
             console.log('Filtered entries:', entries.length);
             
             if (mainChart) {
-                // Immer mit Startpunkt bei 100 beginnen
-                const today = new Date();
-                const startLabel = `${today.getDate()}.${today.getMonth()+1}.${today.getFullYear()}`;
+                let chartLabels = [];
+                let chartData = [];
                 
-                let chartLabels = [startLabel];
-                let chartData = [100];
-                
-                // Echte Entries hinzufügen
-                if (entries.length > 0) {
+                if (entries.length === 0) {
+                    // Wenn keine Entries, zeige Startpunkt bei 100
+                    const today = new Date();
+                    const startLabel = `${today.getDate()}.${today.getMonth()+1}.${today.getFullYear()}`;
+                    chartLabels = [startLabel];
+                    chartData = [100];
+                } else {
+                    // Zeige NUR die gefilterten Entries (kein extra Startpunkt!)
                     entries.forEach(e => {
                         const date = new Date(e.date);
                         const label = `${date.getDate()}.${date.getMonth() + 1}.${date.getFullYear()}`;
@@ -4540,14 +4542,15 @@
                 mainChart.data.labels = chartLabels;
                 mainChart.data.datasets[0].data = chartData;
                 mainChart.update('none');
-                console.log('Chart updated with', chartData.length, 'points (including start at 100)');
+                console.log('Chart updated with', chartData.length, 'points');
             }
 
             if (entries.length > 0) {
                 const latest = entries[entries.length - 1];
+                const first = entries[0];
                 
-                // Basis für Prozent-Berechnung ist IMMER 100
-                const baseValue = 100;
+                // Basis für Prozent-Berechnung ist der ERSTE Wert im Zeitfenster
+                const baseValue = first.fysIndex;
                 const change = latest.fysIndex - baseValue;
                 
                 // Zeige aktuellen Wert
@@ -4565,7 +4568,7 @@
                     valueEl.className = 'index-value-number';
                 }
 
-                const changePercent = ((change / baseValue) * 100).toFixed(2);
+                const changePercent = baseValue !== 0 ? ((change / baseValue) * 100).toFixed(2) : '0.00';
                 const changeText = document.getElementById('mainChangeText');
                 if (changeText) {
                     changeText.textContent = `${change >= 0 ? '+' : ''}${changePercent}%`;
@@ -4578,6 +4581,8 @@
                         changeText.style.color = 'var(--text-secondary)';
                     }
                 }
+                
+                console.log(`Main Chart %: ${first.fysIndex} → ${latest.fysIndex} (${changePercent}%)`);
             }
         }
 
@@ -4589,19 +4594,19 @@
             
             switch(currentTimeRange) {
                 case '1d':
-                    count = 1; // Nur der letzte Entry
+                    count = 2; // Letzten 2 Entries (gestern + heute) um 1-Tages-Veränderung zu sehen
                     break;
                 case '7d':
-                    count = 7; // Letzte 7 Entries
+                    count = 8; // Letzten 8 Entries (vor 7 Tagen + letzte 7 Tage)
                     break;
                 case '1m':
-                    count = 30; // Letzte 30 Entries
+                    count = 31; // Letzten 31 Entries (vor 30 Tagen + letzte 30 Tage)
                     break;
                 case '6m':
-                    count = 180; // Letzte 180 Entries
+                    count = 181; // Letzten 181 Entries
                     break;
                 case '1y':
-                    count = 365; // Letzte 365 Entries
+                    count = 366; // Letzten 366 Entries
                     break;
                 case 'all':
                     return performanceData.entries; // Alle Entries
@@ -4672,15 +4677,18 @@
             
             if (entries.length > 0) {
                 const latest = entries[entries.length - 1];
+                const first = entries[0];
                 
-                // Basis für Prozent-Berechnung ist IMMER 100
-                const baseValue = 100;
+                // Basis für Prozent-Berechnung ist der ERSTE Wert im Zeitfenster
+                const baseValue = first.fysIndex;
                 const change = latest.fysIndex - baseValue;
-                const changePercent = ((change / baseValue) * 100).toFixed(2);
+                const changePercent = baseValue !== 0 ? ((change / baseValue) * 100).toFixed(2) : '0.00';
                 
                 document.getElementById('detailIndexValue').textContent = latest.fysIndex.toFixed(1);
                 document.getElementById('detailIndexChange').textContent = 
                     `${change >= 0 ? '+' : ''}${changePercent}%`;
+                    
+                console.log(`FYS Index: ${first.fysIndex} → ${latest.fysIndex} (${changePercent}%)`);
             } else {
                 // Demo-Werte wenn keine Daten
                 document.getElementById('detailIndexValue').textContent = '100.0';
@@ -4784,10 +4792,10 @@
                 const latestValue = latest.categoryValues ? latest.categoryValues[cat.id] : 100;
                 const firstValue = first.categoryValues ? first.categoryValues[cat.id] : 100;
                 
-                // Basis für Prozent-Berechnung ist IMMER 100 (wie beim FYS-Index)
-                const baseValue = 100;
+                // Basis für Prozent-Berechnung ist der ERSTE Wert im Zeitfenster
+                const baseValue = firstValue;
                 const change = latestValue - baseValue;
-                const changePercent = ((change / baseValue) * 100).toFixed(1);
+                const changePercent = baseValue !== 0 ? ((change / baseValue) * 100).toFixed(1) : '0.0';
                 
                 const isPositive = change > 0;
                 const isNegative = change < 0;
@@ -5015,14 +5023,16 @@
             }
 
             const latest = entries[entries.length - 1];
+            const first = entries[0];
             
             // Verwende categoryValues statt values * 10
             const latestValue = latest.categoryValues ? latest.categoryValues[currentCategoryId] : 100;
+            const firstValue = first.categoryValues ? first.categoryValues[currentCategoryId] : 100;
             
-            // Basis für Prozent-Berechnung ist IMMER 100
-            const baseValue = 100;
+            // Basis für Prozent-Berechnung ist der ERSTE Wert im Zeitfenster
+            const baseValue = firstValue;
             const change = latestValue - baseValue;
-            const changePercent = ((change / baseValue) * 100).toFixed(1);
+            const changePercent = baseValue !== 0 ? ((change / baseValue) * 100).toFixed(1) : '0.0';
 
             const isPositive = change > 0;
             const isNegative = change < 0;
@@ -5053,19 +5063,19 @@
             
             switch(currentCategoryTimeRange) {
                 case '1d':
-                    count = 1; // Nur der letzte Entry
+                    count = 2; // Letzten 2 Entries (gestern + heute)
                     break;
                 case '7d':
-                    count = 7; // Letzte 7 Entries
+                    count = 8; // Letzten 8 Entries
                     break;
                 case '1m':
-                    count = 30; // Letzte 30 Entries
+                    count = 31; // Letzten 31 Entries
                     break;
                 case '6m':
-                    count = 180; // Letzte 180 Entries
+                    count = 181; // Letzten 181 Entries
                     break;
                 case '1y':
-                    count = 365; // Letzte 365 Entries
+                    count = 366; // Letzten 366 Entries
                     break;
                 case 'all':
                     return performanceData.entries; // Alle Entries
@@ -5179,14 +5189,10 @@
                 return;
             }
 
-            // IMMER mit Startpunkt bei 100 beginnen (wie Main Chart)
-            const today = new Date();
-            const startLabel = `${today.getDate()}.${today.getMonth()+1}.${today.getFullYear()}`;
+            // Zeige NUR die gefilterten Entries (kein extra Startpunkt!)
+            let chartLabels = [];
+            let chartData = [];
             
-            let chartLabels = [startLabel];
-            let chartData = [100];
-            
-            // Echte Entries hinzufügen
             entries.forEach(e => {
                 const date = new Date(e.date);
                 const label = `${date.getDate()}.${date.getMonth() + 1}.${date.getFullYear()}`;
@@ -5206,7 +5212,7 @@
             categoryDetailChart.data.datasets[0].pointHoverBackgroundColor = category.color;
 
             categoryDetailChart.update('none');
-            console.log('Category Detail Chart updated with', chartData.length, 'points (including start at 100)');
+            console.log('Category Detail Chart updated with', chartData.length, 'points');
         }
 
         // Initialize combined chart
@@ -7602,14 +7608,12 @@
             if (isFirstEntry) {
                 entryDate = new Date();
             } else {
-                // TEST MODE: Verwende aktuellen Timestamp (nicht +1 Tag vom letzten)
+                const lastEntry = performanceData.entries[performanceData.entries.length - 1];
+                entryDate = new Date(lastEntry.date);
+                entryDate.setDate(entryDate.getDate() + 1);
+                
                 if (testMode) {
-                    entryDate = new Date(); // Jeder CheckIn bekommt aktuellen Timestamp
-                    console.log('🧪 TEST MODE: Using current timestamp for entry');
-                } else {
-                    const lastEntry = performanceData.entries[performanceData.entries.length - 1];
-                    entryDate = new Date(lastEntry.date);
-                    entryDate.setDate(entryDate.getDate() + 1);
+                    console.log('🧪 TEST MODE: Adding +1 day to simulate new day');
                 }
             }
 
