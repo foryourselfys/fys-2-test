@@ -436,11 +436,11 @@
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
         }
         
-        /* Header Hintergrund bis ganz nach oben (auch über safe area) */
+        /* Header Hintergrund bis ganz nach oben (verhindert durchscheinen beim Scrollen) */
         .header::before {
             content: '';
             position: absolute;
-            top: -200px;
+            top: -200px; /* Geht weit nach oben über safe-area */
             left: 0;
             right: 0;
             height: 200px;
@@ -451,7 +451,7 @@
         /* iOS safe area support */
         @supports (padding-top: env(safe-area-inset-top)) {
             .header {
-                padding-top: max(12px, env(safe-area-inset-top));
+                padding-top: calc(12px + env(safe-area-inset-top));
             }
         }
         
@@ -554,7 +554,6 @@
         /* Home View */
         .home-content {
             padding: 20px;
-            padding-top: 0; /* No top padding - widget starts at very top */
             position: relative; /* Enable stacking context for z-index */
         }
 
@@ -2027,10 +2026,31 @@
 
         .view-section {
             display: none;
+            min-height: 100vh;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
         }
 
         .view-section.active {
             display: block;
+        }
+        
+        /* Verhindere dass Content über Header scrollt */
+        .home-content,
+        .chart-details-view,
+        .settings-container,
+        .tools-container {
+            padding-top: 80px; /* Platz für Header */
+        }
+        
+        /* iOS safe area support für Content */
+        @supports (padding-top: env(safe-area-inset-top)) {
+            .home-content,
+            .chart-details-view,
+            .settings-container,
+            .tools-container {
+                padding-top: calc(80px + env(safe-area-inset-top));
+            }
         }
 
         .success-toast {
@@ -5121,21 +5141,35 @@
             const entries = getCategoryFilteredEntries();
             
             if (entries.length === 0) {
-                categoryDetailChart.data.labels = [];
-                categoryDetailChart.data.datasets[0].data = [];
-                categoryDetailChart.update();
+                // Zeige Startpunkt bei 100 wenn keine Daten
+                const today = new Date();
+                const todayLabel = `${today.getDate()}.${today.getMonth()+1}.${today.getFullYear()}`;
+                categoryDetailChart.data.labels = [todayLabel];
+                categoryDetailChart.data.datasets[0].data = [100];
+                categoryDetailChart.update('none');
                 return;
             }
 
-            categoryDetailChart.data.labels = entries.map(e => {
+            // IMMER mit Startpunkt bei 100 beginnen (wie Main Chart)
+            const today = new Date();
+            const startLabel = `${today.getDate()}.${today.getMonth()+1}.${today.getFullYear()}`;
+            
+            let chartLabels = [startLabel];
+            let chartData = [100];
+            
+            // Echte Entries hinzufügen
+            entries.forEach(e => {
                 const date = new Date(e.date);
-                return `${date.getDate()}.${date.getMonth() + 1}.${date.getFullYear()}`;
+                const label = `${date.getDate()}.${date.getMonth() + 1}.${date.getFullYear()}`;
+                chartLabels.push(label);
+                
+                // Verwende categoryValues
+                const value = e.categoryValues ? e.categoryValues[currentCategoryId] : 100;
+                chartData.push(value);
             });
-
-            // Verwende categoryValues
-            categoryDetailChart.data.datasets[0].data = entries.map(e => 
-                e.categoryValues ? e.categoryValues[currentCategoryId] : 100
-            );
+            
+            categoryDetailChart.data.labels = chartLabels;
+            categoryDetailChart.data.datasets[0].data = chartData;
 
             // Update colors
             categoryDetailChart.data.datasets[0].borderColor = category.color;
@@ -5143,6 +5177,7 @@
             categoryDetailChart.data.datasets[0].pointHoverBackgroundColor = category.color;
 
             categoryDetailChart.update('none');
+            console.log('Category Detail Chart updated with', chartData.length, 'points (including start at 100)');
         }
 
         // Initialize combined chart
