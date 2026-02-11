@@ -7529,65 +7529,117 @@
                 window.navigator.vibrate(10); // Light haptic
             }
             
-            // FOTMOB-STYLE: Tabs bleiben im Hintergrund lebendig
-            // Prüfe ob bereits auf diesem View → scroll to top
+            // FOTMOB-STYLE: Prüfe ob bereits auf diesem View → scroll to top
             const viewElement = document.getElementById(`${view}View`);
             const isAlreadyActive = viewElement && viewElement.classList.contains('active');
             
             if (isAlreadyActive) {
+                // TOOLS SPECIAL: Wenn Tool sichtbar ist, verstecke es und zeige Tools-Menü
+                if (view === 'tools') {
+                    const journalModal = document.getElementById('journalModal');
+                    const taskManagerModal = document.getElementById('taskManagerModal');
+                    
+                    const journalVisible = journalModal && journalModal.classList.contains('active') && journalModal.style.display !== 'none';
+                    const taskManagerVisible = taskManagerModal && taskManagerModal.classList.contains('active') && taskManagerModal.style.display !== 'none';
+                    
+                    if (journalVisible || taskManagerVisible) {
+                        // Tool ist sichtbar → verstecke es, zeige Tools-Menü
+                        if (journalVisible) journalModal.style.display = 'none';
+                        if (taskManagerVisible) taskManagerModal.style.display = 'none';
+                        console.log('🔄 Tool versteckt, Tools-Menü sichtbar');
+                        return;
+                    }
+                }
+                
+                // START SPECIAL: Wenn Category Detail sichtbar ist, schließe es
+                if (view === 'home') {
+                    const categoryDetailModal = document.getElementById('categoryDetailModal');
+                    if (categoryDetailModal && categoryDetailModal.classList.contains('active') && categoryDetailModal.style.display !== 'none') {
+                        categoryDetailModal.classList.remove('active');
+                        categoryDetailModal.style.display = 'none';
+                        console.log('❌ Category Detail geschlossen');
+                        return;
+                    }
+                }
+                
+                // Andere Tabs oder Tools-Menü schon sichtbar: Scroll to top
                 window.scrollTo({ top: 0, behavior: 'smooth' });
                 return;
             }
             
-            // TOOLS SPECIAL LOGIC - Schließe Tool wenn sichtbar
-            if (view === 'tools') {
-                const journalModal = document.getElementById('journalModal');
-                const taskManagerModal = document.getElementById('taskManagerModal');
-                
-                // Prüfe ob ein Tool gerade SICHTBAR ist
-                const journalVisible = journalModal && journalModal.classList.contains('active') && journalModal.style.display !== 'none';
-                const taskManagerVisible = taskManagerModal && taskManagerModal.classList.contains('active') && taskManagerModal.style.display !== 'none';
-                
-                // FALL 1: Ein Tool ist sichtbar → SCHLIEßE es komplett (manuell, ohne switchView zu triggern)
-                if (journalVisible || taskManagerVisible) {
-                    if (journalVisible) {
-                        journalModal.classList.remove('active');
-                        journalModal.style.display = 'none';
-                        closeJournalEntry(); // Cleanup
-                        console.log('❌ Journal geschlossen');
-                    }
-                    if (taskManagerVisible) {
-                        taskManagerModal.classList.remove('active');
-                        taskManagerModal.style.display = 'none';
-                        console.log('❌ Task Manager geschlossen');
-                    }
-                    lastActiveToolModal = null;
-                    toolsMenuVisible = false;
-                    // WICHTIG: Nicht return, damit der normale View-Switch durchläuft!
-                }
-            }
-            
-            // Schließe Modals wenn man zu anderen Views wechselt
+            // FOTMOB: Verstecke Modals wenn man TAB wechselt (aber behalte .active!)
             if (view !== 'tools') {
-                document.getElementById('coachModal').classList.remove('active');
-                document.getElementById('categoryDetailModal').classList.remove('active');
-                
-                // Schließe auch Journal/Task Manager komplett (manuell)
+                // Tools-Modals verstecken
                 const journalModal = document.getElementById('journalModal');
                 const taskManagerModal = document.getElementById('taskManagerModal');
                 if (journalModal && journalModal.classList.contains('active')) {
-                    journalModal.classList.remove('active');
                     journalModal.style.display = 'none';
-                    closeJournalEntry(); // Cleanup
-                    console.log('❌ Journal geschlossen (Wechsel zu anderem Tab)');
+                    console.log('📦 Journal im Hintergrund versteckt');
                 }
                 if (taskManagerModal && taskManagerModal.classList.contains('active')) {
-                    taskManagerModal.classList.remove('active');
                     taskManagerModal.style.display = 'none';
-                    console.log('❌ Task Manager geschlossen (Wechsel zu anderem Tab)');
+                    console.log('📦 Tasks im Hintergrund versteckt');
                 }
-                lastActiveToolModal = null;
-                toolsMenuVisible = false;
+            }
+            
+            if (view !== 'home') {
+                // Start-Modals/Views verstecken
+                const chartDetailsView = document.getElementById('chartDetailsView');
+                const categoryDetailModal = document.getElementById('categoryDetailModal');
+                
+                if (chartDetailsView && chartDetailsView.classList.contains('active')) {
+                    chartDetailsView.style.display = 'none';
+                    console.log('📦 Chart Details im Hintergrund versteckt');
+                }
+                if (categoryDetailModal && categoryDetailModal.classList.contains('active')) {
+                    categoryDetailModal.style.display = 'none';
+                    console.log('📦 Category Detail im Hintergrund versteckt');
+                }
+            }
+            
+            if (view !== 'coach') {
+                // Coach-Modal verstecken
+                const coachModal = document.getElementById('coachModal');
+                if (coachModal && coachModal.classList.contains('active')) {
+                    coachModal.style.display = 'none';
+                    console.log('📦 Coach im Hintergrund versteckt');
+                }
+            }
+            
+            // FOTMOB: Bei Wechsel ZU einem Tab → zeige versteckte Modals wieder
+            if (view === 'tools') {
+                const journalModal = document.getElementById('journalModal');
+                const taskManagerModal = document.getElementById('taskManagerModal');
+                if (journalModal && journalModal.classList.contains('active')) {
+                    journalModal.style.display = 'flex';
+                    console.log('🔄 Journal wieder sichtbar');
+                }
+                if (taskManagerModal && taskManagerModal.classList.contains('active')) {
+                    taskManagerModal.style.display = 'flex';
+                    console.log('🔄 Tasks wieder sichtbar');
+                }
+            }
+            
+            if (view === 'home') {
+                const chartDetailsView = document.getElementById('chartDetailsView');
+                const categoryDetailModal = document.getElementById('categoryDetailModal');
+                
+                if (chartDetailsView && chartDetailsView.classList.contains('active')) {
+                    chartDetailsView.style.display = 'block';
+                    console.log('🔄 Chart Details wieder sichtbar');
+                }
+                if (categoryDetailModal && categoryDetailModal.classList.contains('active')) {
+                    categoryDetailModal.style.display = 'flex';
+                    console.log('🔄 Category Detail wieder sichtbar');
+                }
+            }
+            
+            if (view === 'coach') {
+                const coachModal = document.getElementById('coachModal');
+                if (coachModal && coachModal.classList.contains('active')) {
+                    coachModal.style.display = 'flex';
+                    console.log('🔄 Coach wieder sichtbar');
+                }
             }
             
             // FOTMOM-STYLE: Hide all views (keep in DOM), show selected view
