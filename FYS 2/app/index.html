@@ -7517,41 +7517,102 @@
 
 
         // Switch view with haptic feedback
+        // ============================================
+        // TOOLS NAVIGATION STATE
+        // ============================================
+        let lastActiveToolModal = null; // Merkt sich welches Tool zuletzt aktiv war
+        let toolsMenuVisible = true;    // Ist Tools-Menü gerade sichtbar?
+        
         function switchView(view) {
             // Haptic Feedback (iOS-Style)
             if (window.navigator && window.navigator.vibrate) {
                 window.navigator.vibrate(10); // Light haptic
             }
             
-            // Close all modals
-            document.getElementById('coachModal').classList.remove('active');
-            document.getElementById('categoryDetailModal').classList.remove('active');
-            document.getElementById('journalModal').classList.remove('active');
-            
-            // Auto-scroll: If already on this view, scroll to top
+            // FOTMOB-STYLE: Tabs bleiben im Hintergrund lebendig
+            // Prüfe ob bereits auf diesem View → scroll to top
             const viewElement = document.getElementById(`${view}View`);
-            if (viewElement && viewElement.classList.contains('active')) {
+            const isAlreadyActive = viewElement && viewElement.classList.contains('active');
+            
+            if (isAlreadyActive) {
                 window.scrollTo({ top: 0, behavior: 'smooth' });
                 return;
             }
             
-            document.querySelectorAll('.view-section').forEach(s => s.classList.remove('active'));
-            document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
-
-            if (viewElement) viewElement.classList.add('active');
-            const navItem = document.querySelector(`[data-view="${view}"]`);
-            if (navItem) {
-                navItem.classList.add('active');
+            // TOOLS SPECIAL LOGIC - Schließe Tool wenn sichtbar
+            if (view === 'tools') {
+                const journalModal = document.getElementById('journalModal');
+                const taskManagerModal = document.getElementById('taskManagerModal');
+                
+                // Prüfe ob ein Tool gerade SICHTBAR ist
+                const journalVisible = journalModal && journalModal.classList.contains('active') && journalModal.style.display !== 'none';
+                const taskManagerVisible = taskManagerModal && taskManagerModal.classList.contains('active') && taskManagerModal.style.display !== 'none';
+                
+                // FALL 1: Ein Tool ist sichtbar → SCHLIEßE es komplett (manuell, ohne switchView zu triggern)
+                if (journalVisible || taskManagerVisible) {
+                    if (journalVisible) {
+                        journalModal.classList.remove('active');
+                        journalModal.style.display = 'none';
+                        closeJournalEntry(); // Cleanup
+                        console.log('❌ Journal geschlossen');
+                    }
+                    if (taskManagerVisible) {
+                        taskManagerModal.classList.remove('active');
+                        taskManagerModal.style.display = 'none';
+                        console.log('❌ Task Manager geschlossen');
+                    }
+                    lastActiveToolModal = null;
+                    toolsMenuVisible = false;
+                    // WICHTIG: Nicht return, damit der normale View-Switch durchläuft!
+                }
             }
             
-            // Scroll to top when switching views
-            window.scrollTo({ top: 0, behavior: 'instant' });
+            // Schließe Modals wenn man zu anderen Views wechselt
+            if (view !== 'tools') {
+                document.getElementById('coachModal').classList.remove('active');
+                document.getElementById('categoryDetailModal').classList.remove('active');
+                
+                // Schließe auch Journal/Task Manager komplett (manuell)
+                const journalModal = document.getElementById('journalModal');
+                const taskManagerModal = document.getElementById('taskManagerModal');
+                if (journalModal && journalModal.classList.contains('active')) {
+                    journalModal.classList.remove('active');
+                    journalModal.style.display = 'none';
+                    closeJournalEntry(); // Cleanup
+                    console.log('❌ Journal geschlossen (Wechsel zu anderem Tab)');
+                }
+                if (taskManagerModal && taskManagerModal.classList.contains('active')) {
+                    taskManagerModal.classList.remove('active');
+                    taskManagerModal.style.display = 'none';
+                    console.log('❌ Task Manager geschlossen (Wechsel zu anderem Tab)');
+                }
+                lastActiveToolModal = null;
+                toolsMenuVisible = false;
+            }
             
+            // FOTMOM-STYLE: Hide all views (keep in DOM), show selected view
+            document.querySelectorAll('.view-section').forEach(section => {
+                section.classList.remove('active');
+                // Views bleiben im DOM, behalten ihren State (Scroll-Position, Daten, etc.)
+            });
+            
+            // Update bottom nav
+            document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+            const navItem = document.querySelector(`[data-view="${view}"]`);
+            if (navItem) navItem.classList.add('active');
+            
+            // Show selected view
+            if (viewElement) {
+                viewElement.classList.add('active');
+                // Scroll to top only when ENTERING a view (not when already there)
+                window.scrollTo({ top: 0, behavior: 'instant' });
+            }
+            
+            // Check-in special init
             if (view === 'checkin') {
                 console.log('🔧 CHECK-IN VIEW ACTIVATED');
                 
                 try {
-                    // Update wizard subtitle with correct number of questions
                     const totalQuestions = baseWizardCategories.length + (isPro ? getActivePackCategories().length : 0);
                     console.log('  ✓ Total questions:', totalQuestions);
                     
@@ -7561,13 +7622,11 @@
                         console.log('  ✓ Subtitle updated');
                     }
                     
-                    // Hide error and wizard container
                     const errorDiv = document.getElementById('wizardError');
                     const container = document.getElementById('wizardContainer');
                     if (errorDiv) errorDiv.classList.remove('active');
                     if (container) container.classList.remove('active');
                     
-                    // Show wizard confirmation dialog
                     const confirmDialog = document.getElementById('wizardConfirm');
                     if (confirmDialog) {
                         confirmDialog.classList.add('active');
@@ -7698,15 +7757,25 @@
         let selectedJournalDate = null;
 
         function openJournal() {
-            document.getElementById('journalModal').classList.add('active');
+            const journalModal = document.getElementById('journalModal');
+            journalModal.classList.add('active');
+            journalModal.style.display = 'flex';
+            lastActiveToolModal = journalModal;
+            toolsMenuVisible = false;
             currentJournalMonth = new Date();
             renderCalendar();
             updateJournalStats();
         }
 
         function closeJournal() {
-            document.getElementById('journalModal').classList.remove('active');
+            const journalModal = document.getElementById('journalModal');
+            journalModal.classList.remove('active');
+            journalModal.style.display = 'none';
             closeJournalEntry();
+            lastActiveToolModal = null;
+            toolsMenuVisible = true;
+            // Stelle sicher dass Tools-View aktiv ist
+            switchView('tools');
         }
 
         // Confirm Modal Functions
@@ -7765,12 +7834,22 @@
                 return;
             }
             
-            document.getElementById('taskManagerModal').classList.add('active');
+            const taskManagerModal = document.getElementById('taskManagerModal');
+            taskManagerModal.classList.add('active');
+            taskManagerModal.style.display = 'flex';
+            lastActiveToolModal = taskManagerModal;
+            toolsMenuVisible = false;
             renderTaskLists();
         }
         
         function closeTaskManager() {
-            document.getElementById('taskManagerModal').classList.remove('active');
+            const taskManagerModal = document.getElementById('taskManagerModal');
+            taskManagerModal.classList.remove('active');
+            taskManagerModal.style.display = 'none';
+            lastActiveToolModal = null;
+            toolsMenuVisible = true;
+            // Stelle sicher dass Tools-View aktiv ist
+            switchView('tools');
         }
         
         function quickAddTask() {
