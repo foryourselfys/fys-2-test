@@ -4967,6 +4967,9 @@
         function initMainChart() {
             const ctx = document.getElementById('mainChart').getContext('2d');
             
+            // Ermittle tatsächliches Theme (wichtig für "system" mode)
+            const actualTheme = document.documentElement.getAttribute('data-theme') || 'dark';
+            
             mainChart = new Chart(ctx, {
                 type: 'line',
                 data: {
@@ -4990,10 +4993,10 @@
                     plugins: {
                         legend: { display: false },
                         tooltip: {
-                            backgroundColor: currentTheme === 'dark' ? 'rgba(17, 17, 17, 0.95)' : 'rgba(255, 255, 255, 0.98)',
-                            titleColor: currentTheme === 'dark' ? '#ffffff' : '#ff6b35',
-                            bodyColor: currentTheme === 'dark' ? '#6b6b6b' : '#ff8f5f',
-                            borderColor: currentTheme === 'dark' ? '#1a1a1a' : '#ffe8e0',
+                            backgroundColor: actualTheme === 'dark' ? 'rgba(17, 17, 17, 0.95)' : 'rgba(255, 255, 255, 0.98)',
+                            titleColor: actualTheme === 'dark' ? '#ffffff' : '#ff6b35',
+                            bodyColor: actualTheme === 'dark' ? '#6b6b6b' : '#ff8f5f',
+                            borderColor: actualTheme === 'dark' ? '#1a1a1a' : '#ffe8e0',
                             borderWidth: 1,
                             padding: 12,
                             displayColors: false,
@@ -5019,11 +5022,11 @@
                             beginAtZero: false,
                             grace: '5%', // 5% Padding oben und unten für bessere Sicht
                             grid: { 
-                                color: currentTheme === 'dark' ? '#1a1a1a' : '#fff5f0', 
+                                color: actualTheme === 'dark' ? '#1a1a1a' : '#f5f5f5', 
                                 drawBorder: false 
                             },
                             ticks: { 
-                                color: currentTheme === 'dark' ? '#404040' : '#ff8f5f', 
+                                color: actualTheme === 'dark' ? '#404040' : '#999999', 
                                 font: { size: 10 },
                                 padding: 5
                             }
@@ -6110,7 +6113,7 @@
         // DAILY CHECK-IN REMINDER
         // ============================================
         
-        let reminderEnabled = localStorage.getItem('fysReminder') === 'true';
+        let reminderEnabled = localStorage.getItem('fysReminder') !== 'false'; // Default: true
         let reminderTime = localStorage.getItem('fysReminderTime') || '20:00';
         let notificationPermission = 'default';
         
@@ -6262,6 +6265,12 @@
             console.log('🔔 Initializing Reminder System...');
             console.log('   reminderEnabled:', reminderEnabled);
             console.log('   reminderTime:', reminderTime);
+            
+            // Speichere initial state wenn noch nicht gesetzt
+            if (localStorage.getItem('fysReminder') === null) {
+                localStorage.setItem('fysReminder', reminderEnabled);
+                console.log('💾 Initial reminder state gespeichert:', reminderEnabled);
+            }
             
             // Check if elements exist
             const timeInput = document.getElementById('reminderTime');
