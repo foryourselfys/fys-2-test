@@ -42,13 +42,23 @@
             left: 0;
             width: 100vw;
             height: 100vh;
-            background: linear-gradient(180deg, #050505 0%, #0B0B0B 100%);
+            background: var(--bg-primary);
             display: flex;
             align-items: center;
             justify-content: center;
             z-index: 10000;
             transition: opacity 600ms cubic-bezier(0.4, 0.0, 0.2, 1),
                         visibility 600ms cubic-bezier(0.4, 0.0, 0.2, 1);
+        }
+        
+        /* Light Mode Loading Screen */
+        :root[data-theme="light"] #loadingScreen {
+            background: linear-gradient(180deg, #f5f5f7 0%, #ffffff 100%);
+        }
+        
+        /* Dark Mode Loading Screen */
+        :root[data-theme="dark"] #loadingScreen {
+            background: linear-gradient(180deg, #050505 0%, #0B0B0B 100%);
         }
         
         #loadingScreen.hidden {
@@ -178,7 +188,7 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: linear-gradient(135deg, #000000 0%, #0d0d0d 100%);
+            background: var(--bg-primary); /* Theme-aware background */
             z-index: 99999;
             display: flex;
             align-items: center;
@@ -305,7 +315,7 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: linear-gradient(135deg, #000000 0%, #1a1a1a 100%);
+            background: var(--bg-primary); /* Theme-aware */
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -334,12 +344,12 @@
             width: 180px;
             height: 180px;
             border-radius: 50%;
-            background: radial-gradient(circle, rgba(40, 30, 20, 1) 0%, rgba(20, 15, 10, 1) 100%);
+            background: var(--bg-secondary); /* Theme-aware */
             display: flex;
             align-items: center;
             justify-content: center;
             box-shadow: 0 0 60px rgba(255, 107, 53, 0.4),
-                        inset 0 0 40px rgba(0, 0, 0, 0.6);
+                        inset 0 0 40px rgba(0, 0, 0, 0.2);
         }
 
         .logo-ring {
@@ -1111,6 +1121,12 @@
             font-weight: 600;
             color: var(--text-secondary);
             transition: all 0.2s;
+        }
+        
+        .setting-option-text {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
         .setting-option.active {
@@ -2113,7 +2129,7 @@
         .chart-details-view,
         .settings-container,
         .tools-container {
-            padding-top: 80px; /* Platz für Header - reduziert für weniger Abstand */
+            padding-top: 70px; /* Exakt Header-Höhe - kein extra Abstand */
         }
         
         /* iOS safe area support für Content */
@@ -2122,7 +2138,7 @@
             .chart-details-view,
             .settings-container,
             .tools-container {
-                padding-top: calc(80px + env(safe-area-inset-top));
+                padding-top: calc(70px + env(safe-area-inset-top));
             }
         }
 
@@ -3685,6 +3701,7 @@
                     <div class="setting-options">
                         <div class="setting-option active" onclick="changeTheme('dark')" data-theme-btn="dark" id="darkTheme"></div>
                         <div class="setting-option" onclick="changeTheme('light')" data-theme-btn="light" id="lightTheme"></div>
+                        <div class="setting-option" onclick="changeTheme('system')" data-theme-btn="system" id="systemTheme"></div>
                     </div>
                 </div>
 
@@ -4055,6 +4072,7 @@
                 themeDesc: 'Wähle zwischen hellem und dunklem Modus.',
                 darkTheme: 'Dunkel',
                 lightTheme: 'Hell',
+                systemTheme: 'Automatisch',
                 sleepGoalLabel: 'Schlafziel',
                 sleepGoalDesc: 'Dein ideales Schlafziel pro Nacht. Beeinflusst deine Energie-Kategorie.',
                 coachDataLabel: 'KI-Coach Datenzugriff',
@@ -4111,6 +4129,7 @@
                 themeDesc: 'Choose between light and dark mode.',
                 darkTheme: 'Dark',
                 lightTheme: 'Light',
+                systemTheme: 'Automatic',
                 sleepGoalLabel: 'Sleep Goal',
                 sleepGoalDesc: 'Your ideal sleep goal per night. Influences your energy category.',
                 coachDataLabel: 'AI Coach Data Access',
@@ -4167,6 +4186,7 @@
                 themeDesc: 'Elige entre modo claro y oscuro.',
                 darkTheme: 'Oscuro',
                 lightTheme: 'Claro',
+                systemTheme: 'Automático',
                 sleepGoalLabel: 'Objetivo de Sueño',
                 sleepGoalDesc: 'Tu objetivo ideal de sueño por noche. Influye en tu categoría de energía.',
                 coachDataLabel: 'Acceso a Datos del Coach',
@@ -4195,6 +4215,17 @@
         // App State
         let currentLang = localStorage.getItem('fysLanguage') || 'de';
         let currentTheme = localStorage.getItem('fysTheme') || 'dark';
+        
+        // Apply initial theme
+        (function applyInitialTheme() {
+            let actualTheme = currentTheme;
+            if (currentTheme === 'system') {
+                actualTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+            }
+            document.documentElement.setAttribute('data-theme', actualTheme);
+            document.body.className = actualTheme;
+        })();
+        
         let currentTimeRange = '1m';
         let sleepGoal = parseFloat(localStorage.getItem('fysSleepGoal')) || 8.0;
         let sleepHours = 8.0;
@@ -5632,7 +5663,16 @@
         function changeTheme(theme) {
             currentTheme = theme;
             localStorage.setItem('fysTheme', theme);
-            document.documentElement.setAttribute('data-theme', theme);
+            
+            // Wenn System gewählt, ermittle aktuelles System Theme
+            let actualTheme = theme;
+            if (theme === 'system') {
+                actualTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+                console.log('🖥️ System Theme detected:', actualTheme);
+            }
+            
+            document.documentElement.setAttribute('data-theme', actualTheme);
+            document.body.className = actualTheme; // Für body class
             
             document.querySelectorAll('[data-theme-btn]').forEach(el => el.classList.remove('active'));
             document.querySelector(`[data-theme-btn="${theme}"]`).classList.add('active');
@@ -5642,6 +5682,27 @@
                 initMainChart();
                 updateMainChart();
             }
+        }
+        
+        // System Theme Change Listener
+        if (window.matchMedia) {
+            const darkModeQuery = window.matchMedia('(prefers-color-scheme: dark)');
+            darkModeQuery.addEventListener('change', (e) => {
+                // Nur reagieren wenn System Theme aktiv ist
+                if (currentTheme === 'system') {
+                    const newTheme = e.matches ? 'dark' : 'light';
+                    console.log('🖥️ System Theme changed to:', newTheme);
+                    document.documentElement.setAttribute('data-theme', newTheme);
+                    document.body.className = newTheme;
+                    
+                    // Charts neu rendern
+                    if (mainChart) {
+                        mainChart.destroy();
+                        initMainChart();
+                        updateMainChart();
+                    }
+                }
+            });
         }
 
         // Change language
@@ -6722,6 +6783,7 @@
             safeUpdate('themeDesc', t.themeDesc);
             safeUpdate('darkTheme', t.darkTheme);
             safeUpdate('lightTheme', t.lightTheme);
+            safeUpdate('systemTheme', t.systemTheme);
             safeUpdate('sleepGoalLabel', t.sleepGoalLabel);
             safeUpdate('sleepGoalDesc', t.sleepGoalDesc);
             safeUpdate('coachDataLabel', t.coachDataLabel);
@@ -8197,6 +8259,91 @@
         }
 
         // Initialize
+        // ============================================
+        // ZENTRALE APP INITIALISIERUNG
+        // ============================================
+        function initializeApp() {
+            console.log('🚀 initializeApp() called');
+            
+            try {
+                // 1. Lade localStorage Daten
+                performanceData = JSON.parse(localStorage.getItem('fysData')) || { entries: [], activePacks: [] };
+                journalData = JSON.parse(localStorage.getItem('fysJournal')) || {};
+                currentStreak = parseInt(localStorage.getItem('fysStreak')) || 0;
+                longestStreak = parseInt(localStorage.getItem('fysLongestStreak')) || 0;
+                isPro = localStorage.getItem('fysPro') === 'true';
+                sleepGoal = parseFloat(localStorage.getItem('fysSleepGoal')) || 8.0;
+                coachDataAccess = localStorage.getItem('fysCoachData') === 'true';
+                testMode = localStorage.getItem('fysTestMode') === 'true';
+                
+                // Stelle sicher dass activePacks existiert
+                if (!performanceData.activePacks) {
+                    performanceData.activePacks = [];
+                }
+                
+                console.log('✓ Daten geladen:', {
+                    entries: performanceData.entries.length,
+                    activePacks: performanceData.activePacks.length,
+                    journalEntries: Object.keys(journalData).length,
+                    streak: currentStreak,
+                    isPro: isPro
+                });
+                
+                // 2. Update Performance Packs Display
+                renderPerformancePacks();
+                console.log('✓ Performance Packs gerendert');
+                
+                // 3. Update Progress Badges & Streak
+                updateDailyProgress(); // Ruft automatisch calculateStreak() auf
+                console.log('✓ Progress Badges & Streak aktualisiert');
+                
+                // 4. Update Charts
+                initMainChart();
+                updateUI();
+                console.log('✓ Charts aktualisiert');
+                
+                // 5. Update Check-In Widget Status
+                updateCheckInWidget();
+                console.log('✓ Check-In Widget aktualisiert');
+                
+                // 6. Update Stock List
+                createStockList();
+                console.log('✓ Stock List aktualisiert');
+                
+                // 7. Update Journal Stats
+                updateJournalStats();
+                console.log('✓ Journal Stats aktualisiert');
+                
+                // 8. Update Settings Toggles
+                if (coachDataAccess) {
+                    const toggle = document.getElementById('coachDataToggle');
+                    if (toggle) toggle.classList.add('active');
+                }
+                
+                if (testMode) {
+                    const testToggle = document.getElementById('testModeToggle');
+                    if (testToggle) testToggle.classList.add('active');
+                }
+                
+                // 9. Update Theme Button & Apply Theme
+                const themeBtn = document.querySelector(`[data-theme-btn="${currentTheme}"]`);
+                if (themeBtn) themeBtn.classList.add('active');
+                
+                // Apply actual theme (wichtig für System Theme)
+                let actualTheme = currentTheme;
+                if (currentTheme === 'system') {
+                    actualTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+                }
+                document.documentElement.setAttribute('data-theme', actualTheme);
+                document.body.className = actualTheme;
+                
+                console.log('✅ App vollständig initialisiert!');
+                
+            } catch(e) {
+                console.error('❌ Fehler bei App-Initialisierung:', e);
+            }
+        }
+        
         document.addEventListener('DOMContentLoaded', function() {
             console.log('=== PAGE LOAD ===');
             
@@ -8273,11 +8420,8 @@
             }
             
             try {
-                initMainChart();
-                updateUI();
-                renderPerformancePacks();
-                updateDailyProgress(); // Badge Status beim Start aktualisieren
-                updateCheckInWidget(); // Widget Status aktualisieren
+                // Zentrale App-Initialisierung
+                initializeApp();
                 initPullToRefresh(); // Pull-to-Refresh initialisieren
             } catch(e) {
                 console.error('Init error:', e);
@@ -8317,10 +8461,6 @@
                 changeTimeRange(currentTimeRange);
             }
             
-            createStockList();
-            updateJournalStats();
-            renderPerformancePacks(); // Render Performance Packs on home
-            
             // Setup IntersectionObserver for sticky checkin widget
             const checkinWidget = document.querySelector('.checkin-widget');
             if (checkinWidget && 'IntersectionObserver' in window) {
@@ -8344,6 +8484,17 @@
                 console.log('✓ IntersectionObserver setup for sticky widget');
             }
         });
+        
+        // ============================================
+        // APP RE-INITIALIZATION ON RETURN
+        // ============================================
+        document.addEventListener('visibilitychange', function() {
+            if (!document.hidden) {
+                console.log('👀 App wurde wieder sichtbar - re-initialisiere UI');
+                initializeApp();
+            }
+        });
+        
         // ============================================
         // PERFORMANCE PACK CARD ON HOME
         // ============================================
