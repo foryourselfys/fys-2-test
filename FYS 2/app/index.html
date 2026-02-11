@@ -8165,6 +8165,7 @@
         function initPullToRefresh() {
             const pullIndicator = document.getElementById('pullToRefresh');
             const homeView = document.getElementById('homeView');
+            let thresholdReached = false; // Track wenn Threshold erreicht wurde
             
             if (!homeView || !pullIndicator) return;
             
@@ -8172,6 +8173,7 @@
                 if (homeView.scrollTop === 0 && !isRefreshing) {
                     touchStartY = e.touches[0].clientY;
                     isPulling = false;
+                    thresholdReached = false;
                 }
             }, { passive: true });
             
@@ -8189,6 +8191,15 @@
                         pullIndicator.classList.add('visible');
                         const rotation = Math.min(pullDistance * 4, 360);
                         pullIndicator.querySelector('.pull-to-refresh-icon').style.transform = `rotate(${rotation}deg)`;
+                        
+                        // Haptic Feedback wenn Threshold erreicht (nur einmal)
+                        if (pullDistance >= pullThreshold && !thresholdReached) {
+                            thresholdReached = true;
+                            // Medium Haptic
+                            if (window.navigator && window.navigator.vibrate) {
+                                window.navigator.vibrate(15);
+                            }
+                        }
                     } else {
                         pullIndicator.classList.remove('visible');
                     }
@@ -8207,6 +8218,11 @@
                     
                     console.log('🔄 Pull-to-Refresh triggered');
                     
+                    // Heavy Haptic Feedback beim Release
+                    if (window.navigator && window.navigator.vibrate) {
+                        window.navigator.vibrate(25);
+                    }
+                    
                     // Sofortiger Reload (kein Timeout)
                     location.reload();
                 } else {
@@ -8218,6 +8234,7 @@
                 isPulling = false;
                 touchStartY = 0;
                 touchCurrentY = 0;
+                thresholdReached = false;
             });
         }
 
