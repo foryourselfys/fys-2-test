@@ -3372,61 +3372,40 @@
         /* Pull-to-Refresh Indicator - Flatex Style */
         .pull-to-refresh {
             position: fixed;
-            top: 0;
+            top: 70px; /* Direkt unter Header */
             left: 50%;
-            transform: translateX(-50%) translateY(-100px);
-            width: 40px;
-            height: 40px;
+            transform: translateX(-50%);
+            width: 32px;
+            height: 32px;
             background: var(--bg-card);
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
-            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
             z-index: 1001;
             opacity: 0;
+            transition: opacity 0.2s ease;
         }
         
-        .pull-to-refresh.pulling {
+        .pull-to-refresh.visible {
             opacity: 1;
-        }
-        
-        .pull-to-refresh.ready {
-            transform: translateX(-50%) translateY(80px);
-            opacity: 1;
-        }
-        
-        .pull-to-refresh.loading {
-            transform: translateX(-50%) translateY(80px);
-            opacity: 1;
-        }
-        
-        .pull-to-refresh.complete {
-            transform: translateX(-50%) translateY(80px) scale(1.2);
-            opacity: 0;
-            transition: all 0.3s ease-out;
         }
         
         .pull-to-refresh-icon {
-            width: 24px;
-            height: 24px;
+            width: 20px;
+            height: 20px;
             color: var(--accent-primary);
             transition: transform 0.2s ease;
         }
         
         .pull-to-refresh.loading .pull-to-refresh-icon {
-            animation: spin 0.8s linear infinite;
+            animation: spin 0.6s linear infinite;
         }
         
         @keyframes spin {
             from { transform: rotate(0deg); }
             to { transform: rotate(360deg); }
-        }
-        
-        /* Pull-to-Refresh Content Offset */
-        .home-view-pulling {
-            transition: transform 0.2s ease-out;
         }
 
     </style>
@@ -8205,20 +8184,13 @@
                 if (homeView.scrollTop === 0 && pullDistance > 0) {
                     isPulling = true;
                     
-                    // Update indicator position and rotation based on pull
-                    const progress = Math.min(pullDistance / pullThreshold, 1);
-                    const translateY = -100 + (180 * progress); // Von -100 zu 80
-                    const rotation = progress * 360;
-                    
-                    pullIndicator.classList.add('pulling');
-                    pullIndicator.style.transform = `translateX(-50%) translateY(${translateY}px)`;
-                    pullIndicator.querySelector('.pull-to-refresh-icon').style.transform = `rotate(${rotation}deg)`;
-                    
-                    // Add "ready" class when threshold reached
-                    if (pullDistance >= pullThreshold) {
-                        pullIndicator.classList.add('ready');
+                    // Zeige Indicator und rotiere
+                    if (pullDistance > 20) {
+                        pullIndicator.classList.add('visible');
+                        const rotation = Math.min(pullDistance * 4, 360);
+                        pullIndicator.querySelector('.pull-to-refresh-icon').style.transform = `rotate(${rotation}deg)`;
                     } else {
-                        pullIndicator.classList.remove('ready');
+                        pullIndicator.classList.remove('visible');
                     }
                 }
             }, { passive: true });
@@ -8229,26 +8201,17 @@
                 const pullDistance = (touchCurrentY - touchStartY) / pullResistance;
                 
                 if (pullDistance >= pullThreshold) {
-                    // Trigger refresh
+                    // Trigger refresh - sofortiger Reload
                     isRefreshing = true;
-                    pullIndicator.classList.remove('pulling', 'ready');
                     pullIndicator.classList.add('loading');
                     
                     console.log('🔄 Pull-to-Refresh triggered');
                     
-                    // Simulate loading, then reload
-                    setTimeout(() => {
-                        pullIndicator.classList.remove('loading');
-                        pullIndicator.classList.add('complete');
-                        
-                        setTimeout(() => {
-                            location.reload();
-                        }, 300);
-                    }, 800);
+                    // Sofortiger Reload (kein Timeout)
+                    location.reload();
                 } else {
                     // Reset indicator
-                    pullIndicator.classList.remove('pulling', 'ready');
-                    pullIndicator.style.transform = 'translateX(-50%) translateY(-100px)';
+                    pullIndicator.classList.remove('visible');
                     pullIndicator.querySelector('.pull-to-refresh-icon').style.transform = 'rotate(0deg)';
                 }
                 
