@@ -3408,6 +3408,366 @@
             to { transform: rotate(360deg); }
         }
 
+        /* ========================================
+           TASK MANAGER - THINGS 3 STYLE
+           ======================================== */
+        
+        #taskManagerModal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: var(--bg-primary);
+            z-index: 2000;
+            display: none;
+            flex-direction: column;
+        }
+        
+        #taskManagerModal.active {
+            display: flex;
+        }
+        
+        .task-manager-header {
+            background: var(--bg-secondary);
+            padding: 20px;
+            padding-top: calc(20px + env(safe-area-inset-top));
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .task-manager-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+        
+        .task-manager-close {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: var(--bg-card);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: var(--text-primary);
+            font-size: 20px;
+        }
+        
+        .task-manager-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+        }
+        
+        /* Quick Add */
+        .task-quick-add {
+            background: var(--bg-card);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 24px;
+            display: flex;
+            gap: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+        
+        .task-quick-input {
+            flex: 1;
+            background: var(--bg-secondary);
+            border: none;
+            border-radius: 8px;
+            padding: 12px;
+            font-size: 16px;
+            color: var(--text-primary);
+        }
+        
+        .task-quick-add-btn {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: var(--accent-primary);
+            border: none;
+            color: white;
+            font-size: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+        
+        /* Task Lists Navigation */
+        .task-lists-nav {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 20px;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            padding-bottom: 4px;
+        }
+        
+        .task-list-tab {
+            padding: 10px 20px;
+            border-radius: 20px;
+            background: var(--bg-card);
+            color: var(--text-secondary);
+            font-weight: 600;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.2s;
+        }
+        
+        .task-list-tab.active {
+            background: var(--accent-primary);
+            color: white;
+        }
+        
+        .task-list-tab .count {
+            opacity: 0.7;
+            margin-left: 6px;
+        }
+        
+        /* Task List */
+        .task-list {
+            display: none;
+        }
+        
+        .task-list.active {
+            display: block;
+        }
+        
+        .task-item {
+            background: var(--bg-card);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+            touch-action: pan-y;
+        }
+        
+        .task-item:active {
+            transform: scale(0.98);
+        }
+        
+        .task-checkbox {
+            width: 24px;
+            height: 24px;
+            border: 2px solid var(--text-tertiary);
+            border-radius: 50%;
+            flex-shrink: 0;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .task-checkbox.checked {
+            background: var(--accent-primary);
+            border-color: var(--accent-primary);
+            position: relative;
+        }
+        
+        .task-checkbox.checked::after {
+            content: '✓';
+            position: absolute;
+            color: white;
+            font-size: 14px;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+        
+        .task-content {
+            flex: 1;
+            min-width: 0;
+        }
+        
+        .task-name {
+            font-size: 16px;
+            font-weight: 500;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+        
+        .task-item.completed .task-name {
+            text-decoration: line-through;
+            opacity: 0.5;
+        }
+        
+        .task-meta {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        
+        .task-date {
+            font-size: 13px;
+            color: var(--text-secondary);
+            background: var(--bg-secondary);
+            padding: 4px 8px;
+            border-radius: 6px;
+        }
+        
+        .task-date.overdue {
+            color: var(--accent-down);
+            background: rgba(255, 107, 53, 0.1);
+        }
+        
+        .task-date.today {
+            color: var(--accent-primary);
+            background: rgba(255, 107, 53, 0.1);
+        }
+        
+        .task-notes-indicator {
+            font-size: 13px;
+            color: var(--text-tertiary);
+        }
+        
+        /* Empty State */
+        .task-empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-secondary);
+        }
+        
+        .task-empty-icon {
+            font-size: 48px;
+            margin-bottom: 12px;
+        }
+        
+        .task-empty-text {
+            font-size: 16px;
+            font-weight: 500;
+        }
+        
+        /* Task Detail Modal */
+        #taskDetailModal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: var(--bg-primary);
+            z-index: 2001;
+            display: none;
+            flex-direction: column;
+            transform: translateY(100%);
+            transition: transform 0.3s ease;
+        }
+        
+        #taskDetailModal.active {
+            display: flex;
+            transform: translateY(0);
+        }
+        
+        .task-detail-header {
+            background: var(--bg-secondary);
+            padding: 20px;
+            padding-top: calc(20px + env(safe-area-inset-top));
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .task-detail-actions {
+            display: flex;
+            gap: 12px;
+        }
+        
+        .task-detail-btn {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--accent-primary);
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+        
+        .task-detail-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+        }
+        
+        .task-detail-field {
+            margin-bottom: 24px;
+        }
+        
+        .task-detail-label {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .task-detail-input {
+            width: 100%;
+            background: var(--bg-card);
+            border: none;
+            border-radius: 12px;
+            padding: 16px;
+            font-size: 16px;
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+        
+        .task-detail-textarea {
+            width: 100%;
+            background: var(--bg-card);
+            border: none;
+            border-radius: 12px;
+            padding: 16px;
+            font-size: 15px;
+            color: var(--text-primary);
+            min-height: 120px;
+            resize: vertical;
+            font-family: inherit;
+        }
+        
+        .task-detail-date-btn {
+            width: 100%;
+            background: var(--bg-card);
+            border: none;
+            border-radius: 12px;
+            padding: 16px;
+            font-size: 16px;
+            color: var(--text-primary);
+            text-align: left;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .task-detail-delete {
+            width: 100%;
+            background: rgba(255, 59, 48, 0.1);
+            border: none;
+            border-radius: 12px;
+            padding: 16px;
+            font-size: 16px;
+            color: #ff3b30;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 40px;
+        }
+        
+        /* Swipe Actions */
+        .task-item.swiping-right {
+            background: linear-gradient(90deg, var(--accent-up) 0%, var(--bg-card) 100px);
+        }
+        
+        .task-item.swiping-left {
+            background: linear-gradient(-90deg, var(--accent-down) 0%, var(--bg-card) 100px);
+        }
+
     </style>
 </head>
 <body>
@@ -3700,6 +4060,25 @@
                     <div style="display: flex; justify-content: center; margin-top: 14px;">
                         <div class="toggle-switch" id="coachDataToggle" onclick="toggleCoachData()">
                             <div class="toggle-slider"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Daily Check-In Reminder -->
+                <div class="setting-item">
+                    <div class="setting-label" id="reminderLabel"></div>
+                    <div class="setting-description" id="reminderDesc"></div>
+                    <div style="display: flex; justify-content: center; margin-top: 14px;">
+                        <div class="toggle-switch" id="reminderToggle" onclick="toggleReminder()">
+                            <div class="toggle-slider"></div>
+                        </div>
+                    </div>
+                    <div id="reminderTimeContainer" style="margin-top: 16px; display: none;">
+                        <div style="background: var(--bg-secondary); border-radius: 12px; padding: 12px; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                            <span style="font-size: 14px; color: var(--text-secondary);">🔔</span>
+                            <input type="time" id="reminderTime" value="20:00" 
+                                   onchange="updateReminderTime()"
+                                   style="background: none; border: none; color: var(--text-primary); font-size: 16px; font-weight: 600; cursor: pointer;" />
                         </div>
                     </div>
                 </div>
@@ -4056,6 +4435,8 @@
                 sleepGoalDesc: 'Dein ideales Schlafziel pro Nacht. Beeinflusst deine Energie-Kategorie.',
                 coachDataLabel: 'KI-Coach Datenzugriff',
                 coachDataDesc: 'Erlaube dem Coach deine Werte zu sehen.',
+                reminderLabel: 'Tägliche Erinnerung',
+                reminderDesc: 'Erhalte eine Benachrichtigung für deinen Check-In.',
                 navHome: 'Start',
                 navCheckin: 'Check-in',
                 navCoach: 'Coach',
@@ -4113,6 +4494,8 @@
                 sleepGoalDesc: 'Your ideal sleep goal per night. Influences your energy category.',
                 coachDataLabel: 'AI Coach Data Access',
                 coachDataDesc: 'Allow coach to see your values.',
+                reminderLabel: 'Daily Reminder',
+                reminderDesc: 'Get a notification for your check-in.',
                 navHome: 'Home',
                 navCheckin: 'Check-in',
                 navCoach: 'Coach',
@@ -4170,6 +4553,8 @@
                 sleepGoalDesc: 'Tu objetivo ideal de sueño por noche. Influye en tu categoría de energía.',
                 coachDataLabel: 'Acceso a Datos del Coach',
                 coachDataDesc: 'Permite al coach ver tus valores.',
+                reminderLabel: 'Recordatorio Diario',
+                reminderDesc: 'Recibe una notificación para tu check-in.',
                 navHome: 'Inicio',
                 navCheckin: 'Check-in',
                 navCoach: 'Coach',
@@ -5720,6 +6105,164 @@
             }
         }
 
+        // ============================================
+        // DAILY CHECK-IN REMINDER
+        // ============================================
+        
+        let reminderEnabled = localStorage.getItem('fysReminder') === 'true';
+        let reminderTime = localStorage.getItem('fysReminderTime') || '20:00';
+        let notificationPermission = 'default';
+        
+        async function requestNotificationPermission() {
+            if (!('Notification' in window)) {
+                alert('❌ Benachrichtigungen werden von deinem Browser nicht unterstützt.');
+                return false;
+            }
+            
+            if (Notification.permission === 'granted') {
+                return true;
+            }
+            
+            if (Notification.permission === 'denied') {
+                alert('❌ Benachrichtigungen wurden blockiert. Bitte aktiviere sie in deinen Browser-Einstellungen.');
+                return false;
+            }
+            
+            const permission = await Notification.requestPermission();
+            notificationPermission = permission;
+            
+            if (permission === 'granted') {
+                return true;
+            } else {
+                alert('❌ Benachrichtigungen wurden abgelehnt. Aktiviere sie in den Einstellungen um Erinnerungen zu erhalten.');
+                return false;
+            }
+        }
+        
+        async function toggleReminder() {
+            reminderEnabled = !reminderEnabled;
+            
+            if (reminderEnabled) {
+                // Request permission
+                const hasPermission = await requestNotificationPermission();
+                
+                if (!hasPermission) {
+                    reminderEnabled = false;
+                    return;
+                }
+                
+                // Show time picker
+                document.getElementById('reminderTimeContainer').style.display = 'block';
+                document.getElementById('reminderToggle').classList.add('active');
+                
+                // Schedule reminder
+                scheduleReminder();
+                
+                console.log('✅ Daily Reminder aktiviert für', reminderTime);
+            } else {
+                // Hide time picker
+                document.getElementById('reminderTimeContainer').style.display = 'none';
+                document.getElementById('reminderToggle').classList.remove('active');
+                
+                console.log('❌ Daily Reminder deaktiviert');
+            }
+            
+            localStorage.setItem('fysReminder', reminderEnabled);
+        }
+        
+        function updateReminderTime() {
+            const timeInput = document.getElementById('reminderTime');
+            reminderTime = timeInput.value;
+            localStorage.setItem('fysReminderTime', reminderTime);
+            
+            console.log('🔔 Reminder Zeit aktualisiert:', reminderTime);
+            
+            // Reschedule
+            if (reminderEnabled) {
+                scheduleReminder();
+            }
+        }
+        
+        function scheduleReminder() {
+            // Check every minute if it's time to send notification
+            const checkInterval = setInterval(() => {
+                if (!reminderEnabled) {
+                    clearInterval(checkInterval);
+                    return;
+                }
+                
+                const now = new Date();
+                const currentTime = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+                
+                // Check if it's reminder time
+                if (currentTime === reminderTime) {
+                    sendCheckinReminder();
+                }
+            }, 60000); // Check every minute
+            
+            // Also check on load
+            const now = new Date();
+            const currentTime = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+            
+            if (currentTime === reminderTime) {
+                sendCheckinReminder();
+            }
+        }
+        
+        function sendCheckinReminder() {
+            // Check if already checked in today
+            const today = new Date().toISOString().split('T')[0];
+            const lastEntry = performanceData.entries[performanceData.entries.length - 1];
+            
+            if (lastEntry && lastEntry.date === today) {
+                console.log('✅ Check-In bereits erledigt heute');
+                return;
+            }
+            
+            // Send notification
+            if (Notification.permission === 'granted') {
+                const notification = new Notification('FYS Check-In 📊', {
+                    body: 'Zeit für deinen täglichen Check-In! Wie lief dein Tag?',
+                    icon: '/favicon.ico',
+                    badge: '/favicon.ico',
+                    tag: 'fys-checkin',
+                    requireInteraction: false,
+                    silent: false
+                });
+                
+                notification.onclick = () => {
+                    window.focus();
+                    notification.close();
+                    // Open check-in
+                    if (typeof openCheckinWizard === 'function') {
+                        openCheckinWizard();
+                    }
+                };
+                
+                console.log('🔔 Check-In Reminder gesendet!');
+            }
+        }
+        
+        // Initialize reminder on page load
+        function initializeReminder() {
+            // Set time input value
+            document.getElementById('reminderTime').value = reminderTime;
+            
+            // Update UI
+            if (reminderEnabled) {
+                document.getElementById('reminderToggle').classList.add('active');
+                document.getElementById('reminderTimeContainer').style.display = 'block';
+                
+                // Schedule reminder
+                scheduleReminder();
+            }
+            
+            // Check notification permission
+            if ('Notification' in window) {
+                notificationPermission = Notification.permission;
+            }
+        }
+
         function togglePro() {
             isPro = !isPro;
             localStorage.setItem('fysPro', isPro);
@@ -6802,6 +7345,8 @@
             safeUpdate('sleepGoalDesc', t.sleepGoalDesc);
             safeUpdate('coachDataLabel', t.coachDataLabel);
             safeUpdate('coachDataDesc', t.coachDataDesc);
+            safeUpdate('reminderLabel', t.reminderLabel);
+            safeUpdate('reminderDesc', t.reminderDesc);
             safeUpdate('navHome', t.navHome);
             safeUpdate('navCheckin', t.navCheckin);
             safeUpdate('navCoach', t.navCoach);
@@ -7168,9 +7713,391 @@
             }
         }
 
+        // ============================================
+        // TASK MANAGER - THINGS 3 STYLE
+        // ============================================
+        
+        let taskData = JSON.parse(localStorage.getItem('fysTasks')) || [];
+        let currentTaskList = 'inbox';
+        let currentEditingTaskId = null;
+        let taskTouchStartX = 0;
+        let taskTouchCurrentX = 0;
+        let taskSwipeThreshold = 100;
+        
         function openTaskManager() {
-            alert('✓ Task Manager\n\nDiese Funktion wird gerade entwickelt und ist bald verfügbar!');
+            if (!isPro) {
+                alert('⭐ Task Manager ist ein Pro Feature!\n\nUpgrade auf FYS Pro um Zugriff zu erhalten.');
+                return;
+            }
+            
+            document.getElementById('taskManagerModal').classList.add('active');
+            renderTaskLists();
         }
+        
+        function closeTaskManager() {
+            document.getElementById('taskManagerModal').classList.remove('active');
+        }
+        
+        function quickAddTask() {
+            const input = document.getElementById('taskQuickInput');
+            const name = input.value.trim();
+            
+            if (!name) return;
+            
+            const task = {
+                id: Date.now().toString(),
+                name: name,
+                notes: '',
+                dueDate: null,
+                completed: false,
+                list: 'inbox',
+                createdAt: new Date().toISOString(),
+                order: taskData.filter(t => !t.completed).length
+            };
+            
+            taskData.push(task);
+            saveTaskData();
+            renderTaskLists();
+            input.value = '';
+            
+            // Haptic feedback
+            if (window.navigator && window.navigator.vibrate) {
+                window.navigator.vibrate(10);
+            }
+        }
+        
+        function switchTaskList(listName) {
+            currentTaskList = listName;
+            
+            // Update tabs
+            document.querySelectorAll('.task-list-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelector(`.task-list-tab[data-list="${listName}"]`).classList.add('active');
+            
+            // Update lists
+            document.querySelectorAll('.task-list').forEach(list => {
+                list.classList.remove('active');
+            });
+            document.getElementById(`taskList-${listName}`).classList.add('active');
+        }
+        
+        function renderTaskLists() {
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            
+            // Count tasks for each list
+            const counts = {
+                inbox: 0,
+                today: 0,
+                upcoming: 0,
+                someday: 0,
+                completed: 0
+            };
+            
+            // Clear all lists
+            ['inbox', 'today', 'upcoming', 'someday', 'completed'].forEach(listName => {
+                document.getElementById(`taskList-${listName}`).innerHTML = '';
+            });
+            
+            // Sort tasks by order
+            const sortedTasks = [...taskData].sort((a, b) => {
+                if (a.completed !== b.completed) {
+                    return a.completed ? 1 : -1;
+                }
+                return a.order - b.order;
+            });
+            
+            // Render tasks
+            sortedTasks.forEach(task => {
+                const taskElement = createTaskElement(task);
+                
+                if (task.completed) {
+                    counts.completed++;
+                    document.getElementById('taskList-completed').appendChild(taskElement);
+                } else {
+                    // Determine which list this task belongs to
+                    if (task.dueDate) {
+                        const dueDate = new Date(task.dueDate);
+                        dueDate.setHours(0, 0, 0, 0);
+                        
+                        if (dueDate.getTime() === today.getTime()) {
+                            counts.today++;
+                            document.getElementById('taskList-today').appendChild(taskElement.cloneNode(true));
+                        } else if (dueDate > today) {
+                            counts.upcoming++;
+                            document.getElementById('taskList-upcoming').appendChild(taskElement.cloneNode(true));
+                        }
+                    }
+                    
+                    if (task.list === 'inbox') {
+                        counts.inbox++;
+                        document.getElementById('taskList-inbox').appendChild(taskElement.cloneNode(true));
+                    } else if (task.list === 'someday') {
+                        counts.someday++;
+                        document.getElementById('taskList-someday').appendChild(taskElement.cloneNode(true));
+                    }
+                }
+            });
+            
+            // Update counts
+            document.getElementById('inboxCount').textContent = counts.inbox;
+            document.getElementById('todayCount').textContent = counts.today;
+            document.getElementById('upcomingCount').textContent = counts.upcoming;
+            document.getElementById('somedayCount').textContent = counts.someday;
+            document.getElementById('completedCount').textContent = counts.completed;
+            
+            // Show empty states
+            ['inbox', 'today', 'upcoming', 'someday', 'completed'].forEach(listName => {
+                const listEl = document.getElementById(`taskList-${listName}`);
+                if (listEl.children.length === 0) {
+                    listEl.innerHTML = getEmptyState(listName);
+                }
+            });
+            
+            // Re-attach event listeners
+            attachTaskListeners();
+        }
+        
+        function createTaskElement(task) {
+            const div = document.createElement('div');
+            div.className = 'task-item' + (task.completed ? ' completed' : '');
+            div.setAttribute('data-task-id', task.id);
+            
+            let metaHTML = '';
+            
+            if (task.dueDate) {
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+                const dueDate = new Date(task.dueDate);
+                dueDate.setHours(0, 0, 0, 0);
+                
+                let dateClass = 'task-date';
+                let dateText = formatTaskDate(task.dueDate);
+                
+                if (dueDate < today) {
+                    dateClass += ' overdue';
+                } else if (dueDate.getTime() === today.getTime()) {
+                    dateClass += ' today';
+                    dateText = 'Today';
+                }
+                
+                metaHTML += `<span class="${dateClass}">📅 ${dateText}</span>`;
+            }
+            
+            if (task.notes) {
+                metaHTML += `<span class="task-notes-indicator">📝</span>`;
+            }
+            
+            div.innerHTML = `
+                <div class="task-checkbox ${task.completed ? 'checked' : ''}" onclick="toggleTaskComplete('${task.id}')"></div>
+                <div class="task-content" onclick="editTask('${task.id}')">
+                    <div class="task-name">${task.name}</div>
+                    ${metaHTML ? `<div class="task-meta">${metaHTML}</div>` : ''}
+                </div>
+            `;
+            
+            return div;
+        }
+        
+        function getEmptyState(listName) {
+            const states = {
+                inbox: { icon: '📥', text: 'No tasks in inbox' },
+                today: { icon: '☀️', text: 'No tasks for today' },
+                upcoming: { icon: '📅', text: 'No upcoming tasks' },
+                someday: { icon: '💭', text: 'No someday tasks' },
+                completed: { icon: '✓', text: 'No completed tasks' }
+            };
+            
+            const state = states[listName];
+            return `
+                <div class="task-empty-state">
+                    <div class="task-empty-icon">${state.icon}</div>
+                    <div class="task-empty-text">${state.text}</div>
+                </div>
+            `;
+        }
+        
+        function toggleTaskComplete(taskId) {
+            const task = taskData.find(t => t.id === taskId);
+            if (!task) return;
+            
+            task.completed = !task.completed;
+            
+            // Haptic feedback
+            if (window.navigator && window.navigator.vibrate) {
+                window.navigator.vibrate(task.completed ? 20 : 10);
+            }
+            
+            saveTaskData();
+            renderTaskLists();
+        }
+        
+        function editTask(taskId) {
+            currentEditingTaskId = taskId;
+            const task = taskData.find(t => t.id === taskId);
+            if (!task) return;
+            
+            document.getElementById('taskDetailName').value = task.name;
+            document.getElementById('taskDetailNotes').value = task.notes || '';
+            document.getElementById('taskDetailDate').value = task.dueDate || '';
+            updateDateDisplay();
+            
+            document.getElementById('taskDetailModal').classList.add('active');
+        }
+        
+        function closeTaskDetail() {
+            document.getElementById('taskDetailModal').classList.remove('active');
+            currentEditingTaskId = null;
+        }
+        
+        function saveTaskDetail() {
+            if (!currentEditingTaskId) return;
+            
+            const task = taskData.find(t => t.id === currentEditingTaskId);
+            if (!task) return;
+            
+            task.name = document.getElementById('taskDetailName').value.trim();
+            task.notes = document.getElementById('taskDetailNotes').value.trim();
+            task.dueDate = document.getElementById('taskDetailDate').value || null;
+            
+            // Auto-assign list based on date
+            if (task.dueDate) {
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+                const dueDate = new Date(task.dueDate);
+                dueDate.setHours(0, 0, 0, 0);
+                
+                if (dueDate.getTime() === today.getTime()) {
+                    task.list = 'inbox'; // Today tasks also show in inbox
+                } else if (dueDate > today) {
+                    task.list = 'inbox'; // Upcoming tasks also show in inbox
+                }
+            } else {
+                task.list = 'someday'; // No date = someday
+            }
+            
+            saveTaskData();
+            renderTaskLists();
+            closeTaskDetail();
+            
+            // Haptic feedback
+            if (window.navigator && window.navigator.vibrate) {
+                window.navigator.vibrate(10);
+            }
+        }
+        
+        function deleteTask() {
+            if (!currentEditingTaskId) return;
+            
+            if (!confirm('Delete this task?')) return;
+            
+            taskData = taskData.filter(t => t.id !== currentEditingTaskId);
+            saveTaskData();
+            renderTaskLists();
+            closeTaskDetail();
+            
+            // Haptic feedback
+            if (window.navigator && window.navigator.vibrate) {
+                window.navigator.vibrate(25);
+            }
+        }
+        
+        function openDatePicker() {
+            document.getElementById('taskDetailDate').showPicker();
+        }
+        
+        function updateDateDisplay() {
+            const dateInput = document.getElementById('taskDetailDate');
+            const dateText = document.getElementById('taskDetailDateText');
+            
+            if (dateInput.value) {
+                const date = new Date(dateInput.value);
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+                const selectedDate = new Date(date);
+                selectedDate.setHours(0, 0, 0, 0);
+                
+                if (selectedDate.getTime() === today.getTime()) {
+                    dateText.textContent = '📅 Today';
+                } else if (selectedDate.getTime() === today.getTime() + 86400000) {
+                    dateText.textContent = '📅 Tomorrow';
+                } else {
+                    dateText.textContent = '📅 ' + formatTaskDate(dateInput.value);
+                }
+            } else {
+                dateText.textContent = 'No date';
+            }
+        }
+        
+        function formatTaskDate(dateString) {
+            const date = new Date(dateString);
+            const day = date.getDate();
+            const month = date.getMonth() + 1;
+            const year = date.getFullYear();
+            return `${day}.${month}.${year}`;
+        }
+        
+        function saveTaskData() {
+            localStorage.setItem('fysTasks', JSON.stringify(taskData));
+        }
+        
+        // Swipe Actions
+        function attachTaskListeners() {
+            document.querySelectorAll('.task-item').forEach(item => {
+                let startX = 0;
+                let currentX = 0;
+                let isSwiping = false;
+                
+                item.addEventListener('touchstart', (e) => {
+                    startX = e.touches[0].clientX;
+                    currentX = startX;
+                    isSwiping = true;
+                }, { passive: true });
+                
+                item.addEventListener('touchmove', (e) => {
+                    if (!isSwiping) return;
+                    
+                    currentX = e.touches[0].clientX;
+                    const diff = currentX - startX;
+                    
+                    if (Math.abs(diff) > 10) {
+                        if (diff > 0) {
+                            item.classList.add('swiping-right');
+                            item.classList.remove('swiping-left');
+                        } else {
+                            item.classList.add('swiping-left');
+                            item.classList.remove('swiping-right');
+                        }
+                    }
+                }, { passive: true });
+                
+                item.addEventListener('touchend', () => {
+                    if (!isSwiping) return;
+                    
+                    const diff = currentX - startX;
+                    const taskId = item.getAttribute('data-task-id');
+                    
+                    if (diff > taskSwipeThreshold) {
+                        // Swipe right → Complete
+                        toggleTaskComplete(taskId);
+                    } else if (diff < -taskSwipeThreshold) {
+                        // Swipe left → Delete
+                        if (confirm('Delete this task?')) {
+                            taskData = taskData.filter(t => t.id !== taskId);
+                            saveTaskData();
+                            renderTaskLists();
+                        }
+                    }
+                    
+                    item.classList.remove('swiping-right', 'swiping-left');
+                    isSwiping = false;
+                });
+            });
+        }
+        
+        // Enter key in quick add - wird in DOMContentLoaded weiter unten hinzugefügt
+
 
         function openHabitTracker() {
             alert('🎯 Habit Tracker\n\nDiese Funktion wird gerade entwickelt und ist bald verfügbar!');
@@ -8352,6 +9279,9 @@
                 document.documentElement.setAttribute('data-theme', actualTheme);
                 document.body.className = actualTheme;
                 
+                // 10. Initialize Daily Reminder
+                initializeReminder();
+                
                 console.log('✅ App vollständig initialisiert!');
                 
             } catch(e) {
@@ -8495,6 +9425,16 @@
                 
                 observer.observe(checkinWidget);
                 console.log('✓ IntersectionObserver setup for sticky widget');
+            }
+            
+            // Task Manager: Enter key in quick add
+            const taskQuickInput = document.getElementById('taskQuickInput');
+            if (taskQuickInput) {
+                taskQuickInput.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') {
+                        quickAddTask();
+                    }
+                });
             }
         });
         
@@ -9009,5 +9949,77 @@
         };
 
     </script>
+    <!-- TASK MANAGER MODAL -->
+    <div id="taskManagerModal">
+        <div class="task-manager-header">
+            <div class="task-manager-title">✓ Tasks</div>
+            <div class="task-manager-close" onclick="closeTaskManager()">×</div>
+        </div>
+        
+        <div class="task-manager-body">
+            <!-- Quick Add -->
+            <div class="task-quick-add">
+                <input type="text" class="task-quick-input" id="taskQuickInput" placeholder="New Task..." />
+                <button class="task-quick-add-btn" onclick="quickAddTask()">+</button>
+            </div>
+            
+            <!-- Lists Navigation -->
+            <div class="task-lists-nav">
+                <div class="task-list-tab active" data-list="inbox" onclick="switchTaskList('inbox')">
+                    📥 Inbox <span class="count" id="inboxCount">0</span>
+                </div>
+                <div class="task-list-tab" data-list="today" onclick="switchTaskList('today')">
+                    ☀️ Today <span class="count" id="todayCount">0</span>
+                </div>
+                <div class="task-list-tab" data-list="upcoming" onclick="switchTaskList('upcoming')">
+                    📅 Upcoming <span class="count" id="upcomingCount">0</span>
+                </div>
+                <div class="task-list-tab" data-list="someday" onclick="switchTaskList('someday')">
+                    💭 Someday <span class="count" id="somedayCount">0</span>
+                </div>
+                <div class="task-list-tab" data-list="completed" onclick="switchTaskList('completed')">
+                    ✓ Completed <span class="count" id="completedCount">0</span>
+                </div>
+            </div>
+            
+            <!-- Task Lists -->
+            <div class="task-list active" id="taskList-inbox"></div>
+            <div class="task-list" id="taskList-today"></div>
+            <div class="task-list" id="taskList-upcoming"></div>
+            <div class="task-list" id="taskList-someday"></div>
+            <div class="task-list" id="taskList-completed"></div>
+        </div>
+    </div>
+    
+    <!-- TASK DETAIL MODAL -->
+    <div id="taskDetailModal">
+        <div class="task-detail-header">
+            <button class="task-detail-btn" onclick="closeTaskDetail()">Cancel</button>
+            <button class="task-detail-btn" onclick="saveTaskDetail()">Done</button>
+        </div>
+        
+        <div class="task-detail-body">
+            <div class="task-detail-field">
+                <div class="task-detail-label">Task Name</div>
+                <input type="text" class="task-detail-input" id="taskDetailName" placeholder="Task name..." />
+            </div>
+            
+            <div class="task-detail-field">
+                <div class="task-detail-label">Notes</div>
+                <textarea class="task-detail-textarea" id="taskDetailNotes" placeholder="Add notes..."></textarea>
+            </div>
+            
+            <div class="task-detail-field">
+                <div class="task-detail-label">Due Date</div>
+                <button class="task-detail-date-btn" onclick="openDatePicker()">
+                    <span id="taskDetailDateText">No date</span>
+                </button>
+                <input type="date" id="taskDetailDate" style="display: none;" onchange="updateDateDisplay()" />
+            </div>
+            
+            <button class="task-detail-delete" onclick="deleteTask()">Delete Task</button>
+        </div>
+    </div>
+
 </body>
 </html>
