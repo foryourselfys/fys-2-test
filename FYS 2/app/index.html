@@ -1995,7 +1995,7 @@
             justify-content: space-around;
             align-items: center;
             padding: 0 20px;
-            z-index: 200;
+            z-index: 2100; /* Über Task Manager (2000) */
             
             /* Glassmorphism Effect */
             background: rgba(28, 28, 30, 0.78);
@@ -3461,6 +3461,7 @@
             flex: 1;
             overflow-y: auto;
             padding: 20px;
+            padding-bottom: 120px; /* Platz für Bottom Nav */
         }
         
         /* Quick Add */
@@ -6219,20 +6220,33 @@
                 return;
             }
             
+            // Get time-appropriate greeting
+            const hour = new Date().getHours();
+            let greeting = 'Guten Tag';
+            if (hour < 12) {
+                greeting = 'Guten Morgen';
+            } else if (hour >= 18) {
+                greeting = 'Guten Abend';
+            }
+            
             // Send notification
             if (Notification.permission === 'granted') {
-                const notification = new Notification('FYS Check-In 📊', {
-                    body: 'Zeit für deinen täglichen Check-In! Wie lief dein Tag?',
+                const notification = new Notification('FYS Daily Check-In', {
+                    body: `${greeting} 👋\n\nZeit für deinen Check-In. Bewerte deinen Tag in 8 Kategorien.`,
                     icon: '/favicon.ico',
                     badge: '/favicon.ico',
-                    tag: 'fys-checkin',
+                    tag: 'fys-checkin-daily',
                     requireInteraction: false,
-                    silent: false
+                    silent: false,
+                    vibrate: [200, 100, 200],
+                    timestamp: Date.now(),
+                    renotify: false
                 });
                 
                 notification.onclick = () => {
                     window.focus();
                     notification.close();
+                    
                     // Open check-in
                     if (typeof openCheckinWizard === 'function') {
                         openCheckinWizard();
@@ -6245,21 +6259,42 @@
         
         // Initialize reminder on page load
         function initializeReminder() {
-            // Set time input value
-            document.getElementById('reminderTime').value = reminderTime;
+            console.log('🔔 Initializing Reminder System...');
+            console.log('   reminderEnabled:', reminderEnabled);
+            console.log('   reminderTime:', reminderTime);
             
-            // Update UI
+            // Check if elements exist
+            const timeInput = document.getElementById('reminderTime');
+            const toggle = document.getElementById('reminderToggle');
+            const container = document.getElementById('reminderTimeContainer');
+            
+            if (!timeInput || !toggle || !container) {
+                console.warn('⚠️ Reminder elements not found yet, will retry...');
+                setTimeout(initializeReminder, 100);
+                return;
+            }
+            
+            // Set time input value
+            timeInput.value = reminderTime;
+            
+            // Update UI based on saved state
             if (reminderEnabled) {
-                document.getElementById('reminderToggle').classList.add('active');
-                document.getElementById('reminderTimeContainer').style.display = 'block';
+                toggle.classList.add('active');
+                container.style.display = 'block';
+                console.log('✅ Reminder UI aktiviert');
                 
                 // Schedule reminder
                 scheduleReminder();
+            } else {
+                toggle.classList.remove('active');
+                container.style.display = 'none';
+                console.log('❌ Reminder UI deaktiviert');
             }
             
             // Check notification permission
             if ('Notification' in window) {
                 notificationPermission = Notification.permission;
+                console.log('🔔 Notification Permission:', notificationPermission);
             }
         }
 
