@@ -5118,10 +5118,22 @@
             const first = entries[0];
 
             pack.categories.forEach(cat => {
-                const latestValue = latest.values ? latest.values[cat.id] : 5;
-                const firstValue = first.values ? first.values[cat.id] : 5;
-                const change = latestValue - firstValue;
-                const changePercent = firstValue !== 0 ? ((change / firstValue) * 100).toFixed(1) : '0.0';
+                // Verwende categoryValues (akkumuliert) statt values
+                const latestValue = latest.categoryValues ? latest.categoryValues[cat.id] : 100;
+                const firstValue = first.categoryValues ? first.categoryValues[cat.id] : 100;
+                
+                // Basis für Prozent-Berechnung
+                let baseValue;
+                if (performanceData.entries.length === 1) {
+                    // ALLERERSTER ENTRY: Vergleich mit 100
+                    baseValue = 100;
+                } else {
+                    // Normale Entries: Vergleich mit erstem Wert im Zeitfenster
+                    baseValue = firstValue;
+                }
+                
+                const change = latestValue - baseValue;
+                const changePercent = baseValue !== 0 ? ((change / baseValue) * 100).toFixed(1) : '0.0';
                 
                 const isPositive = change > 0;
                 const isNegative = change < 0;
@@ -6016,7 +6028,12 @@
                     const lastEntry = performanceData.entries[performanceData.entries.length - 1];
                     packIndexValue = lastEntry.packIndices?.[pack.id] || 100.0;
                     
-                    if (performanceData.entries.length > 1) {
+                    if (performanceData.entries.length === 1) {
+                        // ALLERERSTER ENTRY: Vergleich mit 100
+                        changeValue = packIndexValue - 100;
+                        changePercent = (changeValue / 100) * 100;
+                    } else if (performanceData.entries.length > 1) {
+                        // Normale Entries: Vergleich mit vorherigem Entry
                         const prevEntry = performanceData.entries[performanceData.entries.length - 2];
                         const prevValue = prevEntry.packIndices?.[pack.id] || 100.0;
                         changeValue = packIndexValue - prevValue;
@@ -6075,15 +6092,33 @@
                 e.packIndices && e.packIndices[packId] !== undefined
             );
 
-            const labels = packEntries.map(e => {
+            let labels = [];
+            let data = [];
+            
+            // ALLERERSTER ENTRY: Zeige 100 → Entry
+            if (performanceData.entries.length === 1 && packEntries.length === 1) {
+                const today = new Date();
+                const startLabel = `${today.getDate()}.${today.getMonth()+1}.${today.getFullYear()}`;
+                labels.push(startLabel);
+                data.push(100);
+                
+                // Dann der erste Entry
+                const e = packEntries[0];
                 const date = new Date(e.date);
-                const day = date.getDate();
-                const month = date.getMonth() + 1;
-                const year = date.getFullYear();
-                return `${day}.${month}.${year}`;
-            });
-
-            const data = packEntries.map(e => e.packIndices[packId]);
+                const label = `${date.getDate()}.${date.getMonth() + 1}.${date.getFullYear()}`;
+                labels.push(label);
+                data.push(e.packIndices[packId]);
+            } else {
+                // Normale Entries
+                labels = packEntries.map(e => {
+                    const date = new Date(e.date);
+                    const day = date.getDate();
+                    const month = date.getMonth() + 1;
+                    const year = date.getFullYear();
+                    return `${day}.${month}.${year}`;
+                });
+                data = packEntries.map(e => e.packIndices[packId]);
+            }
 
             // 1:1 COPY of FYS Index Chart Config!
             window[`packMiniChart_${packId}`] = new Chart(ctx, {
@@ -8341,13 +8376,11 @@
                 console.log('✅ Fresh state initialized:', performanceData);
             }
             
-            // Hide loading screen after 3 seconds
-            setTimeout(() => {
-                const loadingScreen = document.getElementById('loadingScreen');
-                if (loadingScreen) {
-                    loadingScreen.classList.add('hidden');
-                }
-            }, 3000);
+            // Hide loading screen immediately
+            const loadingScreen = document.getElementById('loadingScreen');
+            if (loadingScreen) {
+                loadingScreen.classList.add('hidden');
+            }
             
             // Load saved timeRange
             const savedTimeRange = localStorage.getItem('fys_timeRange');
