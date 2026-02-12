@@ -1857,9 +1857,11 @@
             display: flex;
             flex-direction: column;
             height: 100%;
+            width: 100%;
             position: relative;
             overflow: hidden;
             box-sizing: border-box;
+            background: var(--bg-primary);
         }
         @supports (padding-top: env(safe-area-inset-top)) {
             .coach-page {
@@ -2575,14 +2577,17 @@
             display: block;
         }
         
-        /* Coach view needs flex layout and must NOT scroll itself */
+        /* Coach view: fixed fullscreen, immune to window scroll */
         #coachView.view-section {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
             overflow: hidden;
             min-height: 0;
-            height: 100vh;
-            height: 100dvh;
-            max-height: 100vh;
-            max-height: 100dvh;
+            height: 100%;
+            z-index: 90; /* Below header (100) and bottom-nav (2100) */
         }
         #coachView.view-section.active {
             display: flex;
