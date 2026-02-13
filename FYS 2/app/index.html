@@ -3573,18 +3573,69 @@
         }
         
         .checkin-widget.completed {
-            background: linear-gradient(135deg, rgba(0, 201, 109, 0.12), rgba(0, 201, 109, 0.04));
-            border: 1px solid rgba(0, 201, 109, 0.2);
-            box-shadow: 0 2px 12px rgba(0, 201, 109, 0.1);
+            background: linear-gradient(135deg, rgba(0, 201, 109, 0.10), rgba(0, 180, 100, 0.04));
+            border: 1px solid rgba(0, 201, 109, 0.25);
+            box-shadow: 0 2px 12px rgba(0, 201, 109, 0.08);
+            position: relative;
+        }
+        
+        /* Success checkmark badge */
+        .checkin-widget.completed::after {
+            content: '✓';
+            position: absolute;
+            top: 10px;
+            right: 14px;
+            width: 22px;
+            height: 22px;
+            background: #00c96d;
+            color: #fff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 900;
+            box-shadow: 0 2px 6px rgba(0, 201, 109, 0.3);
         }
         
         .checkin-widget.completed .checkin-widget-icon {
             background: rgba(0, 201, 109, 0.15);
         }
         
+        .checkin-widget.completed .checkin-widget-icon svg {
+            stroke: #00c96d;
+        }
+        
+        .checkin-widget.completed .checkin-widget-title {
+            color: #00c96d;
+        }
+        
+        .checkin-widget.completed .checkin-widget-subtitle {
+            color: var(--text-secondary);
+        }
+        
+        .checkin-widget.completed .checkin-widget-arrow {
+            color: #00c96d;
+            opacity: 0.5;
+        }
+        
         .checkin-widget.completed:hover {
             transform: translateY(-1px);
-            box-shadow: 0 4px 16px rgba(0, 201, 109, 0.2);
+            box-shadow: 0 4px 16px rgba(0, 201, 109, 0.15);
+        }
+        
+        /* Completed + Sticky */
+        .checkin-widget.completed.is-sticky {
+            box-shadow: 0 6px 20px rgba(0, 201, 109, 0.2),
+                        0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+        
+        .checkin-widget.completed.is-sticky::after {
+            top: 8px;
+            right: 10px;
+            width: 18px;
+            height: 18px;
+            font-size: 10px;
         }
         
         .checkin-widget.pro-edit {
@@ -4309,7 +4360,7 @@
                         <polyline points="16 7 22 7 22 13"></polyline>
                     </svg>
                 </div>
-                <div class="progress-badge-compact incomplete" id="journalBadge" onclick="openJournal()" title="Tagebuch">
+                <div class="progress-badge-compact incomplete" id="journalBadge" onclick="toggleJournal()" title="Tagebuch">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
                         <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
@@ -4325,7 +4376,7 @@
             <div class="home-content">
                 
                 <!-- Daily Check-in Widget (MOVED TO TOP) -->
-                <div class="checkin-widget" onclick="openCheckIn()">
+                <div class="checkin-widget" id="checkinWidget" onclick="openCheckIn()">
                     <div class="checkin-widget-header">
                         <div class="checkin-widget-icon">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -4334,10 +4385,10 @@
                             </svg>
                         </div>
                         <div class="checkin-widget-info">
-                            <div class="checkin-widget-title">Daily Check-In</div>
+                            <div class="checkin-widget-title" id="checkinWidgetTitle">Daily Check-In</div>
                             <div class="checkin-widget-subtitle" id="checkinWidgetSubtitle">Beantworte 8 Fragen zu deinem Tag</div>
                         </div>
-                        <div class="checkin-widget-arrow">→</div>
+                        <div class="checkin-widget-arrow" id="checkinWidgetArrow">→</div>
                     </div>
                 </div>
                 
@@ -4348,7 +4399,7 @@
                         <div class="streak-info">
                             <div class="streak-number" id="streakNumber">0</div>
                             <div class="streak-label">Tage Streak</div>
-                            <div class="streak-sublabel">CheckIn + Tagebuch</div>
+                            <div class="streak-sublabel">Check-In + Tagebuch</div>
                         </div>
                         <div class="streak-record">
                             <div class="streak-record-label">Rekord</div>
@@ -4963,6 +5014,7 @@
                 checkinDone: 'Check-in für',
                 checkinDoneText: 'bereits erledigt! Du kannst deine Kursänderung schon ansehen.',
                 checkinDoneSub: 'Wir sehen uns morgen wieder! 🚀',
+                checkinEditSub: '✏️ Bearbeite deinen heutigen Check-In',
                 editCheckin: 'Ändern',
                 sleepQuestion: 'Wie viele Stunden hast du geschlafen?',
                 taskWidgetTitle: 'Task Manager',
@@ -5028,6 +5080,7 @@
                 checkinDone: 'Check-in for',
                 checkinDoneText: 'already complete! You can view your progress.',
                 checkinDoneSub: 'See you tomorrow! 🚀',
+                checkinEditSub: '✏️ Edit your today\'s check-in',
                 editCheckin: 'Edit',
                 sleepQuestion: 'How many hours did you sleep?',
                 taskWidgetTitle: 'Task Manager',
@@ -5093,6 +5146,7 @@
                 checkinDone: 'Check-in para',
                 checkinDoneText: '¡ya completo! Puedes ver tu progreso.',
                 checkinDoneSub: '¡Hasta mañana! 🚀',
+                checkinEditSub: '✏️ Edita tu check-in de hoy',
                 editCheckin: 'Editar',
                 sleepQuestion: '¿Cuántas horas dormiste?',
                 taskWidgetTitle: 'Gestor de Tareas',
@@ -6760,11 +6814,22 @@
             }
         }
         
+        let reminderIntervalId = null;
+        
         function scheduleReminder() {
+            // Clear any existing interval
+            if (reminderIntervalId) {
+                clearInterval(reminderIntervalId);
+                reminderIntervalId = null;
+            }
+            
+            if (!reminderEnabled) return;
+            
             // Check every minute if it's time to send notification
-            const checkInterval = setInterval(() => {
+            reminderIntervalId = setInterval(() => {
                 if (!reminderEnabled) {
-                    clearInterval(checkInterval);
+                    clearInterval(reminderIntervalId);
+                    reminderIntervalId = null;
                     return;
                 }
                 
@@ -6777,13 +6842,15 @@
                 }
             }, 60000); // Check every minute
             
-            // Also check on load
+            // Also check immediately on load
             const now = new Date();
             const currentTime = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
             
             if (currentTime === reminderTime) {
                 sendCheckinReminder();
             }
+            
+            console.log('🔔 Reminder scheduled for', reminderTime);
         }
         
         function sendCheckinReminder() {
@@ -7929,9 +7996,21 @@
             
             updateHeaderDate();
             
-            // Update Check-in Widget with correct question count
+            // Update Check-in Widget with correct question count (only if NOT checked in today)
             const totalQuestions = baseWizardCategories.length + (isPro ? getActivePackCategories().length : 0);
-            safeUpdate('checkinWidgetSubtitle', `Beantworte ${totalQuestions} Fragen zu deinem Tag`);
+            const todayForWidget = new Date().toDateString();
+            const lastCheckIn = localStorage.getItem('lastCheckInDate');
+            const hasCheckedInToday = lastCheckIn === todayForWidget;
+            
+            if (hasCheckedInToday) {
+                if (isPro) {
+                    safeUpdate('checkinWidgetSubtitle', t.checkinEditSub || '✏️ Bearbeite deinen heutigen Check-In');
+                } else {
+                    safeUpdate('checkinWidgetSubtitle', t.checkinDoneSub || '✅ Heute bereits eingecheckt');
+                }
+            } else {
+                safeUpdate('checkinWidgetSubtitle', t.checkinWidgetSubtitle || `Beantworte ${totalQuestions} Fragen zu deinem Tag`);
+            }
             
             safeUpdate('tapHint', t.tapHint);
             safeUpdate('backText', t.backText);
@@ -7996,20 +8075,25 @@
         function updateDailyProgress() {
             console.log('🎯 updateDailyProgress called');
             
-            // Use actual today date (not header date which is always current)
             const today = new Date();
             const todayStr = today.toISOString().split('T')[0];
-            console.log('📅 Today string:', todayStr);
             
             const checkinBadge = document.getElementById('checkinBadge');
             const journalBadge = document.getElementById('journalBadge');
+            const checkinWidget = document.getElementById('checkinWidget');
+            const checkinTitle = document.getElementById('checkinWidgetTitle');
+            const checkinSubtitle = document.getElementById('checkinWidgetSubtitle');
+            const checkinArrow = document.getElementById('checkinWidgetArrow');
             
+            const hasCheckin = performanceData.entries && performanceData.entries.some(e => {
+                const entryDate = new Date(e.date).toISOString().split('T')[0];
+                return entryDate === todayStr;
+            });
+            
+            const hasJournal = journalData && journalData[todayStr] && journalData[todayStr].trim().length > 0;
+            
+            // Update header badges
             if (checkinBadge) {
-                const hasCheckin = performanceData.entries && performanceData.entries.some(e => {
-                    const entryDate = new Date(e.date).toISOString().split('T')[0];
-                    return entryDate === todayStr;
-                });
-                console.log('✅ Has check-in today:', hasCheckin);
                 if (hasCheckin) {
                     checkinBadge.classList.remove('incomplete');
                     checkinBadge.classList.add('complete');
@@ -8020,21 +8104,35 @@
             }
             
             if (journalBadge) {
-                // Prüfe journalData (als Objekt mit Datum-Keys: "YYYY-MM-DD")
-                console.log('📔 journalData:', journalData);
-                console.log('📔 journalData[todayStr]:', journalData[todayStr]);
-                
-                const hasJournal = journalData && journalData[todayStr] && journalData[todayStr].trim().length > 0;
-                console.log('✅ Has journal today:', hasJournal);
-                
                 if (hasJournal) {
-                    console.log('🟠 Setting badge to COMPLETE (orange)');
                     journalBadge.classList.remove('incomplete');
                     journalBadge.classList.add('complete');
                 } else {
-                    console.log('⚪ Setting badge to INCOMPLETE (gray)');
                     journalBadge.classList.remove('complete');
                     journalBadge.classList.add('incomplete');
+                }
+            }
+            
+            // Update Check-In Widget auf Startseite
+            if (checkinWidget) {
+                const t = translations[currentLang];
+                checkinWidget.classList.remove('completed', 'pro-edit');
+                if (hasCheckin) {
+                    if (isPro) {
+                        checkinWidget.classList.add('pro-edit');
+                        if (checkinTitle) checkinTitle.textContent = t?.checkinDone ? `✓ ${t.checkinDone} ${formatDate(todayStr)}` : '✓ Check-In erledigt';
+                        if (checkinSubtitle) checkinSubtitle.textContent = t?.checkinEditSub || '✏️ Bearbeite deinen heutigen Check-In';
+                        if (checkinArrow) checkinArrow.textContent = '✏️';
+                    } else {
+                        checkinWidget.classList.add('completed');
+                        if (checkinTitle) checkinTitle.textContent = t?.checkinDone ? `✓ ${t.checkinDone} ${formatDate(todayStr)}` : '✓ Check-In erledigt';
+                        if (checkinSubtitle) checkinSubtitle.textContent = t?.checkinDoneSub || '✅ Heute bereits eingecheckt';
+                        if (checkinArrow) checkinArrow.textContent = '✓';
+                    }
+                } else {
+                    if (checkinTitle) checkinTitle.textContent = 'Daily Check-In';
+                    if (checkinSubtitle) checkinSubtitle.textContent = t?.checkinWidgetSubtitle || 'Beantworte 8 Fragen zu deinem Tag';
+                    if (checkinArrow) checkinArrow.textContent = '→';
                 }
             }
             
@@ -8068,19 +8166,17 @@
                 // Beide müssen vorhanden sein
                 if (hasCheckin && hasJournal) {
                     streak++;
-                    checkDate.setDate(checkDate.getDate() - 1); // Einen Tag zurück
+                    checkDate.setDate(checkDate.getDate() - 1);
                 } else {
-                    break; // Streak unterbrochen
+                    break;
                 }
                 
-                // Sicherheitsabbruch nach 365 Tagen
                 if (streak > 365) break;
             }
             
             currentStreak = streak;
             localStorage.setItem('fysStreak', streak);
             
-            // Longest Streak aktualisieren
             if (streak > longestStreak) {
                 longestStreak = streak;
                 localStorage.setItem('fysLongestStreak', streak);
@@ -8089,7 +8185,6 @@
             console.log(`🔥 Current Streak: ${currentStreak} days`);
             console.log(`🏆 Longest Streak: ${longestStreak} days`);
             
-            // Update UI
             updateStreakDisplay();
         }
         
@@ -8162,33 +8257,42 @@
                 return;
             }
             
-            // FOTMOB: Verstecke Modals wenn man TAB wechselt (aber behalte .active!)
+            // Wenn man NICHT auf Tools wechselt: Journal & Tasks komplett schließen
             if (view !== 'tools') {
-                // Tools-Modals verstecken
                 const journalModal = document.getElementById('journalModal');
                 const taskManagerModal = document.getElementById('taskManagerModal');
                 if (journalModal && journalModal.classList.contains('active')) {
+                    journalModal.classList.remove('active');
                     journalModal.style.display = 'none';
-                    console.log('📦 Journal im Hintergrund versteckt');
+                    lastActiveToolModal = null;
+                    toolsMenuVisible = true;
+                    console.log('🔒 Journal geschlossen (Tab-Wechsel)');
                 }
                 if (taskManagerModal && taskManagerModal.classList.contains('active')) {
+                    taskManagerModal.classList.remove('active');
                     taskManagerModal.style.display = 'none';
-                    console.log('📦 Tasks im Hintergrund versteckt');
+                    lastActiveToolModal = null;
+                    toolsMenuVisible = true;
+                    console.log('🔒 Tasks geschlossen (Tab-Wechsel)');
                 }
             }
             
             if (view !== 'home') {
-                // Start-Modals/Views verstecken
+                // Schließe Chart Details und Category Detail komplett (nicht nur verstecken)
                 const chartDetailsView = document.getElementById('chartDetailsView');
                 const categoryDetailModal = document.getElementById('categoryDetailModal');
                 
                 if (chartDetailsView && chartDetailsView.classList.contains('active')) {
-                    chartDetailsView.style.display = 'none';
-                    console.log('📦 Chart Details im Hintergrund versteckt');
+                    chartDetailsView.classList.remove('active');
+                    chartDetailsView.style.display = '';
+                    // Zeige homeView wieder (falls nötig beim Zurückkehren)
+                    document.getElementById('homeView').classList.add('active');
+                    console.log('🔒 Chart Details geschlossen');
                 }
                 if (categoryDetailModal && categoryDetailModal.classList.contains('active')) {
-                    categoryDetailModal.style.display = 'none';
-                    console.log('📦 Category Detail im Hintergrund versteckt');
+                    categoryDetailModal.classList.remove('active');
+                    categoryDetailModal.style.display = '';
+                    console.log('🔒 Category Detail geschlossen');
                 }
             }
             
@@ -8198,30 +8302,11 @@
             
             // FOTMOB: Bei Wechsel ZU einem Tab → zeige versteckte Modals wieder
             if (view === 'tools') {
-                const journalModal = document.getElementById('journalModal');
-                const taskManagerModal = document.getElementById('taskManagerModal');
-                if (journalModal && journalModal.classList.contains('active')) {
-                    journalModal.style.display = 'flex';
-                    console.log('🔄 Journal wieder sichtbar');
-                }
-                if (taskManagerModal && taskManagerModal.classList.contains('active')) {
-                    taskManagerModal.style.display = 'flex';
-                    console.log('🔄 Tasks wieder sichtbar');
-                }
+                // Tools-Modals wurden komplett geschlossen, nichts wiederherstellen
             }
             
             if (view === 'home') {
-                const chartDetailsView = document.getElementById('chartDetailsView');
-                const categoryDetailModal = document.getElementById('categoryDetailModal');
-                
-                if (chartDetailsView && chartDetailsView.classList.contains('active')) {
-                    chartDetailsView.style.display = 'block';
-                    console.log('🔄 Chart Details wieder sichtbar');
-                }
-                if (categoryDetailModal && categoryDetailModal.classList.contains('active')) {
-                    categoryDetailModal.style.display = 'flex';
-                    console.log('🔄 Category Detail wieder sichtbar');
-                }
+                // Chart Details wurden geschlossen, nichts wiederherstellen
             }
             
             if (view === 'coach') {
@@ -8849,6 +8934,17 @@
         let currentJournalMonth = new Date();
         let selectedJournalDate = null;
 
+        let journalOpenedFromView = null; // Merkt sich von wo das Journal geöffnet wurde
+
+        function toggleJournal() {
+            const journalModal = document.getElementById('journalModal');
+            if (journalModal && journalModal.classList.contains('active') && journalModal.style.display !== 'none') {
+                closeJournal();
+            } else {
+                openJournal();
+            }
+        }
+
         function openJournal() {
             const journalModal = document.getElementById('journalModal');
             journalModal.classList.add('active');
@@ -8858,6 +8954,10 @@
             currentJournalMonth = new Date();
             renderCalendar();
             updateJournalStats();
+            
+            // Merke von welchem View geöffnet wurde
+            const activeView = document.querySelector('.view-section.active');
+            journalOpenedFromView = activeView ? activeView.id.replace('View', '') : 'home';
         }
 
         function closeJournal() {
@@ -8867,8 +8967,12 @@
             closeJournalEntry();
             lastActiveToolModal = null;
             toolsMenuVisible = true;
-            // Stelle sicher dass Tools-View aktiv ist
-            switchView('tools');
+            
+            // Zurück zum View von dem es geöffnet wurde
+            if (journalOpenedFromView) {
+                switchView(journalOpenedFromView);
+                journalOpenedFromView = null;
+            }
         }
 
         // Confirm Modal Functions
@@ -10442,26 +10546,23 @@
                 renderPerformancePacks();
                 console.log('✓ Performance Packs gerendert');
                 
-                // 3. Update Progress Badges & Streak
-                updateDailyProgress(); // Ruft automatisch calculateStreak() auf
-                console.log('✓ Progress Badges & Streak aktualisiert');
-                
-                // 4. Update Charts
+                // 3. Update Charts
                 initMainChart();
                 updateUI();
-                console.log('✓ Charts aktualisiert');
+                console.log('✓ Charts & UI aktualisiert');
                 
-                // 5. Update Check-In Widget Status
-                updateCheckInWidget();
-                console.log('✓ Check-In Widget aktualisiert');
-                
-                // 6. Update Stock List
+                // 4. Update Stock List
                 createStockList();
                 console.log('✓ Stock List aktualisiert');
                 
-                // 7. Update Journal Stats
+                // 5. Update Journal Stats
                 updateJournalStats();
                 console.log('✓ Journal Stats aktualisiert');
+                
+                // 6. Update Progress Badges, Streak & Widget Status (LAST - must override updateUI defaults)
+                updateDailyProgress();
+                updateCheckInWidget();
+                console.log('✓ Progress Badges, Streak & Widget aktualisiert');
                 
                 // 8. Update Settings Toggles
                 if (coachDataAccess) {
@@ -11154,6 +11255,96 @@
                 originalCloseChartDetails();
             }
         };
+
+        // ============================================
+        // SWIPE GESTURES - Navigate between views
+        // ============================================
+        (function() {
+            const viewOrder = ['home', 'tools', 'coach', 'settings'];
+            let swipeStartX = 0;
+            let swipeStartY = 0;
+            let swipeStartTime = 0;
+            let isSwiping = false;
+
+            function getCurrentViewIndex() {
+                // Check which view is active
+                for (let i = 0; i < viewOrder.length; i++) {
+                    const el = document.getElementById(viewOrder[i] + 'View');
+                    if (el && el.classList.contains('active')) return i;
+                }
+                return 0;
+            }
+
+            document.addEventListener('touchstart', function(e) {
+                // Don't swipe inside scrollable areas that scroll horizontally
+                const target = e.target;
+                if (target.closest('.coach-suggestions') || 
+                    target.closest('.coach-sidebar') ||
+                    target.closest('.coach-input') ||
+                    target.closest('input') || 
+                    target.closest('textarea') ||
+                    target.closest('.wizard-slider') ||
+                    target.closest('.time-selector')) {
+                    isSwiping = false;
+                    return;
+                }
+
+                // Don't swipe if a modal is open
+                const journalModal = document.getElementById('journalModal');
+                const taskManagerModal = document.getElementById('taskManagerModal');
+                if ((journalModal && journalModal.classList.contains('active') && journalModal.style.display !== 'none') ||
+                    (taskManagerModal && taskManagerModal.classList.contains('active') && taskManagerModal.style.display !== 'none')) {
+                    isSwiping = false;
+                    return;
+                }
+
+                // Don't swipe if chartDetailsView is active
+                const chartDetails = document.getElementById('chartDetailsView');
+                if (chartDetails && chartDetails.classList.contains('active')) {
+                    isSwiping = false;
+                    return;
+                }
+
+                swipeStartX = e.touches[0].clientX;
+                swipeStartY = e.touches[0].clientY;
+                swipeStartTime = Date.now();
+                isSwiping = true;
+            }, { passive: true });
+
+            document.addEventListener('touchend', function(e) {
+                if (!isSwiping) return;
+                isSwiping = false;
+
+                const deltaX = e.changedTouches[0].clientX - swipeStartX;
+                const deltaY = e.changedTouches[0].clientY - swipeStartY;
+                const deltaTime = Date.now() - swipeStartTime;
+
+                // Must be horizontal swipe: |deltaX| > 60px, |deltaX| > |deltaY| * 1.5, < 400ms
+                if (Math.abs(deltaX) < 60 || Math.abs(deltaX) < Math.abs(deltaY) * 1.5 || deltaTime > 400) {
+                    return;
+                }
+
+                const currentIdx = getCurrentViewIndex();
+
+                if (deltaX < 0 && currentIdx < viewOrder.length - 1) {
+                    // Swipe left → next view
+                    const nextView = viewOrder[currentIdx + 1];
+                    if (nextView === 'coach') {
+                        switchToCoach();
+                    } else {
+                        switchView(nextView);
+                    }
+                } else if (deltaX > 0 && currentIdx > 0) {
+                    // Swipe right → previous view
+                    const prevView = viewOrder[currentIdx - 1];
+                    if (prevView === 'coach') {
+                        switchToCoach();
+                    } else {
+                        switchView(prevView);
+                    }
+                }
+            }, { passive: true });
+        })();
 
     </script>
     <!-- TASK MANAGER MODAL -->
