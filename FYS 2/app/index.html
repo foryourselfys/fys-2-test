@@ -47,8 +47,7 @@
             align-items: center;
             justify-content: center;
             z-index: 10000;
-            transition: opacity 600ms cubic-bezier(0.4, 0.0, 0.2, 1),
-                        visibility 600ms cubic-bezier(0.4, 0.0, 0.2, 1);
+            transition: opacity 600ms cubic-bezier(0.4, 0.0, 0.2, 1);
         }
         
         /* Light Mode Loading Screen */
@@ -63,9 +62,8 @@
         
         #loadingScreen.hidden {
             opacity: 0;
-            visibility: hidden;
-            pointer-events: auto; /* Klickbar */
-            cursor: pointer;
+            pointer-events: none;
+            display: none;
         }
         
         .loading-logo-container {
@@ -434,7 +432,7 @@
         /* Header with Logo */
         .header {
             background: var(--bg-secondary);
-            padding: 16px 16px 14px 16px;
+            padding: 20px 20px 20px 20px;
             position: fixed;
             top: 0;
             left: 0;
@@ -443,8 +441,8 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            box-shadow: 0 1px 0 var(--border), 0 4px 16px rgba(0, 0, 0, 0.08);
-            min-height: 64px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            min-height: 70px; /* Mindesthöhe für richtigen Header */
         }
         
         /* Header Hintergrund bis ganz nach oben (verhindert durchscheinen beim Scrollen) */
@@ -462,8 +460,8 @@
         /* iOS safe area support */
         @supports (padding-top: env(safe-area-inset-top)) {
             .header {
-                padding-top: calc(16px + env(safe-area-inset-top));
-                min-height: calc(64px + env(safe-area-inset-top));
+                padding-top: calc(20px + env(safe-area-inset-top));
+                min-height: calc(70px + env(safe-area-inset-top));
             }
         }
         
@@ -516,47 +514,29 @@
         
         /* Streak Card */
         .streak-card {
-            margin: 12px 0 14px;
-            padding: 14px 18px;
-            background: linear-gradient(135deg, rgba(255, 107, 53, 0.08), rgba(255, 140, 80, 0.02));
-            border: 1px solid rgba(255, 107, 53, 0.15);
-            border-radius: 18px;
+            margin: 16px 0;
+            padding: 20px;
+            background: rgba(255, 107, 53, 0.05);
+            border: 2px solid rgba(255, 107, 53, 0.2);
+            border-radius: 16px;
             animation: fadeIn 0.5s;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .streak-card::after {
-            content: '';
-            position: absolute;
-            top: -50%;
-            right: -20%;
-            width: 40%;
-            height: 200%;
-            background: radial-gradient(ellipse, rgba(255, 107, 53, 0.05) 0%, transparent 70%);
-            pointer-events: none;
         }
         
         .streak-card-content {
             display: flex;
             align-items: center;
-            gap: 14px;
-            position: relative;
-            z-index: 1;
+            gap: 16px;
         }
         
         .streak-flame {
-            font-size: 38px;
+            font-size: 48px;
             line-height: 1;
             animation: flameFlicker 2s infinite;
-            filter: drop-shadow(0 2px 6px rgba(255, 107, 53, 0.3));
         }
         
         @keyframes flameFlicker {
-            0%, 100% { transform: scale(1) rotate(0deg); }
-            25% { transform: scale(1.05) rotate(-2deg); }
-            50% { transform: scale(1.1) rotate(0deg); }
-            75% { transform: scale(1.05) rotate(2deg); }
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
         }
         
         .streak-info {
@@ -564,26 +544,23 @@
         }
         
         .streak-number {
-            font-size: 28px;
-            font-weight: 900;
+            font-size: 32px;
+            font-weight: 800;
             color: var(--accent-primary);
             line-height: 1;
-            letter-spacing: -1px;
         }
         
         .streak-label {
-            font-size: 13px;
+            font-size: 14px;
             font-weight: 600;
             color: var(--text-primary);
-            margin-top: 2px;
+            margin-top: 4px;
         }
         
         .streak-sublabel {
-            font-size: 10px;
-            color: var(--text-muted);
-            margin-top: 1px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
+            font-size: 11px;
+            color: var(--text-secondary);
+            margin-top: 2px;
         }
         
         .streak-record {
@@ -591,17 +568,16 @@
         }
         
         .streak-record-label {
-            font-size: 9px;
-            color: var(--text-muted);
+            font-size: 10px;
+            color: var(--text-secondary);
             text-transform: uppercase;
-            letter-spacing: 1px;
-            font-weight: 700;
+            letter-spacing: 0.5px;
         }
         
         .streak-record-number {
-            font-size: 18px;
-            font-weight: 800;
-            color: var(--text-secondary);
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--text-primary);
             margin-top: 2px;
         }
 
@@ -656,43 +632,28 @@
 
         /* Home View */
         .home-content {
-            padding: 0 16px 24px 16px;
-            position: relative;
+            padding: 0 20px 20px 20px; /* Kein padding-top, wird von .view-section Regel gesetzt */
+            position: relative; /* Enable stacking context for z-index */
         }
 
         .index-label {
-            font-size: 10px;
+            font-size: 11px;
             text-transform: uppercase;
-            letter-spacing: 3px;
+            letter-spacing: 2px;
             color: var(--text-tertiary);
-            font-weight: 800;
-            margin-bottom: 10px;
+            font-weight: 700;
+            margin-bottom: 12px;
             text-align: center;
-            opacity: 0.6;
         }
 
         .main-chart-section {
             background: var(--bg-card);
-            border-radius: 24px;
+            border-radius: 20px;
             border: 1px solid var(--border);
-            padding: 20px;
+            padding: 24px;
             margin-bottom: 20px;
             cursor: pointer;
-            transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s ease;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .main-chart-section::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 15%;
-            right: 15%;
-            height: 2px;
-            background: linear-gradient(90deg, transparent, var(--accent-primary), transparent);
-            opacity: 0.35;
-            border-radius: 0 0 2px 2px;
+            transition: transform 0.2s;
         }
 
         .main-chart-section:active {
@@ -701,8 +662,8 @@
 
         .main-chart-container {
             position: relative;
-            height: 200px;
-            margin-bottom: 16px;
+            height: 220px;
+            margin-bottom: 20px;
         }
 
         .index-value-display {
@@ -710,11 +671,11 @@
         }
 
         .index-value-number {
-            font-size: 52px;
-            font-weight: 900;
-            letter-spacing: -3px;
+            font-size: 48px;
+            font-weight: 800;
+            letter-spacing: -2px;
             line-height: 1;
-            margin-bottom: 6px;
+            margin-bottom: 8px;
         }
 
         .index-value-number.positive {
@@ -726,62 +687,92 @@
         }
 
         .index-change-text {
-            font-size: 13px;
+            font-size: 14px;
             font-weight: 600;
             color: var(--text-secondary);
         }
 
         .tap-hint {
             text-align: center;
-            margin-top: 10px;
-            font-size: 10px;
+            margin-top: 12px;
+            font-size: 11px;
             color: var(--text-tertiary);
-            opacity: 0.45;
-            letter-spacing: 0.3px;
+            opacity: 0.6;
         }
 
         .time-selector {
             display: flex;
             justify-content: center;
-            gap: 2px;
-            margin-bottom: 16px;
-            position: relative;
-            z-index: 10;
-            padding: 3px;
+            gap: 8px;
+            margin-bottom: 20px;
+            position: relative; /* NEW: Enable stacking */
+            z-index: 10; /* NEW: Above other content */
+            padding: 4px;
             background: var(--bg-secondary);
-            border-radius: 14px;
-            border: 1px solid var(--border);
+            border-radius: 16px;
         }
 
         .time-btn {
-            flex: 1;
-            padding: 7px 0;
-            background: transparent;
-            border: none;
-            color: var(--text-muted);
-            border-radius: 11px;
+            padding: 8px 16px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            color: var(--text-secondary);
+            border-radius: 20px;
             cursor: pointer;
-            font-size: 12px;
-            font-weight: 700;
-            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+            font-size: 13px;
+            font-weight: 600;
+            transition: all 0.2s;
             font-family: inherit;
             display: flex;
             flex-direction: column;
             align-items: center;
             gap: 2px;
-            letter-spacing: 0.5px;
         }
 
         .time-btn.active {
             background: var(--accent-primary);
-            color: #000;
+            color: #000; /* Dark text in dark mode */
             border-color: var(--accent-primary);
-            box-shadow: 0 2px 8px rgba(255, 107, 53, 0.3);
         }
         
         /* Light Mode: White text on orange */
         :root[data-theme="light"] .time-btn.active {
             color: #ffffff;
+        }
+        
+        /* Flatex-Style Chart Transition Animations */
+        .chart-transitioning .main-chart-container {
+            animation: chartFadeSwap 0.45s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+        
+        @keyframes chartFadeSwap {
+            0% { opacity: 1; transform: scale(1); }
+            30% { opacity: 0.3; transform: scale(0.98); }
+            60% { opacity: 0.6; transform: scale(0.99); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+        
+        .index-value-number {
+            transition: color 0.3s ease;
+        }
+        
+        .index-value-counting {
+            animation: valueCountPulse 0.4s ease-out;
+        }
+        
+        @keyframes valueCountPulse {
+            0% { opacity: 0.4; transform: translateY(6px); }
+            50% { opacity: 0.8; }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+        
+        .change-text-animate {
+            animation: changeFadeIn 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.2s both;
+        }
+        
+        @keyframes changeFadeIn {
+            from { opacity: 0; transform: translateX(-8px); }
+            to { opacity: 1; transform: translateX(0); }
         }
 
         /* Solid backgrounds for all Cards */
@@ -794,7 +785,7 @@
         .category-chart-card {
             background: var(--bg-card) !important;
             border: 1px solid var(--border);
-            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
         }
 
         /* Widget Cards */
@@ -802,10 +793,10 @@
             background: var(--bg-card);
             border-radius: 20px;
             border: 1px solid var(--border);
-            padding: 18px;
-            margin-bottom: 14px;
+            padding: 20px;
+            margin-bottom: 16px;
             cursor: pointer;
-            transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+            transition: transform 0.2s;
         }
 
         .widget-card:active {
@@ -1889,575 +1880,100 @@
             height: 280px;
         }
 
-        /* ═══════════════════════════════════════════════════════
-           AI COACH - FULL PAGE VIEW (Mobile-First)
-           ═══════════════════════════════════════════════════════ */
-        
-        .coach-page {
-            padding-top: 0;
-            padding-bottom: 100px; /* Space for floating bottom nav */
-            display: flex;
+        /* Coach View - Full Page */
+        #coachView {
             flex-direction: column;
-            height: 100%;
-            width: 100%;
-            position: relative;
-            overflow: hidden;
+            height: 100vh;
+            padding-top: 64px;
+            padding-bottom: 80px;
             box-sizing: border-box;
-            background: var(--bg-primary);
-        }
-        @supports (padding-top: env(safe-area-inset-top)) {
-            .coach-page {
-                padding-bottom: calc(100px + env(safe-area-inset-bottom));
-            }
-        }
-
-        /* Ambient background glow */
-        .coach-ambient {
-            position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            pointer-events: none;
-            z-index: 0;
             overflow: hidden;
+            min-height: 0;
         }
-        .coach-ambient::before {
-            content: '';
-            position: absolute;
-            top: -30%;
-            left: -15%;
-            width: 55%;
-            height: 55%;
-            background: radial-gradient(ellipse, rgba(255,107,53,0.05) 0%, transparent 70%);
-            animation: coachGlow1 8s ease-in-out infinite alternate;
+        
+        #coachView.active {
+            display: flex !important;
         }
-        .coach-ambient::after {
-            content: '';
-            position: absolute;
-            bottom: -20%;
-            right: -15%;
-            width: 45%;
-            height: 45%;
-            background: radial-gradient(ellipse, rgba(255,107,53,0.03) 0%, transparent 70%);
-            animation: coachGlow2 10s ease-in-out infinite alternate;
-        }
-        @keyframes coachGlow1 {
-            0% { transform: translate(0, 0) scale(1); }
-            100% { transform: translate(10%, 15%) scale(1.2); }
-        }
-        @keyframes coachGlow2 {
-            0% { transform: translate(0, 0) scale(1); }
-            100% { transform: translate(-10%, -10%) scale(1.15); }
-        }
-
-        /* ─── Coach Top Bar (compact, inline) ─── */
+        
         .coach-topbar {
-            position: relative;
-            z-index: 2;
+            padding: 16px 20px 12px;
             display: flex;
+            justify-content: space-between;
             align-items: center;
-            gap: 10px;
-            padding: 12px 16px;
-            padding-top: calc(12px + env(safe-area-inset-top, 0px));
-            border-bottom: 1px solid var(--border);
-            background: var(--bg-secondary);
-            flex-shrink: 0;
         }
-        .coach-sidebar-btn {
-            width: 36px;
-            height: 36px;
-            border-radius: 10px;
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            color: var(--text-secondary);
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-shrink: 0;
-            transition: all 0.2s ease;
-            font-family: inherit;
-        }
-        .coach-sidebar-btn:hover, .coach-sidebar-btn:active {
-            background: rgba(255,107,53,0.1);
-            border-color: rgba(255,107,53,0.3);
-            color: var(--accent-primary);
-        }
-        .coach-sidebar-btn svg {
-            width: 18px;
-            height: 18px;
-            fill: none;
-            stroke: currentColor;
-            stroke-width: 2;
-            stroke-linecap: round;
-            stroke-linejoin: round;
-        }
-        .coach-topbar-avatar {
-            width: 32px;
-            height: 32px;
-            border-radius: 10px;
-            background: linear-gradient(135deg, var(--accent-primary), #ff8f5e);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 16px;
-            flex-shrink: 0;
-            box-shadow: 0 2px 8px rgba(255,107,53,0.2);
-        }
-        .coach-topbar-info {
-            flex: 1;
-            min-width: 0;
-        }
+        
         .coach-topbar-title {
-            font-size: 15px;
+            font-size: 22px;
             font-weight: 700;
             color: var(--text-primary);
-            line-height: 1.2;
         }
-        .coach-topbar-status {
-            display: flex;
-            align-items: center;
-            gap: 4px;
-            font-size: 11px;
-            color: #4ade80;
-        }
-        .coach-topbar-status-dot {
-            width: 5px;
-            height: 5px;
-            border-radius: 50%;
-            background: #4ade80;
-            animation: statusPulse 2s ease-in-out infinite;
-        }
-        @keyframes statusPulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.4; }
-        }
-        .coach-newchat-btn {
-            width: 36px;
-            height: 36px;
-            border-radius: 10px;
-            background: var(--accent-primary);
-            border: none;
-            color: #fff;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-shrink: 0;
-            transition: all 0.2s ease;
-            font-family: inherit;
-            box-shadow: 0 2px 8px rgba(255,107,53,0.25);
-        }
-        .coach-newchat-btn:hover { transform: scale(1.05); }
-        .coach-newchat-btn:active { transform: scale(0.95); }
-        .coach-newchat-btn svg {
-            width: 18px;
-            height: 18px;
-            fill: none;
-            stroke: #fff;
-            stroke-width: 2;
-            stroke-linecap: round;
-            stroke-linejoin: round;
+        
+        .coach-topbar-subtitle {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-top: 2px;
         }
 
-        /* ─── Chat Sidebar (slide from left) ─── */
-        .coach-sidebar-overlay {
-            position: absolute;
-            inset: 0;
-            background: rgba(0,0,0,0.4);
-            z-index: 10;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.3s ease;
-        }
-        .coach-sidebar-overlay.active {
-            opacity: 1;
-            pointer-events: auto;
-        }
-        .coach-sidebar {
-            position: absolute;
-            top: 0;
-            left: 0;
-            bottom: 0;
-            width: 280px;
-            max-width: 85vw;
-            background: var(--bg-secondary);
-            z-index: 11;
-            transform: translateX(-100%);
-            transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-            display: flex;
-            flex-direction: column;
-            border-right: 1px solid var(--border);
-        }
-        .coach-sidebar.active {
-            transform: translateX(0);
-        }
-        .coach-sidebar-header {
-            padding: 14px 16px;
-            border-bottom: 1px solid var(--border);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-        .coach-sidebar-title {
-            font-size: 15px;
-            font-weight: 700;
-            color: var(--text-primary);
-        }
-        .coach-sidebar-close {
-            width: 30px;
-            height: 30px;
-            border-radius: 8px;
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            color: var(--text-secondary);
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 16px;
-            font-family: inherit;
-        }
-        .coach-sidebar-list {
+        .coach-content {
             flex: 1;
             overflow-y: auto;
-            padding: 8px;
-            -webkit-overflow-scrolling: touch;
+            padding: 0 20px 20px;
+            min-height: 0;
         }
-        .coach-chat-item {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 10px 12px;
-            border-radius: 10px;
-            cursor: pointer;
-            transition: background 0.15s ease;
-            margin-bottom: 2px;
-        }
-        .coach-chat-item:hover, .coach-chat-item:active {
-            background: var(--bg-card);
-        }
-        .coach-chat-item.active {
-            background: rgba(255,107,53,0.1);
-            border: 1px solid rgba(255,107,53,0.2);
-        }
-        .coach-chat-item-icon {
-            width: 32px;
-            height: 32px;
-            border-radius: 8px;
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 14px;
-            flex-shrink: 0;
-        }
-        .coach-chat-item.active .coach-chat-item-icon {
-            background: rgba(255,107,53,0.15);
-            border-color: rgba(255,107,53,0.3);
-        }
-        .coach-chat-item-info {
-            flex: 1;
-            min-width: 0;
-        }
-        .coach-chat-item-title {
-            font-size: 13px;
-            font-weight: 600;
-            color: var(--text-primary);
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-        .coach-chat-item-date {
-            font-size: 11px;
-            color: var(--text-muted);
-            margin-top: 1px;
-        }
-        .coach-chat-item-delete {
-            width: 26px;
-            height: 26px;
-            border-radius: 6px;
-            background: transparent;
-            border: none;
-            color: var(--text-muted);
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 14px;
-            opacity: 0;
-            transition: all 0.15s ease;
-            flex-shrink: 0;
-            font-family: inherit;
-        }
-        .coach-chat-item:hover .coach-chat-item-delete {
-            opacity: 1;
-        }
-        .coach-chat-item-delete:hover {
-            background: rgba(239,68,68,0.15);
-            color: #ef4444;
-        }
-        .coach-sidebar-empty {
+        
+        .coach-welcome {
             text-align: center;
-            padding: 30px 16px;
-            color: var(--text-muted);
-            font-size: 13px;
+            padding: 40px 20px;
         }
-
-        /* ─── Quick Suggestion Pills ─── */
+        
+        .coach-welcome-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+        }
+        
+        .coach-welcome-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+        }
+        
+        .coach-welcome-sub {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+        
         .coach-suggestions {
             display: flex;
             gap: 8px;
-            padding: 10px 16px;
             overflow-x: auto;
+            padding: 12px 20px;
             -webkit-overflow-scrolling: touch;
             scrollbar-width: none;
-            flex-shrink: 0;
-            position: relative;
-            z-index: 1;
-            transition: all 0.3s ease;
         }
-        .coach-suggestions.hidden { display: none; }
+        
         .coach-suggestions::-webkit-scrollbar { display: none; }
         
         .coach-pill {
             flex-shrink: 0;
-            padding: 7px 13px;
-            border-radius: 18px;
+            padding: 8px 16px;
             background: var(--bg-card);
             border: 1px solid var(--border);
+            border-radius: 20px;
+            font-size: 13px;
             color: var(--text-secondary);
-            font-size: 12px;
-            font-family: inherit;
             cursor: pointer;
-            transition: all 0.2s ease;
+            transition: all 0.2s;
             white-space: nowrap;
         }
-        .coach-pill:hover, .coach-pill:active {
-            background: rgba(255,107,53,0.1);
-            border-color: rgba(255,107,53,0.3);
-            color: var(--accent-primary);
-        }
-
-        /* ─── Chat Messages Area ─── */
-        .coach-messages {
-            flex: 1;
-            min-height: 0; /* Critical: allows flex item to shrink below content size */
-            overflow-y: auto;
-            padding: 12px 16px 16px;
-            position: relative;
-            z-index: 1;
-            scroll-behavior: smooth;
-            -webkit-overflow-scrolling: touch;
-        }
-
-        .message {
-            margin-bottom: 14px;
-            display: flex;
-            gap: 8px;
-            animation: messageIn 0.35s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-
-        @keyframes messageIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .message.user {
-            flex-direction: row-reverse;
-        }
-
-        .msg-avatar {
-            width: 26px;
-            height: 26px;
-            border-radius: 9px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 13px;
-            flex-shrink: 0;
-            margin-top: 2px;
-        }
-        .message.assistant .msg-avatar {
-            background: linear-gradient(135deg, var(--accent-primary), #ff8f5e);
-            box-shadow: 0 2px 6px rgba(255,107,53,0.2);
-        }
-        .message.user .msg-avatar {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-        }
-
-        .message-bubble {
-            max-width: 80%;
-            padding: 10px 14px;
-            font-size: 14px;
-            line-height: 1.55;
-            color: var(--text-primary);
-        }
-
-        .message.assistant .message-bubble {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 4px 16px 16px 16px;
-            color: var(--text-primary);
-        }
-
-        .message.user .message-bubble {
+        
+        .coach-pill:active {
             background: var(--accent-primary);
-            color: #ffffff;
-            font-weight: 500;
-            border-radius: 16px 4px 16px 16px;
-        }
-
-        /* Typing indicator */
-        .typing-indicator {
-            display: flex;
-            gap: 4px;
-            padding: 12px 16px;
-        }
-        .typing-indicator span {
-            width: 6px;
-            height: 6px;
-            border-radius: 50%;
-            background: var(--text-muted);
-            animation: typingBounce 1.4s ease-in-out infinite;
-        }
-        .typing-indicator span:nth-child(2) { animation-delay: 0.15s; }
-        .typing-indicator span:nth-child(3) { animation-delay: 0.3s; }
-        @keyframes typingBounce {
-            0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
-            30% { transform: translateY(-5px); opacity: 1; }
-        }
-
-        /* ─── Input Area ─── */
-        .coach-input-bar {
-            padding: 10px 16px;
-            padding-bottom: calc(10px + env(safe-area-inset-bottom, 0px));
-            background: var(--bg-secondary);
-            border-top: 1px solid var(--border);
-            position: relative;
-            z-index: 2;
-            flex-shrink: 0;
-        }
-
-        .coach-input-row {
-            display: flex;
-            gap: 8px;
-            align-items: flex-end;
-        }
-
-        .coach-input {
-            flex: 1;
-            padding: 10px 16px;
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 22px;
-            color: var(--text-primary);
-            font-size: 14px;
-            font-family: inherit;
-            resize: none;
-            min-height: 42px;
-            max-height: 100px;
-            outline: none;
-            transition: border-color 0.2s ease, box-shadow 0.2s ease;
-        }
-        .coach-input:focus {
-            border-color: rgba(255,107,53,0.4);
-            box-shadow: 0 0 0 3px rgba(255,107,53,0.08);
-        }
-
-        .send-btn {
-            width: 42px;
-            height: 42px;
-            border-radius: 50%;
-            background: var(--accent-primary);
-            border: none;
             color: #fff;
-            font-size: 16px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-family: inherit;
-            flex-shrink: 0;
-            transition: all 0.2s ease;
-            box-shadow: 0 2px 8px rgba(255,107,53,0.3);
+            border-color: var(--accent-primary);
         }
-        .send-btn:hover { transform: scale(1.05); }
-        .send-btn:active { transform: scale(0.95); }
-        .send-btn:disabled { opacity: 0.5; transform: none; box-shadow: none; }
-        .send-btn svg {
-            width: 17px;
-            height: 17px;
-            fill: none;
-            stroke: #fff;
-            stroke-width: 2;
-            stroke-linecap: round;
-            stroke-linejoin: round;
-        }
-
-        /* Loading animation in send button */
-        .send-btn .loading {
-            width: 16px;
-            height: 16px;
-            border: 2px solid rgba(255,255,255,0.3);
-            border-top-color: #fff;
-            border-radius: 50%;
-            animation: spin 0.7s linear infinite;
-        }
-        @keyframes spin { to { transform: rotate(360deg); } }
-
-        /* Empty state (welcome) */
-        .coach-welcome {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 24px 20px;
-            text-align: center;
-            flex: 1;
-            min-height: 0;
-        }
-        .coach-welcome-avatar {
-            width: 52px;
-            height: 52px;
-            border-radius: 18px;
-            background: linear-gradient(135deg, var(--accent-primary), #ff8f5e);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 26px;
-            box-shadow: 0 4px 16px rgba(255,107,53,0.25);
-            margin-bottom: 12px;
-            position: relative;
-        }
-        .coach-welcome-avatar::after {
-            content: '';
-            position: absolute;
-            inset: -3px;
-            border-radius: 21px;
-            background: linear-gradient(135deg, var(--accent-primary), #ff8f5e);
-            z-index: -1;
-            opacity: 0.25;
-            animation: avatarPulse 3s ease-in-out infinite;
-        }
-        @keyframes avatarPulse {
-            0%, 100% { opacity: 0.15; transform: scale(1); }
-            50% { opacity: 0.35; transform: scale(1.06); }
-        }
-        .coach-welcome-title {
-            font-size: 17px;
-            font-weight: 700;
-            color: var(--text-primary);
-            margin-bottom: 4px;
-        }
-        .coach-welcome-sub {
-            font-size: 13px;
-            color: var(--text-muted);
-            line-height: 1.4;
-            max-width: 260px;
-        }
-
-        /* Close button generic (used elsewhere) */
+        
         .close-btn {
             width: 36px;
             height: 36px;
@@ -2470,6 +1986,87 @@
             align-items: center;
             justify-content: center;
             font-size: 20px;
+            font-family: inherit;
+        }
+
+        .message {
+            margin-bottom: 16px;
+            display: flex;
+            gap: 12px;
+            animation: messageIn 0.3s ease;
+        }
+
+        @keyframes messageIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .message.user {
+            flex-direction: row-reverse;
+        }
+
+        .message-bubble {
+            max-width: 80%;
+            padding: 14px 18px;
+            border-radius: 18px;
+            font-size: 14px;
+            line-height: 1.6;
+            color: var(--text-primary); /* Einheitliche Farbe */
+        }
+
+        .message.assistant .message-bubble {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            color: var(--text-primary); /* Explizit */
+        }
+
+        .message.user .message-bubble {
+            background: var(--accent-primary);
+            color: #ffffff; /* Weiß auf Orange */
+            font-weight: 500;
+        }
+
+        .coach-input-area {
+            padding: 12px 20px;
+            padding-bottom: calc(12px + env(safe-area-inset-bottom, 0px));
+            background: var(--bg-secondary);
+            border-top: 1px solid var(--border);
+        }
+
+        .coach-input-wrapper {
+            display: flex;
+            gap: 10px;
+        }
+
+        .coach-input {
+            flex: 1;
+            padding: 14px 18px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            color: var(--text-primary);
+            font-size: 14px;
+            font-family: inherit;
+        }
+
+        .send-btn {
+            width: 46px;
+            height: 46px;
+            border-radius: 12px;
+            background: var(--accent-primary);
+            border: none;
+            color: #000;
+            font-size: 18px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             font-family: inherit;
         }
 
@@ -2619,28 +2216,12 @@
             display: block;
         }
         
-        /* Coach view: fixed fullscreen, ABOVE header */
-        #coachView.view-section {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            overflow: hidden;
-            min-height: 0;
-            height: 100%;
-            z-index: 200; /* Above header (100), below bottom-nav (2100) */
-        }
-        #coachView.view-section.active {
-            display: flex;
-        }
-        
         /* Verhindere dass Content über Header scrollt */
         .home-content,
         .chart-details-view,
         .settings-container,
         .tools-container {
-            padding-top: 64px;
+            padding-top: 70px; /* Exakt Header-Höhe - kein extra Abstand */
         }
         
         /* iOS safe area support für Content */
@@ -2649,7 +2230,7 @@
             .chart-details-view,
             .settings-container,
             .tools-container {
-                padding-top: calc(64px + env(safe-area-inset-top));
+                padding-top: calc(70px + env(safe-area-inset-top));
             }
         }
 
@@ -3162,32 +2743,31 @@
            ======================================== */
         
         .performance-packs-container {
-            margin-top: 20px;
+            margin-top: 24px;
         }
 
         .performance-packs-title {
-            font-size: 10px;
+            font-size: 11px;
             text-transform: uppercase;
-            letter-spacing: 3px;
+            letter-spacing: 2px;
             color: var(--text-tertiary);
-            font-weight: 800;
-            margin-bottom: 14px;
+            font-weight: 700;
+            margin-bottom: 16px;
             text-align: center;
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 8px;
-            opacity: 0.6;
         }
 
         .performance-pack-card {
             background: var(--bg-card);
-            border-radius: 18px;
-            border: 1px solid var(--border);
-            padding: 18px;
-            margin-bottom: 12px;
+            border-radius: 20px;
+            border: 2px solid var(--border);
+            padding: 20px;
+            margin-bottom: 16px;
             cursor: pointer;
-            transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+            transition: all 0.3s;
             position: relative;
             overflow: hidden;
         }
@@ -3199,7 +2779,7 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: linear-gradient(135deg, transparent, rgba(255, 107, 53, 0.04));
+            background: linear-gradient(135deg, transparent, rgba(255, 107, 53, 0.05));
             opacity: 0;
             transition: opacity 0.3s;
         }
@@ -3209,8 +2789,8 @@
         }
 
         .performance-pack-card.active {
-            border-color: rgba(255, 107, 53, 0.3);
-            background: linear-gradient(135deg, rgba(255, 107, 53, 0.04), transparent);
+            border-color: var(--accent-primary);
+            background: linear-gradient(135deg, rgba(255, 107, 53, 0.05), transparent);
         }
 
         .performance-pack-card:active {
@@ -3543,23 +3123,26 @@
         /* DAILY CHECK-IN WIDGET */
         /* ============================================ */
         .checkin-widget {
-            position: sticky;
-            top: 90px;
-            z-index: 50;
+            position: sticky; /* Sticky on scroll */
+            top: 90px; /* Klebt unter dem Header (90px = Header Höhe) */
+            z-index: 50; /* Above content, below header */
             
-            background: linear-gradient(135deg, var(--accent-primary) 0%, #ff8f5e 100%);
+            background: rgba(255, 107, 53, 0.95); /* Semi-transparent for glass effect */
+            backdrop-filter: blur(20px) saturate(180%); /* Glassmorphism */
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
             
-            border-radius: 18px;
-            padding: 16px 20px;
-            margin: 16px 0 14px 0;
+            border-radius: 16px;
+            padding: 20px;
+            margin: 20px 0 16px 0; /* Top margin for breathing room */
             cursor: pointer;
             
-            box-shadow: 0 4px 16px rgba(255, 107, 53, 0.25),
-                        0 1px 3px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 12px rgba(255, 107, 53, 0.2),
+                        0 8px 24px rgba(255, 107, 53, 0.1);
             
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
         
+        /* iOS safe area support für sticky widget */
         @supports (top: env(safe-area-inset-top)) {
             .checkin-widget {
                 top: calc(90px + env(safe-area-inset-top));
@@ -3567,134 +3150,90 @@
         }
 
         .checkin-widget:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 6px 24px rgba(255, 107, 53, 0.35),
-                        0 2px 6px rgba(0, 0, 0, 0.1);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(255, 107, 53, 0.3),
+                        0 12px 36px rgba(255, 107, 53, 0.15);
         }
         
+        /* Completed State - eleganter Look */
         .checkin-widget.completed {
-            background: linear-gradient(135deg, rgba(0, 201, 109, 0.10), rgba(0, 180, 100, 0.04));
+            background: linear-gradient(135deg, rgba(0, 201, 109, 0.12), rgba(0, 201, 109, 0.05));
             border: 1px solid rgba(0, 201, 109, 0.25);
-            box-shadow: 0 2px 12px rgba(0, 201, 109, 0.08);
-            position: relative;
-        }
-        
-        /* Success checkmark badge */
-        .checkin-widget.completed::after {
-            content: '✓';
-            position: absolute;
-            top: 10px;
-            right: 14px;
-            width: 22px;
-            height: 22px;
-            background: #00c96d;
-            color: #fff;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 12px;
-            font-weight: 900;
-            box-shadow: 0 2px 6px rgba(0, 201, 109, 0.3);
+            box-shadow: 0 4px 12px rgba(0, 201, 109, 0.15);
         }
         
         .checkin-widget.completed .checkin-widget-icon {
-            background: rgba(0, 201, 109, 0.15);
-        }
-        
-        .checkin-widget.completed .checkin-widget-icon svg {
-            stroke: #00c96d;
-        }
-        
-        .checkin-widget.completed .checkin-widget-title {
-            color: #00c96d;
-        }
-        
-        .checkin-widget.completed .checkin-widget-subtitle {
-            color: var(--text-secondary);
-        }
-        
-        .checkin-widget.completed .checkin-widget-arrow {
-            color: #00c96d;
-            opacity: 0.5;
+            background: rgba(0, 201, 109, 0.2);
         }
         
         .checkin-widget.completed:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 4px 16px rgba(0, 201, 109, 0.15);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(0, 201, 109, 0.25);
         }
         
-        /* Completed + Sticky */
-        .checkin-widget.completed.is-sticky {
-            box-shadow: 0 6px 20px rgba(0, 201, 109, 0.2),
-                        0 2px 8px rgba(0, 0, 0, 0.08);
-        }
-        
-        .checkin-widget.completed.is-sticky::after {
-            top: 8px;
-            right: 10px;
-            width: 18px;
-            height: 18px;
-            font-size: 10px;
-        }
-        
+        /* Pro Edit State - orange Highlight */
         .checkin-widget.pro-edit {
-            background: linear-gradient(135deg, rgba(255, 107, 53, 0.15), rgba(255, 107, 53, 0.06));
-            border: 1px solid rgba(255, 107, 53, 0.3);
-            box-shadow: 0 2px 12px rgba(255, 107, 53, 0.15);
+            background: linear-gradient(135deg, rgba(255, 107, 53, 0.18), rgba(255, 107, 53, 0.08));
+            border: 1px solid rgba(255, 107, 53, 0.35);
+            box-shadow: 0 4px 12px rgba(255, 107, 53, 0.2);
         }
         
         .checkin-widget.pro-edit:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 4px 16px rgba(255, 107, 53, 0.25);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(255, 107, 53, 0.3);
         }
         
+        /* Compact mode when sticky (smaller) */
         .checkin-widget.is-sticky {
-            padding: 12px 16px;
-            margin: 0;
-            border-radius: 16px;
-            box-shadow: 0 8px 28px rgba(255, 107, 53, 0.3),
-                        0 2px 8px rgba(0, 0, 0, 0.15);
+            padding: 14px 18px; /* Slightly bigger for better look */
+            margin: 0; /* No margin when sticky */
+            border-radius: 16px; /* Fully rounded, not cut off */
+            box-shadow: 0 8px 24px rgba(255, 107, 53, 0.35),
+                        0 16px 48px rgba(255, 107, 53, 0.2);
+            backdrop-filter: blur(30px) saturate(200%);
+            -webkit-backdrop-filter: blur(30px) saturate(200%);
         }
         
+        /* Hide subtitle when sticky */
         .checkin-widget.is-sticky .checkin-widget-subtitle {
             display: none;
         }
         
+        /* Smaller icon when sticky */
         .checkin-widget.is-sticky .checkin-widget-icon {
-            width: 36px;
-            height: 36px;
+            width: 40px; /* Slightly bigger: 36 → 40 */
+            height: 40px;
         }
         
         .checkin-widget.is-sticky .checkin-widget-icon svg {
-            width: 18px;
-            height: 18px;
+            width: 20px; /* Slightly bigger: 18 → 20 */
+            height: 20px;
         }
         
+        /* Smaller title when sticky */
         .checkin-widget.is-sticky .checkin-widget-title {
-            font-size: 15px;
+            font-size: 16px; /* Slightly bigger: 15 → 16 */
         }
 
         .checkin-widget-header {
             display: flex;
             align-items: center;
-            gap: 14px;
+            gap: 16px;
         }
 
         .checkin-widget-icon {
-            width: 42px;
-            height: 42px;
+            width: 48px;
+            height: 48px;
             background: rgba(255, 255, 255, 0.2);
             border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
-            flex-shrink: 0;
         }
 
         .checkin-widget-icon svg {
-            width: 22px;
-            height: 22px;
+            width: 24px;
+            height: 24px;
             stroke: #ffffff;
         }
 
@@ -3703,22 +3242,22 @@
         }
 
         .checkin-widget-title {
-            font-size: 16px;
+            font-size: 18px;
             font-weight: 700;
             color: #ffffff;
-            margin-bottom: 2px;
+            margin-bottom: 4px;
         }
 
         .checkin-widget-subtitle {
-            font-size: 12px;
+            font-size: 13px;
             font-weight: 400;
-            color: rgba(255, 255, 255, 0.85);
+            color: rgba(255, 255, 255, 0.9);
         }
 
         .checkin-widget-arrow {
-            font-size: 20px;
+            font-size: 24px;
             color: #ffffff;
-            opacity: 0.7;
+            opacity: 0.8;
         }
 
         /* ============================================ */
@@ -3847,6 +3386,56 @@
             margin-bottom: 24px;
         }
 
+        /* Inline editable summary items */
+        .summary-item-inline {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 14px 16px 10px;
+            margin-bottom: 10px;
+            transition: all 0.2s;
+        }
+        
+        .summary-item-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+        
+        .summary-item-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .summary-item-info {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .summary-item-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+        
+        .summary-item-scale {
+            font-size: 11px;
+            color: var(--text-secondary);
+            margin-top: 2px;
+        }
+        
+        .summary-slider-row {
+            padding: 0 4px;
+        }
+        
+        .summary-slider-row .slider-wizard {
+            height: 4px;
+            margin: 0;
+        }
+
+        /* Legacy summary-item (for review step click-to-edit) */
         .summary-item {
             display: flex;
             align-items: center;
@@ -3863,12 +3452,6 @@
         .summary-item:hover {
             background: var(--bg-elevated);
             transform: translateX(4px);
-        }
-
-        .summary-item-left {
-            display: flex;
-            align-items: center;
-            gap: 12px;
         }
 
         .summary-icon {
@@ -4376,7 +3959,7 @@
             <div class="home-content">
                 
                 <!-- Daily Check-in Widget (MOVED TO TOP) -->
-                <div class="checkin-widget" id="checkinWidget" onclick="openCheckIn()">
+                <div class="checkin-widget" onclick="openCheckIn()">
                     <div class="checkin-widget-header">
                         <div class="checkin-widget-icon">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -4385,10 +3968,10 @@
                             </svg>
                         </div>
                         <div class="checkin-widget-info">
-                            <div class="checkin-widget-title" id="checkinWidgetTitle">Daily Check-In</div>
+                            <div class="checkin-widget-title">Daily Check-In</div>
                             <div class="checkin-widget-subtitle" id="checkinWidgetSubtitle">Beantworte 8 Fragen zu deinem Tag</div>
                         </div>
-                        <div class="checkin-widget-arrow" id="checkinWidgetArrow">→</div>
+                        <div class="checkin-widget-arrow">→</div>
                     </div>
                 </div>
                 
@@ -4399,7 +3982,7 @@
                         <div class="streak-info">
                             <div class="streak-number" id="streakNumber">0</div>
                             <div class="streak-label">Tage Streak</div>
-                            <div class="streak-sublabel">Check-In + Tagebuch</div>
+                            <div class="streak-sublabel">CheckIn + Tagebuch</div>
                         </div>
                         <div class="streak-record">
                             <div class="streak-record-label">Rekord</div>
@@ -4410,17 +3993,6 @@
                 
                 <div class="index-label">FYS-INDEX</div>
 
-                <div class="main-chart-section" onclick="openChartDetails()">
-                    <div class="index-value-display">
-                        <div class="index-value-number" id="mainIndexValue">100.0</div>
-                        <div class="index-change-text" id="mainChangeText"></div>
-                    </div>
-                    <div class="main-chart-container">
-                        <canvas id="mainChart"></canvas>
-                    </div>
-                    <div class="tap-hint" id="tapHint"></div>
-                </div>
-
                 <div class="time-selector">
                     <button class="time-btn" onclick="changeTimeRange('1d')" data-range="1d">1D</button>
                     <button class="time-btn" onclick="changeTimeRange('7d')" data-range="7d">7D</button>
@@ -4428,6 +4000,17 @@
                     <button class="time-btn" onclick="changeTimeRange('6m')" data-range="6m">6M</button>
                     <button class="time-btn" onclick="changeTimeRange('1y')" data-range="1y">1Y</button>
                     <button class="time-btn" onclick="changeTimeRange('all')" data-range="all">MAX</button>
+                </div>
+
+                <div class="main-chart-section" onclick="openChartDetails()">
+                    <div class="main-chart-container">
+                        <canvas id="mainChart"></canvas>
+                    </div>
+                    <div class="index-value-display">
+                        <div class="index-value-number" id="mainIndexValue">100.0</div>
+                        <div class="index-change-text" id="mainChangeText"></div>
+                    </div>
+                    <div class="tap-hint" id="tapHint"></div>
                 </div>
 
                 <!-- Performance Packs Section -->
@@ -4449,8 +4032,8 @@
                     ← <span id="backText">Zurück</span>
                 </button>
                 
-                <!-- FYS Index Summary (hidden - already visible on home) -->
-                <div class="fys-index-summary" style="display:none;">
+                <!-- FYS Index Summary -->
+                <div class="fys-index-summary">
                     <div class="fys-index-label">Your FYS Score</div>
                     <div class="fys-index-value" id="detailIndexValue">100.0</div>
                     <div class="fys-index-change" id="detailIndexChange">+0.00%</div>
@@ -4785,6 +4368,29 @@
         <div class="success-toast" id="successToast"></div>
     </div>
 
+    <!-- Coach View (Full Page) -->
+    <div id="coachView" class="view-section">
+        <div class="coach-topbar">
+            <div>
+                <div class="coach-topbar-title">KI Coach</div>
+                <div class="coach-topbar-subtitle">Dein persönlicher Performance-Berater</div>
+            </div>
+        </div>
+        <div class="coach-suggestions">
+            <div class="coach-pill" onclick="sendPillMessage(this)">Wie war mein Tag?</div>
+            <div class="coach-pill" onclick="sendPillMessage(this)">Tipps für morgen</div>
+            <div class="coach-pill" onclick="sendPillMessage(this)">Schwächen analysieren</div>
+            <div class="coach-pill" onclick="sendPillMessage(this)">Motivation</div>
+        </div>
+        <div class="coach-content" id="coachContent"></div>
+        <div class="coach-input-area">
+            <div class="coach-input-wrapper">
+                <input type="text" class="coach-input" id="coachInput" placeholder="Frag deinen Coach..." onkeypress="if(event.key==='Enter') sendMessage()">
+                <button class="send-btn" onclick="sendMessage()" id="sendBtn">➤</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Upgrade Modal (NEW) -->
     <div class="upgrade-modal" id="upgradeModal">
         <div class="upgrade-content">
@@ -4821,7 +4427,7 @@
             </svg>
             <div class="nav-label" id="navTools">Tools</div>
         </button>
-        <button class="nav-item" onclick="switchToCoach()" data-view="coach">
+        <button class="nav-item" onclick="switchView('coach')" data-view="coach">
             <svg class="nav-icon" viewBox="0 0 24 24">
                 <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
             </svg>
@@ -4834,75 +4440,6 @@
             </svg>
             <div class="nav-label" id="navSettings">Einstellungen</div>
         </button>
-    </div>
-
-    <!-- Floating Check-in Button (Apple Trading Style) -->
-    <!-- AI Coach View (Full Page) -->
-    <div id="coachView" class="view-section">
-        <div class="coach-page">
-            <!-- Ambient glow background -->
-            <div class="coach-ambient"></div>
-            
-            <!-- Sidebar Overlay -->
-            <div class="coach-sidebar-overlay" id="coachSidebarOverlay" onclick="closeCoachSidebar()"></div>
-            
-            <!-- Sidebar (chat history) -->
-            <div class="coach-sidebar" id="coachSidebar">
-                <div class="coach-sidebar-header">
-                    <div class="coach-sidebar-title" id="coachSidebarTitle">Chat-Verlauf</div>
-                    <button class="coach-sidebar-close" onclick="closeCoachSidebar()">×</button>
-                </div>
-                <div class="coach-sidebar-list" id="coachSidebarList">
-                    <div class="coach-sidebar-empty" id="coachSidebarEmpty">Noch keine Chats</div>
-                </div>
-            </div>
-            
-            <!-- Top Bar (compact) -->
-            <div class="coach-topbar">
-                <button class="coach-sidebar-btn" onclick="toggleCoachSidebar()" title="Chat-Verlauf">
-                    <svg viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
-                </button>
-                <div class="coach-topbar-avatar">🧠</div>
-                <div class="coach-topbar-info">
-                    <div class="coach-topbar-title" id="coachTitle">FYS Coach</div>
-                    <div class="coach-topbar-status">
-                        <span class="coach-topbar-status-dot"></span>
-                        <span id="coachStatusText">Online</span>
-                    </div>
-                </div>
-                <button class="coach-newchat-btn" onclick="newCoachChat()" title="Neuer Chat">
-                    <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-                </button>
-            </div>
-            
-            <!-- Welcome State (shown when no messages) -->
-            <div class="coach-welcome" id="coachWelcome">
-                <div class="coach-welcome-avatar">🧠</div>
-                <div class="coach-welcome-title" id="coachWelcomeTitle">Hey! 👋</div>
-                <div class="coach-welcome-sub" id="coachWelcomeSub">Dein persönlicher Performance-Coach. Stelle eine Frage oder wähle ein Thema.</div>
-            </div>
-            
-            <!-- Quick Suggestions (shown in welcome state) -->
-            <div class="coach-suggestions" id="coachSuggestions">
-                <button class="coach-pill" onclick="useSuggestion(this)" data-de="Wie kann ich meinen Schlaf verbessern?" data-en="How can I improve my sleep?" data-es="¿Cómo puedo mejorar mi sueño?">💤 Schlaf verbessern</button>
-                <button class="coach-pill" onclick="useSuggestion(this)" data-de="Gib mir einen Motivations-Tipp" data-en="Give me a motivation tip" data-es="Dame un consejo de motivación">🔥 Motivation</button>
-                <button class="coach-pill" onclick="useSuggestion(this)" data-de="Analysiere meine Werte" data-en="Analyze my values" data-es="Analiza mis valores">📊 Meine Werte</button>
-                <button class="coach-pill" onclick="useSuggestion(this)" data-de="Wie steigere ich meinen Fokus?" data-en="How do I improve my focus?" data-es="¿Cómo mejoro mi enfoque?">🎯 Fokus steigern</button>
-            </div>
-            
-            <!-- Messages Area (hidden until first message) -->
-            <div class="coach-messages" id="coachContent" style="display:none;"></div>
-            
-            <!-- Input Bar -->
-            <div class="coach-input-bar">
-                <div class="coach-input-row">
-                    <input type="text" class="coach-input" id="coachInput" onkeypress="if(event.key==='Enter') sendMessage()" placeholder="Stelle eine Frage...">
-                    <button class="send-btn" onclick="sendMessage()" id="sendBtn">
-                        <svg viewBox="0 0 24 24"><path d="M22 2L11 13"></path><path d="M22 2L15 22L11 13L2 9L22 2Z"></path></svg>
-                    </button>
-                </div>
-            </div>
-        </div>
     </div>
 
     <!-- Category Detail Modal -->
@@ -5014,7 +4551,6 @@
                 checkinDone: 'Check-in für',
                 checkinDoneText: 'bereits erledigt! Du kannst deine Kursänderung schon ansehen.',
                 checkinDoneSub: 'Wir sehen uns morgen wieder! 🚀',
-                checkinEditSub: '✏️ Bearbeite deinen heutigen Check-In',
                 editCheckin: 'Ändern',
                 sleepQuestion: 'Wie viele Stunden hast du geschlafen?',
                 taskWidgetTitle: 'Task Manager',
@@ -5052,12 +4588,6 @@
                 coachTitle: 'FYS Coach',
                 coachPlaceholder: 'Stelle eine Frage...',
                 coachWelcome: 'Hey! 👋 Wie kann ich dir helfen?',
-                coachSubtitle: 'Dein persönlicher Performance-Coach',
-                coachStatus: 'Online',
-                coachPills: ['💤 Schlaf verbessern', '🔥 Motivation', '📊 Meine Werte', '🎯 Fokus steigern'],
-                coachSidebarTitle: 'Chat-Verlauf',
-                coachNoChats: 'Noch keine Chats',
-                coachNewChat: 'Neuer Chat',
                 submitBtn: 'Speichern',
                 successToast: '✓ Gespeichert!',
                 categories: {
@@ -5080,7 +4610,6 @@
                 checkinDone: 'Check-in for',
                 checkinDoneText: 'already complete! You can view your progress.',
                 checkinDoneSub: 'See you tomorrow! 🚀',
-                checkinEditSub: '✏️ Edit your today\'s check-in',
                 editCheckin: 'Edit',
                 sleepQuestion: 'How many hours did you sleep?',
                 taskWidgetTitle: 'Task Manager',
@@ -5118,12 +4647,6 @@
                 coachTitle: 'FYS Coach',
                 coachPlaceholder: 'Ask a question...',
                 coachWelcome: 'Hey! 👋 How can I help you?',
-                coachSubtitle: 'Your personal performance coach',
-                coachStatus: 'Online',
-                coachPills: ['💤 Improve sleep', '🔥 Motivation', '📊 My values', '🎯 Boost focus'],
-                coachSidebarTitle: 'Chat History',
-                coachNoChats: 'No chats yet',
-                coachNewChat: 'New Chat',
                 submitBtn: 'Save',
                 successToast: '✓ Saved!',
                 categories: {
@@ -5146,7 +4669,6 @@
                 checkinDone: 'Check-in para',
                 checkinDoneText: '¡ya completo! Puedes ver tu progreso.',
                 checkinDoneSub: '¡Hasta mañana! 🚀',
-                checkinEditSub: '✏️ Edita tu check-in de hoy',
                 editCheckin: 'Editar',
                 sleepQuestion: '¿Cuántas horas dormiste?',
                 taskWidgetTitle: 'Gestor de Tareas',
@@ -5184,12 +4706,6 @@
                 coachTitle: 'Coach FYS',
                 coachPlaceholder: 'Haz una pregunta...',
                 coachWelcome: '¡Hola! 👋 ¿Cómo puedo ayudarte?',
-                coachSubtitle: 'Tu coach personal de rendimiento',
-                coachStatus: 'En línea',
-                coachPills: ['💤 Mejorar sueño', '🔥 Motivación', '📊 Mis valores', '🎯 Mejorar enfoque'],
-                coachSidebarTitle: 'Historial de chats',
-                coachNoChats: 'Aún no hay chats',
-                coachNewChat: 'Nuevo chat',
                 submitBtn: 'Guardar',
                 successToast: '✓ ¡Guardado!',
                 categories: {
@@ -5247,7 +4763,135 @@
             { id: 'mindset', color: '#5f7aff' }
         ];
 
-        // ========== PERFORMANCE PACKS DATA ==========
+        // ============================================
+        // CENTRAL SCALE DEFINITIONS (1–10)
+        // ============================================
+        const categoryScales = {
+            // === STANDARD CATEGORIES ===
+            social: {
+                de: ['Komplett isoliert', 'Kaum soziale Kontakte', 'Sehr wenig Interaktion', 'Weniger Kontakte als üblich', 'Ausreichend soziale Kontakte', 'Gute soziale Interaktionen', 'Aktives Sozialleben', 'Sehr gute Verbindungen', 'Intensive, erfüllende Kontakte', 'Optimale soziale Verbundenheit'],
+                en: ['Completely isolated', 'Almost no social contact', 'Very little interaction', 'Less contact than usual', 'Adequate social contacts', 'Good social interactions', 'Active social life', 'Very strong connections', 'Intense, fulfilling contacts', 'Optimal social connectedness'],
+                es: ['Completamente aislado', 'Casi sin contacto social', 'Muy poca interacción', 'Menos contacto de lo normal', 'Contactos sociales adecuados', 'Buenas interacciones sociales', 'Vida social activa', 'Muy buenas conexiones', 'Contactos intensos y plenos', 'Conexión social óptima']
+            },
+            energy: {
+                de: ['Keine Energie, komplett erschöpft', 'Fast keine Energie, stark müde', 'Sehr wenig Energie', 'Weniger Energie als normal', 'Ausreichend Energie', 'Gute Energie', 'Hohe Energie', 'Sehr viel Energie', 'Extrem viel Energie', 'Maximale Energie, voll leistungsfähig'],
+                en: ['No energy, completely exhausted', 'Almost no energy, very tired', 'Very low energy', 'Less energy than normal', 'Adequate energy', 'Good energy', 'High energy', 'Very high energy', 'Extremely high energy', 'Maximum energy, peak performance'],
+                es: ['Sin energía, completamente agotado', 'Casi sin energía, muy cansado', 'Muy poca energía', 'Menos energía de lo normal', 'Energía suficiente', 'Buena energía', 'Energía alta', 'Mucha energía', 'Energía extrema', 'Energía máxima, rendimiento pleno']
+            },
+            focus: {
+                de: ['Null Konzentration möglich', 'Extrem abgelenkt', 'Sehr leicht ablenkbar', 'Unter normaler Konzentration', 'Durchschnittliche Konzentration', 'Solider Fokus', 'Guter, stabiler Fokus', 'Sehr konzentriert', 'Exzellenter Deep Focus', 'Maximaler Flow-Zustand'],
+                en: ['Zero concentration possible', 'Extremely distracted', 'Very easily distracted', 'Below normal focus', 'Average concentration', 'Solid focus', 'Good, stable focus', 'Very concentrated', 'Excellent deep focus', 'Maximum flow state'],
+                es: ['Concentración nula', 'Extremadamente distraído', 'Muy fácilmente distraíble', 'Debajo del enfoque normal', 'Concentración promedio', 'Enfoque sólido', 'Buen enfoque estable', 'Muy concentrado', 'Excelente enfoque profundo', 'Estado de flujo máximo']
+            },
+            discipline: {
+                de: ['Keine Disziplin, alles aufgeschoben', 'Sehr wenig Selbstkontrolle', 'Kaum durchgehalten', 'Leicht unter Normal', 'Durchschnittliche Disziplin', 'Solide Disziplin', 'Gute Selbstkontrolle', 'Sehr diszipliniert', 'Exzellente Willenskraft', 'Eiserne Disziplin, alles erledigt'],
+                en: ['No discipline, everything postponed', 'Very little self-control', 'Barely persevered', 'Slightly below normal', 'Average discipline', 'Solid discipline', 'Good self-control', 'Very disciplined', 'Excellent willpower', 'Iron discipline, everything done'],
+                es: ['Sin disciplina, todo pospuesto', 'Muy poco autocontrol', 'Apenas perseveré', 'Ligeramente debajo de lo normal', 'Disciplina promedio', 'Disciplina sólida', 'Buen autocontrol', 'Muy disciplinado', 'Excelente fuerza de voluntad', 'Disciplina de hierro, todo hecho']
+            },
+            sport: {
+                de: ['Keinerlei Bewegung', 'Fast keine Aktivität', 'Minimale Bewegung', 'Weniger aktiv als gewünscht', 'Moderate Bewegung', 'Solides Training', 'Gutes Training absolviert', 'Intensives Training', 'Herausragendes Training', 'Perfektes Training, Bestleistung'],
+                en: ['No movement at all', 'Almost no activity', 'Minimal movement', 'Less active than desired', 'Moderate exercise', 'Solid workout', 'Good workout completed', 'Intense training', 'Outstanding workout', 'Perfect training, personal best'],
+                es: ['Sin movimiento alguno', 'Casi sin actividad', 'Movimiento mínimo', 'Menos activo de lo deseado', 'Ejercicio moderado', 'Entrenamiento sólido', 'Buen entrenamiento completado', 'Entrenamiento intenso', 'Entrenamiento excepcional', 'Entrenamiento perfecto, mejor marca']
+            },
+            nutrition: {
+                de: ['Komplett ungesund gegessen', 'Sehr ungesunde Ernährung', 'Überwiegend ungesund', 'Etwas weniger gesund als gewünscht', 'Ausreichend gesunde Ernährung', 'Überwiegend gesund gegessen', 'Gute, ausgewogene Ernährung', 'Sehr gesunde Ernährung', 'Exzellente Nährstoffzufuhr', 'Perfekte Ernährung, optimal versorgt'],
+                en: ['Completely unhealthy eating', 'Very unhealthy diet', 'Mostly unhealthy', 'Slightly less healthy than desired', 'Adequate healthy eating', 'Mostly healthy eating', 'Good, balanced nutrition', 'Very healthy diet', 'Excellent nutrient intake', 'Perfect nutrition, optimally nourished'],
+                es: ['Alimentación completamente insalubre', 'Dieta muy poco saludable', 'Mayormente no saludable', 'Algo menos saludable de lo deseado', 'Alimentación saludable adecuada', 'Mayormente saludable', 'Buena nutrición equilibrada', 'Dieta muy saludable', 'Excelente ingesta de nutrientes', 'Nutrición perfecta, óptimamente alimentado']
+            },
+            mindset: {
+                de: ['Extrem negativ, hoffnungslos', 'Sehr pessimistisch', 'Überwiegend negativ', 'Leicht negativer als normal', 'Neutrale Einstellung', 'Leicht positive Einstellung', 'Gute, optimistische Haltung', 'Sehr positives Mindset', 'Exzellente mentale Stärke', 'Maximale positive Einstellung, unaufhaltbar'],
+                en: ['Extremely negative, hopeless', 'Very pessimistic', 'Mostly negative', 'Slightly more negative than normal', 'Neutral attitude', 'Slightly positive attitude', 'Good, optimistic mindset', 'Very positive mindset', 'Excellent mental strength', 'Maximum positive attitude, unstoppable'],
+                es: ['Extremadamente negativo, sin esperanza', 'Muy pesimista', 'Mayormente negativo', 'Algo más negativo de lo normal', 'Actitud neutral', 'Actitud ligeramente positiva', 'Buena mentalidad optimista', 'Mentalidad muy positiva', 'Excelente fortaleza mental', 'Actitud positiva máxima, imparable']
+            },
+            // === PERFORMANCE PACK CATEGORIES ===
+            savings: {
+                de: ['Nichts gespart', 'Kaum gespart', 'Wenig gespart', 'Unter Sparziel', 'Sparziel knapp erreicht', 'Solide gespart', 'Gut gespart', 'Sehr gut gespart', 'Exzellent gespart', 'Maximal gespart'],
+                en: ['Nothing saved', 'Almost nothing saved', 'Little saved', 'Below savings goal', 'Savings goal barely met', 'Solidly saved', 'Well saved', 'Very well saved', 'Excellently saved', 'Maximum savings'],
+                es: ['Nada ahorrado', 'Casi nada ahorrado', 'Poco ahorrado', 'Debajo del objetivo', 'Objetivo apenas alcanzado', 'Ahorro sólido', 'Bien ahorrado', 'Muy bien ahorrado', 'Excelentemente ahorrado', 'Ahorro máximo']
+            },
+            investments: {
+                de: ['Keine Investitionen', 'Kaum investiert', 'Wenig investiert', 'Unter Investitionsziel', 'Investitionsziel erreicht', 'Solide investiert', 'Gut investiert', 'Sehr gut investiert', 'Exzellent investiert', 'Optimal investiert'],
+                en: ['No investments', 'Almost nothing invested', 'Little invested', 'Below investment goal', 'Investment goal met', 'Solidly invested', 'Well invested', 'Very well invested', 'Excellently invested', 'Optimally invested'],
+                es: ['Sin inversiones', 'Casi nada invertido', 'Poco invertido', 'Debajo del objetivo', 'Objetivo alcanzado', 'Inversión sólida', 'Bien invertido', 'Muy bien invertido', 'Excelentemente invertido', 'Óptimamente invertido']
+            },
+            budget: {
+                de: ['Budget komplett überschritten', 'Stark über Budget', 'Deutlich über Budget', 'Leicht über Budget', 'Budget eingehalten', 'Budget solide eingehalten', 'Gut unter Budget', 'Deutlich unter Budget', 'Exzellente Budget-Disziplin', 'Perfekte Budget-Kontrolle'],
+                en: ['Budget completely exceeded', 'Far over budget', 'Significantly over budget', 'Slightly over budget', 'Budget met', 'Budget solidly met', 'Well under budget', 'Significantly under budget', 'Excellent budget discipline', 'Perfect budget control'],
+                es: ['Presupuesto totalmente excedido', 'Muy por encima', 'Significativamente excedido', 'Ligeramente excedido', 'Presupuesto cumplido', 'Presupuesto bien cumplido', 'Bien debajo del presupuesto', 'Significativamente debajo', 'Excelente disciplina', 'Control perfecto']
+            },
+            income: {
+                de: ['Kein Einkommen', 'Sehr geringes Einkommen', 'Unter Erwartung', 'Leicht unter Erwartung', 'Erwartung erreicht', 'Über Erwartung', 'Deutlich über Erwartung', 'Starkes Wachstum', 'Exzellentes Wachstum', 'Maximales Einkommenswachstum'],
+                en: ['No income', 'Very low income', 'Below expectation', 'Slightly below expectation', 'Expectation met', 'Above expectation', 'Significantly above', 'Strong growth', 'Excellent growth', 'Maximum income growth'],
+                es: ['Sin ingresos', 'Ingresos muy bajos', 'Debajo de expectativa', 'Ligeramente debajo', 'Expectativa cumplida', 'Por encima', 'Significativamente arriba', 'Crecimiento fuerte', 'Crecimiento excelente', 'Crecimiento máximo']
+            },
+            financial_education: {
+                de: ['Nichts gelernt', 'Kaum beschäftigt', 'Wenig gelernt', 'Etwas gelesen', 'Durchschnittlich informiert', 'Gut informiert', 'Aktiv gelernt', 'Intensiv studiert', 'Exzellente Weiterbildung', 'Maximale Finanzbildung'],
+                en: ['Nothing learned', 'Barely engaged', 'Little learned', 'Some reading done', 'Averagely informed', 'Well informed', 'Actively learning', 'Intensively studying', 'Excellent education', 'Maximum financial literacy'],
+                es: ['Nada aprendido', 'Apenas involucrado', 'Poco aprendido', 'Algo leído', 'Medianamente informado', 'Bien informado', 'Aprendizaje activo', 'Estudio intensivo', 'Educación excelente', 'Máxima educación financiera']
+            },
+            cardio: {
+                de: ['Kein Ausdauertraining', 'Minimale Ausdauer', 'Wenig Cardio', 'Unter Ziel', 'Moderate Ausdauer', 'Solides Cardio', 'Gutes Ausdauertraining', 'Intensives Cardio', 'Exzellente Ausdauer', 'Maximale Cardio-Leistung'],
+                en: ['No cardio training', 'Minimal endurance', 'Little cardio', 'Below goal', 'Moderate endurance', 'Solid cardio', 'Good endurance training', 'Intense cardio', 'Excellent endurance', 'Maximum cardio performance'],
+                es: ['Sin cardio', 'Resistencia mínima', 'Poco cardio', 'Debajo del objetivo', 'Resistencia moderada', 'Cardio sólido', 'Buen entrenamiento', 'Cardio intenso', 'Excelente resistencia', 'Rendimiento cardio máximo']
+            },
+            strength: {
+                de: ['Kein Krafttraining', 'Minimale Kraft', 'Wenig Training', 'Unter Ziel', 'Moderates Training', 'Solides Krafttraining', 'Gutes Krafttraining', 'Intensives Krafttraining', 'Exzellentes Training', 'Maximale Kraft, Bestleistung'],
+                en: ['No strength training', 'Minimal strength', 'Little training', 'Below goal', 'Moderate training', 'Solid strength training', 'Good strength training', 'Intense strength training', 'Excellent training', 'Maximum strength, personal best'],
+                es: ['Sin entrenamiento de fuerza', 'Fuerza mínima', 'Poco entrenamiento', 'Debajo del objetivo', 'Entrenamiento moderado', 'Fuerza sólida', 'Buen entrenamiento', 'Entrenamiento intenso', 'Entrenamiento excelente', 'Fuerza máxima, mejor marca']
+            },
+            flexibility: {
+                de: ['Keine Dehnung', 'Kaum gedehnt', 'Wenig Flexibilität', 'Unter Normal', 'Durchschnittliche Flexibilität', 'Solide Flexibilität', 'Gute Flexibilität', 'Sehr flexibel', 'Exzellente Beweglichkeit', 'Maximale Flexibilität'],
+                en: ['No stretching', 'Barely stretched', 'Low flexibility', 'Below normal', 'Average flexibility', 'Solid flexibility', 'Good flexibility', 'Very flexible', 'Excellent mobility', 'Maximum flexibility'],
+                es: ['Sin estiramiento', 'Apenas estirado', 'Poca flexibilidad', 'Debajo de lo normal', 'Flexibilidad promedio', 'Flexibilidad sólida', 'Buena flexibilidad', 'Muy flexible', 'Excelente movilidad', 'Flexibilidad máxima']
+            },
+            mental_health: {
+                de: ['Extrem belastet', 'Stark belastet', 'Deutlich belastet', 'Leicht belastet', 'Stabil', 'Gutes Wohlbefinden', 'Sehr gutes Wohlbefinden', 'Exzellente mentale Gesundheit', 'Hervorragend', 'Optimale mentale Gesundheit'],
+                en: ['Extremely burdened', 'Heavily burdened', 'Significantly burdened', 'Slightly burdened', 'Stable', 'Good well-being', 'Very good well-being', 'Excellent mental health', 'Outstanding', 'Optimal mental health'],
+                es: ['Extremadamente agobiado', 'Muy agobiado', 'Significativamente agobiado', 'Ligeramente agobiado', 'Estable', 'Buen bienestar', 'Muy buen bienestar', 'Excelente salud mental', 'Sobresaliente', 'Salud mental óptima']
+            },
+            networking: {
+                de: ['Kein Networking', 'Kaum Kontakte geknüpft', 'Wenig Networking', 'Unter Ziel', 'Moderates Networking', 'Solides Networking', 'Gute Kontakte geknüpft', 'Sehr aktives Networking', 'Exzellentes Networking', 'Maximales Netzwerk-Wachstum'],
+                en: ['No networking', 'Almost no contacts made', 'Little networking', 'Below goal', 'Moderate networking', 'Solid networking', 'Good contacts made', 'Very active networking', 'Excellent networking', 'Maximum network growth'],
+                es: ['Sin networking', 'Casi sin contactos', 'Poco networking', 'Debajo del objetivo', 'Networking moderado', 'Networking sólido', 'Buenos contactos', 'Networking muy activo', 'Networking excelente', 'Crecimiento máximo']
+            },
+            product_development: {
+                de: ['Kein Fortschritt', 'Minimaler Fortschritt', 'Wenig entwickelt', 'Unter Ziel', 'Moderater Fortschritt', 'Solide Entwicklung', 'Guter Fortschritt', 'Sehr guter Fortschritt', 'Exzellente Entwicklung', 'Maximaler Produktfortschritt'],
+                en: ['No progress', 'Minimal progress', 'Little developed', 'Below goal', 'Moderate progress', 'Solid development', 'Good progress', 'Very good progress', 'Excellent development', 'Maximum product progress'],
+                es: ['Sin progreso', 'Progreso mínimo', 'Poco desarrollado', 'Debajo del objetivo', 'Progreso moderado', 'Desarrollo sólido', 'Buen progreso', 'Muy buen progreso', 'Excelente desarrollo', 'Progreso máximo']
+            },
+            marketing: {
+                de: ['Kein Marketing', 'Kaum Marketing', 'Wenig Marketing', 'Unter Ziel', 'Moderates Marketing', 'Solides Marketing', 'Gutes Marketing', 'Sehr gutes Marketing', 'Exzellentes Marketing', 'Maximale Marketing-Wirkung'],
+                en: ['No marketing', 'Almost no marketing', 'Little marketing', 'Below goal', 'Moderate marketing', 'Solid marketing', 'Good marketing', 'Very good marketing', 'Excellent marketing', 'Maximum marketing impact'],
+                es: ['Sin marketing', 'Casi sin marketing', 'Poco marketing', 'Debajo del objetivo', 'Marketing moderado', 'Marketing sólido', 'Buen marketing', 'Muy buen marketing', 'Marketing excelente', 'Impacto máximo']
+            },
+            sales: {
+                de: ['Keine Verkäufe', 'Kaum Verkäufe', 'Wenig Verkäufe', 'Unter Verkaufsziel', 'Verkaufsziel erreicht', 'Über Verkaufsziel', 'Gute Verkäufe', 'Sehr gute Verkäufe', 'Exzellente Verkäufe', 'Maximaler Verkaufserfolg'],
+                en: ['No sales', 'Almost no sales', 'Few sales', 'Below sales goal', 'Sales goal met', 'Above sales goal', 'Good sales', 'Very good sales', 'Excellent sales', 'Maximum sales success'],
+                es: ['Sin ventas', 'Casi sin ventas', 'Pocas ventas', 'Debajo del objetivo', 'Objetivo alcanzado', 'Por encima del objetivo', 'Buenas ventas', 'Muy buenas ventas', 'Ventas excelentes', 'Éxito máximo en ventas']
+            },
+            leadership: {
+                de: ['Keine Führung gezeigt', 'Kaum Führung', 'Wenig Führungsstärke', 'Unter Normal', 'Durchschnittliche Führung', 'Solide Führung', 'Gute Führungsqualität', 'Starke Führung', 'Exzellente Führung', 'Inspirierende Führungsstärke'],
+                en: ['No leadership shown', 'Almost no leadership', 'Little leadership', 'Below normal', 'Average leadership', 'Solid leadership', 'Good leadership quality', 'Strong leadership', 'Excellent leadership', 'Inspiring leadership'],
+                es: ['Sin liderazgo', 'Casi sin liderazgo', 'Poco liderazgo', 'Debajo de lo normal', 'Liderazgo promedio', 'Liderazgo sólido', 'Buena calidad de liderazgo', 'Liderazgo fuerte', 'Liderazgo excelente', 'Liderazgo inspirador']
+            }
+        };
+
+        // Default/fallback scale for unknown categories
+        const defaultScale = {
+            de: ['Sehr schlecht', 'Stark unterdurchschnittlich', 'Deutlich unter Normal', 'Leicht unterdurchschnittlich', 'Durchschnittlich', 'Solide, über Durchschnitt', 'Gut, stabil', 'Sehr gut, stark', 'Exzellent, nahe Maximum', 'Optimal, maximaler Zustand'],
+            en: ['Very poor', 'Far below average', 'Significantly below normal', 'Slightly below average', 'Average', 'Solid, above average', 'Good, stable', 'Very good, strong', 'Excellent, near maximum', 'Optimal, peak state'],
+            es: ['Muy malo', 'Muy por debajo del promedio', 'Significativamente debajo', 'Ligeramente debajo', 'Promedio', 'Sólido, sobre promedio', 'Bueno, estable', 'Muy bueno, fuerte', 'Excelente, cerca del máximo', 'Óptimo, estado máximo']
+        };
+
+        // Get scale label for a category at a given value (1-10)
+        function getScaleLabel(categoryId, value, lang) {
+            lang = lang || currentLang;
+            const idx = Math.max(0, Math.min(9, Math.round(value) - 1));
+            const scale = categoryScales[categoryId];
+            if (scale && scale[lang]) return scale[lang][idx];
+            if (scale && scale.de) return scale.de[idx]; // fallback to DE
+            return (defaultScale[lang] || defaultScale.de)[idx];
+        }
         const performancePacks = [
             {
                 id: 'finance',
@@ -5830,37 +5474,151 @@
         // Change time range
         function changeTimeRange(range) {
             console.log('Changing time range to:', range);
-            currentTimeRange = range;
+            if (range === currentTimeRange) return; // Kein Wechsel nötig
             
-            // Save to localStorage
+            // Speichere alten Wert für Count-Animation
+            const valueEl = document.getElementById('mainIndexValue');
+            const changeText = document.getElementById('mainChangeText');
+            const chartSection = document.querySelector('.main-chart-section');
+            const oldValue = valueEl ? parseFloat(valueEl.textContent) || 100 : 100;
+            
+            currentTimeRange = range;
             localStorage.setItem('fys_timeRange', range);
             
             // Update all time buttons
             document.querySelectorAll('.time-btn').forEach(btn => btn.classList.remove('active'));
             document.querySelectorAll(`.time-btn[data-range="${range}"]`).forEach(btn => btn.classList.add('active'));
             
-            updateMainChart();
-            
-            // Reload the correct stock list based on what's currently displayed
-            if (currentStockListType === 'fys') {
-                createStockList(); // FYS categories
-            } else {
-                // Performance Pack categories
-                const pack = performancePacks.find(p => p.id === currentStockListType);
-                if (pack) {
-                    createPackStockList(pack);
-                }
+            // Starte Chart-Container Animation
+            if (chartSection) {
+                chartSection.classList.add('chart-transitioning');
+                setTimeout(() => chartSection.classList.remove('chart-transitioning'), 500);
             }
             
-            // Update Performance Pack charts (synchronized!)
+            // Change-Text fade out
+            if (changeText) {
+                changeText.style.opacity = '0';
+                changeText.style.transition = 'opacity 0.15s';
+            }
+            
+            // Chart mit Morph-Animation updaten
+            updateMainChartAnimated(oldValue);
+            
+            // Reload the correct stock list
+            if (currentStockListType === 'fys') {
+                createStockList();
+            } else {
+                const pack = performancePacks.find(p => p.id === currentStockListType);
+                if (pack) createPackStockList(pack);
+            }
+            
+            // Update Performance Pack charts
             if (isPro && performanceData.activePacks && performanceData.activePacks.length > 0) {
                 performanceData.activePacks.forEach(packId => {
                     createPackMiniChart(packId);
                 });
-                console.log('✓ Pack charts updated with new timerange');
+            }
+        }
+        
+        // Animated chart update with count-up and morph
+        function updateMainChartAnimated(oldValue) {
+            if (!mainChart) { updateMainChart(); return; }
+            
+            if (performanceData.entries.length === 0) { updateMainChart(); return; }
+            
+            const entries = getFilteredEntries();
+            let chartLabels = [];
+            let chartData = [];
+            
+            if (entries.length === 0) {
+                const today = new Date();
+                chartLabels = [`${today.getDate()}.${today.getMonth()+1}.${today.getFullYear()}`];
+                chartData = [100];
+            } else if (performanceData.entries.length === 1) {
+                const today = new Date();
+                chartLabels.push(`${today.getDate()}.${today.getMonth()+1}.${today.getFullYear()}`);
+                chartData.push(100);
+                const e = entries[0];
+                const date = new Date(e.date);
+                chartLabels.push(`${date.getDate()}.${date.getMonth()+1}.${date.getFullYear()}`);
+                chartData.push(e.fysIndex);
+            } else {
+                entries.forEach(e => {
+                    const date = new Date(e.date);
+                    chartLabels.push(`${date.getDate()}.${date.getMonth()+1}.${date.getFullYear()}`);
+                    chartData.push(e.fysIndex);
+                });
             }
             
-            console.log('Time range changed and saved:', range);
+            // Chart.js Morph-Animation
+            mainChart.data.labels = chartLabels;
+            mainChart.data.datasets[0].data = chartData;
+            mainChart.update({
+                duration: 450,
+                easing: 'easeInOutCubic'
+            });
+            
+            // Count-Up Animation für Index-Wert
+            if (entries.length > 0) {
+                const latest = entries[entries.length - 1];
+                const first = entries[0];
+                const newValue = latest.fysIndex;
+                
+                let baseValue = performanceData.entries.length === 1 ? 100 : first.fysIndex;
+                const change = newValue - baseValue;
+                const changePercent = baseValue !== 0 ? ((change / baseValue) * 100).toFixed(2) : '0.00';
+                
+                // Animate count from oldValue to newValue
+                animateCountUp(oldValue, newValue, 400);
+                
+                // Animate change text with delay
+                setTimeout(() => {
+                    const changeText = document.getElementById('mainChangeText');
+                    const valueEl = document.getElementById('mainIndexValue');
+                    if (changeText) {
+                        changeText.textContent = `${change >= 0 ? '+' : ''}${changePercent}%`;
+                        changeText.style.color = change > 0 ? '#00c96d' : change < 0 ? '#ff3366' : 'var(--text-secondary)';
+                        changeText.style.opacity = '1';
+                        changeText.classList.remove('change-text-animate');
+                        void changeText.offsetWidth; // Force reflow
+                        changeText.classList.add('change-text-animate');
+                    }
+                    if (valueEl) {
+                        valueEl.className = 'index-value-number' + (change > 0 ? ' positive' : change < 0 ? ' negative' : '');
+                    }
+                }, 200);
+            }
+        }
+        
+        // Smooth count-up animation
+        function animateCountUp(from, to, duration) {
+            const valueEl = document.getElementById('mainIndexValue');
+            if (!valueEl) return;
+            
+            valueEl.classList.add('index-value-counting');
+            
+            const startTime = performance.now();
+            const diff = to - from;
+            
+            function tick(now) {
+                const elapsed = now - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+                
+                // Ease-out cubic
+                const eased = 1 - Math.pow(1 - progress, 3);
+                const current = from + diff * eased;
+                
+                valueEl.textContent = current.toFixed(1);
+                
+                if (progress < 1) {
+                    requestAnimationFrame(tick);
+                } else {
+                    valueEl.textContent = to.toFixed(1);
+                    valueEl.classList.remove('index-value-counting');
+                }
+            }
+            
+            requestAnimationFrame(tick);
         }
 
         // Open chart details (Flatex-Style)
@@ -6817,7 +6575,6 @@
         let reminderIntervalId = null;
         
         function scheduleReminder() {
-            // Clear any existing interval
             if (reminderIntervalId) {
                 clearInterval(reminderIntervalId);
                 reminderIntervalId = null;
@@ -6825,7 +6582,6 @@
             
             if (!reminderEnabled) return;
             
-            // Check every minute if it's time to send notification
             reminderIntervalId = setInterval(() => {
                 if (!reminderEnabled) {
                     clearInterval(reminderIntervalId);
@@ -6836,13 +6592,12 @@
                 const now = new Date();
                 const currentTime = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
                 
-                // Check if it's reminder time
                 if (currentTime === reminderTime) {
                     sendCheckinReminder();
                 }
-            }, 60000); // Check every minute
+            }, 60000);
             
-            // Also check immediately on load
+            // Also check immediately
             const now = new Date();
             const currentTime = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
             
@@ -7028,7 +6783,6 @@
                         'lastCheckInDate',
                         'fysSleepGoal',         // <- Wird NICHT neu gespeichert!
                         'fysCoachData',
-                        'fysCoachChats',
                         'fysLanguage'
                         // 'fysPro' und 'fysTheme' bleiben erhalten
                     ];
@@ -7996,21 +7750,9 @@
             
             updateHeaderDate();
             
-            // Update Check-in Widget with correct question count (only if NOT checked in today)
+            // Update Check-in Widget with correct question count
             const totalQuestions = baseWizardCategories.length + (isPro ? getActivePackCategories().length : 0);
-            const todayForWidget = new Date().toDateString();
-            const lastCheckIn = localStorage.getItem('lastCheckInDate');
-            const hasCheckedInToday = lastCheckIn === todayForWidget;
-            
-            if (hasCheckedInToday) {
-                if (isPro) {
-                    safeUpdate('checkinWidgetSubtitle', t.checkinEditSub || '✏️ Bearbeite deinen heutigen Check-In');
-                } else {
-                    safeUpdate('checkinWidgetSubtitle', t.checkinDoneSub || '✅ Heute bereits eingecheckt');
-                }
-            } else {
-                safeUpdate('checkinWidgetSubtitle', t.checkinWidgetSubtitle || `Beantworte ${totalQuestions} Fragen zu deinem Tag`);
-            }
+            safeUpdate('checkinWidgetSubtitle', `Beantworte ${totalQuestions} Fragen zu deinem Tag`);
             
             safeUpdate('tapHint', t.tapHint);
             safeUpdate('backText', t.backText);
@@ -8050,18 +7792,6 @@
             safeUpdate('navSettings', t.navSettings);
             safeUpdate('coachTitle', t.coachTitle);
             safeUpdate('coachInput', t.coachPlaceholder, true);
-            safeUpdate('coachSubtitle', t.coachSubtitle);
-            safeUpdate('coachStatusText', t.coachStatus);
-            safeUpdate('coachSidebarTitle', t.coachSidebarTitle);
-            safeUpdate('coachWelcomeSub', t.coachSubtitle);
-            
-            // Update coach suggestion pill labels
-            if (t.coachPills) {
-                const pills = document.querySelectorAll('.coach-pill');
-                pills.forEach((pill, i) => {
-                    if (t.coachPills[i]) pill.textContent = t.coachPills[i];
-                });
-            }
             safeUpdate('sleepGoalValue', sleepGoal.toFixed(1) + 'h');
             
             // Update Pro button state
@@ -8075,73 +7805,50 @@
         function updateDailyProgress() {
             console.log('🎯 updateDailyProgress called');
             
-            try {
-                const today = new Date();
-                const todayStr = today.toISOString().split('T')[0];
-                
-                const checkinBadge = document.getElementById('checkinBadge');
-                const journalBadge = document.getElementById('journalBadge');
-                const checkinWidget = document.getElementById('checkinWidget');
-                const checkinTitle = document.getElementById('checkinWidgetTitle');
-                const checkinSubtitle = document.getElementById('checkinWidgetSubtitle');
-                const checkinArrow = document.getElementById('checkinWidgetArrow');
-                
+            // Use actual today date (not header date which is always current)
+            const today = new Date();
+            const todayStr = today.toISOString().split('T')[0];
+            console.log('📅 Today string:', todayStr);
+            
+            const checkinBadge = document.getElementById('checkinBadge');
+            const journalBadge = document.getElementById('journalBadge');
+            
+            if (checkinBadge) {
                 const hasCheckin = performanceData.entries && performanceData.entries.some(e => {
                     const entryDate = new Date(e.date).toISOString().split('T')[0];
                     return entryDate === todayStr;
                 });
+                console.log('✅ Has check-in today:', hasCheckin);
+                if (hasCheckin) {
+                    checkinBadge.classList.remove('incomplete');
+                    checkinBadge.classList.add('complete');
+                } else {
+                    checkinBadge.classList.remove('complete');
+                    checkinBadge.classList.add('incomplete');
+                }
+            }
+            
+            if (journalBadge) {
+                // Prüfe journalData (als Objekt mit Datum-Keys: "YYYY-MM-DD")
+                console.log('📔 journalData:', journalData);
+                console.log('📔 journalData[todayStr]:', journalData[todayStr]);
                 
                 const hasJournal = journalData && journalData[todayStr] && journalData[todayStr].trim().length > 0;
+                console.log('✅ Has journal today:', hasJournal);
                 
-                console.log('📊 hasCheckin:', hasCheckin, 'hasJournal:', hasJournal);
-                
-                // Update header badges
-                if (checkinBadge) {
-                    checkinBadge.classList.remove('incomplete', 'complete');
-                    checkinBadge.classList.add(hasCheckin ? 'complete' : 'incomplete');
-                    console.log('✅ CheckIn badge:', hasCheckin ? 'complete' : 'incomplete');
+                if (hasJournal) {
+                    console.log('🟠 Setting badge to COMPLETE (orange)');
+                    journalBadge.classList.remove('incomplete');
+                    journalBadge.classList.add('complete');
+                } else {
+                    console.log('⚪ Setting badge to INCOMPLETE (gray)');
+                    journalBadge.classList.remove('complete');
+                    journalBadge.classList.add('incomplete');
                 }
-                
-                if (journalBadge) {
-                    journalBadge.classList.remove('incomplete', 'complete');
-                    journalBadge.classList.add(hasJournal ? 'complete' : 'incomplete');
-                    console.log('📔 Journal badge:', hasJournal ? 'complete' : 'incomplete');
-                }
-                
-                // Update Check-In Widget auf Startseite
-                if (checkinWidget) {
-                    const t = translations[currentLang];
-                    checkinWidget.classList.remove('completed', 'pro-edit');
-                    
-                    if (hasCheckin) {
-                        if (isPro) {
-                            checkinWidget.classList.add('pro-edit');
-                            if (checkinTitle) checkinTitle.textContent = '✓ Check-In erledigt';
-                            if (checkinSubtitle) checkinSubtitle.textContent = t?.checkinEditSub || '✏️ Bearbeite deinen heutigen Check-In';
-                            if (checkinArrow) checkinArrow.textContent = '✏️';
-                        } else {
-                            checkinWidget.classList.add('completed');
-                            if (checkinTitle) checkinTitle.textContent = '✓ Check-In erledigt';
-                            if (checkinSubtitle) checkinSubtitle.textContent = t?.checkinDoneSub || '✅ Heute bereits eingecheckt';
-                            if (checkinArrow) checkinArrow.textContent = '✓';
-                        }
-                        // Sync localStorage
-                        localStorage.setItem('lastCheckInDate', today.toDateString());
-                        console.log('✅ Widget set to completed');
-                    } else {
-                        if (checkinTitle) checkinTitle.textContent = 'Daily Check-In';
-                        if (checkinSubtitle) checkinSubtitle.textContent = t?.checkinWidgetSubtitle || 'Beantworte 8 Fragen zu deinem Tag';
-                        if (checkinArrow) checkinArrow.textContent = '→';
-                        console.log('⬜ Widget set to incomplete');
-                    }
-                }
-                
-                // Update Streak
-                calculateStreak();
-                
-            } catch (error) {
-                console.error('❌ updateDailyProgress error:', error);
             }
+            
+            // Update Streak
+            calculateStreak();
         }
         
         // Calculate and update streak
@@ -8170,17 +7877,19 @@
                 // Beide müssen vorhanden sein
                 if (hasCheckin && hasJournal) {
                     streak++;
-                    checkDate.setDate(checkDate.getDate() - 1);
+                    checkDate.setDate(checkDate.getDate() - 1); // Einen Tag zurück
                 } else {
-                    break;
+                    break; // Streak unterbrochen
                 }
                 
+                // Sicherheitsabbruch nach 365 Tagen
                 if (streak > 365) break;
             }
             
             currentStreak = streak;
             localStorage.setItem('fysStreak', streak);
             
+            // Longest Streak aktualisieren
             if (streak > longestStreak) {
                 longestStreak = streak;
                 localStorage.setItem('fysLongestStreak', streak);
@@ -8189,6 +7898,7 @@
             console.log(`🔥 Current Streak: ${currentStreak} days`);
             console.log(`🏆 Longest Streak: ${longestStreak} days`);
             
+            // Update UI
             updateStreakDisplay();
         }
         
@@ -8228,7 +7938,7 @@
             const isAlreadyActive = viewElement && viewElement.classList.contains('active');
             
             if (isAlreadyActive) {
-                // TOOLS SPECIAL: Wenn Tool sichtbar ist, verstecke es und zeige Tools-Menü
+                // TOOLS SPECIAL: Wenn Tool sichtbar ist, KOMPLETT schließen (User will zurück zum Menü)
                 if (view === 'tools') {
                     const journalModal = document.getElementById('journalModal');
                     const taskManagerModal = document.getElementById('taskManagerModal');
@@ -8237,10 +7947,12 @@
                     const taskManagerVisible = taskManagerModal && taskManagerModal.classList.contains('active') && taskManagerModal.style.display !== 'none';
                     
                     if (journalVisible || taskManagerVisible) {
-                        // Tool ist sichtbar → verstecke es, zeige Tools-Menü
-                        if (journalVisible) journalModal.style.display = 'none';
-                        if (taskManagerVisible) taskManagerModal.style.display = 'none';
-                        console.log('🔄 Tool versteckt, Tools-Menü sichtbar');
+                        // User drückt nochmal Tools → Tool komplett schließen
+                        if (journalVisible) { journalModal.classList.remove('active'); journalModal.style.display = 'none'; }
+                        if (taskManagerVisible) { taskManagerModal.classList.remove('active'); taskManagerModal.style.display = 'none'; }
+                        lastActiveToolModal = null;
+                        toolsMenuVisible = true;
+                        console.log('🔒 Tool geschlossen (Tools-Tab Doppelklick)');
                         return;
                     }
                 }
@@ -8261,35 +7973,28 @@
                 return;
             }
             
-            // Wenn man NICHT auf Tools wechselt: Journal & Tasks komplett schließen
+            // Wenn man NICHT auf Tools wechselt: Journal & Tasks nur VERSTECKEN (nicht schließen)
             if (view !== 'tools') {
                 const journalModal = document.getElementById('journalModal');
                 const taskManagerModal = document.getElementById('taskManagerModal');
                 if (journalModal && journalModal.classList.contains('active')) {
-                    journalModal.classList.remove('active');
                     journalModal.style.display = 'none';
-                    lastActiveToolModal = null;
-                    toolsMenuVisible = true;
-                    console.log('🔒 Journal geschlossen (Tab-Wechsel)');
+                    console.log('📦 Journal versteckt (Tab-Wechsel)');
                 }
                 if (taskManagerModal && taskManagerModal.classList.contains('active')) {
-                    taskManagerModal.classList.remove('active');
                     taskManagerModal.style.display = 'none';
-                    lastActiveToolModal = null;
-                    toolsMenuVisible = true;
-                    console.log('🔒 Tasks geschlossen (Tab-Wechsel)');
+                    console.log('📦 Tasks versteckt (Tab-Wechsel)');
                 }
             }
             
             if (view !== 'home') {
-                // Schließe Chart Details und Category Detail komplett (nicht nur verstecken)
+                // Schließe Chart Details und Category Detail komplett
                 const chartDetailsView = document.getElementById('chartDetailsView');
                 const categoryDetailModal = document.getElementById('categoryDetailModal');
                 
                 if (chartDetailsView && chartDetailsView.classList.contains('active')) {
                     chartDetailsView.classList.remove('active');
                     chartDetailsView.style.display = '';
-                    // Zeige homeView wieder (falls nötig beim Zurückkehren)
                     document.getElementById('homeView').classList.add('active');
                     console.log('🔒 Chart Details geschlossen');
                 }
@@ -8300,21 +8005,25 @@
                 }
             }
             
-            if (view !== 'coach') {
-                // Coach is now a view-section, no modal logic needed
-            }
+            // (Coach is now a view-section, no modal to hide)
             
             // FOTMOB: Bei Wechsel ZU einem Tab → zeige versteckte Modals wieder
+            // FOTMOB: Bei Wechsel ZU Tools → zeige versteckte Modals wieder
             if (view === 'tools') {
-                // Tools-Modals wurden komplett geschlossen, nichts wiederherstellen
+                const journalModal = document.getElementById('journalModal');
+                const taskManagerModal = document.getElementById('taskManagerModal');
+                if (journalModal && journalModal.classList.contains('active')) {
+                    journalModal.style.display = 'flex';
+                    console.log('🔄 Journal wieder sichtbar');
+                }
+                if (taskManagerModal && taskManagerModal.classList.contains('active')) {
+                    taskManagerModal.style.display = 'flex';
+                    console.log('🔄 Tasks wieder sichtbar');
+                }
             }
             
             if (view === 'home') {
                 // Chart Details wurden geschlossen, nichts wiederherstellen
-            }
-            
-            if (view === 'coach') {
-                initCoachView();
             }
             
             // FOTMOM-STYLE: Hide all views (keep in DOM), show selected view
@@ -8367,426 +8076,44 @@
                     showWizardError();
                 }
             }
-        }
-
-        // Switch to Coach with tab activation
-        // ============================================
-        // COACH - Chat History & Sidebar
-        // ============================================
-        let coachChats = JSON.parse(localStorage.getItem('fysCoachChats')) || [];
-        let currentCoachChatId = null;
-        let coachMessageHistory = []; // For API context
-
-        function switchToCoach() {
-            if (window.navigator && window.navigator.vibrate) {
-                window.navigator.vibrate(10);
-            }
-            switchView('coach');
-            initCoachView();
-        }
-
-        function initCoachView() {
-            if (!currentCoachChatId) {
-                showCoachWelcome();
-            }
-            renderCoachSidebar();
-            updateCoachOnlineStatus();
-        }
-
-        // Track actual AI availability (not just network)
-        let coachAIAvailable = true;
-
-        // Update online/offline status in topbar
-        function updateCoachOnlineStatus() {
-            const dot = document.querySelector('.coach-topbar-status-dot');
-            const text = document.getElementById('coachStatusText');
-            if (!dot || !text) return;
             
-            if (coachAIAvailable) {
-                dot.style.background = '#4ade80';
-                dot.style.animation = 'statusPulse 2s ease-in-out infinite';
-                text.style.color = '#4ade80';
-                text.textContent = translations[currentLang]?.coachStatus || 'Online';
-            } else {
-                dot.style.background = '#f59e0b';
-                dot.style.animation = 'none';
-                text.style.color = '#f59e0b';
-                text.textContent = currentLang === 'de' ? 'Offline-Tipps' : currentLang === 'es' ? 'Consejos offline' : 'Offline Tips';
+            // Coach special init
+            if (view === 'coach') {
+                initCoachContent();
+            }
+        }
+
+        // Switch to Coach - now uses regular view switching
+        function switchToCoach() {
+            switchView('coach');
+        }
+
+        // Coach functions
+        function initCoachContent() {
+            const content = document.getElementById('coachContent');
+            const t = translations[currentLang];
+            
+            if (content && content.children.length === 0) {
+                content.innerHTML = `
+                    <div class="coach-welcome">
+                        <div class="coach-welcome-icon">🤖</div>
+                        <div class="coach-welcome-title">${t.coachWelcome || 'Hallo! Ich bin dein FYS Coach.'}</div>
+                        <div class="coach-welcome-sub" id="coachWelcomeSub">${t.coachSubtitle || 'Frag mich alles über deine Performance.'}</div>
+                    </div>
+                `;
             }
         }
         
-        // Also react to network changes
-        window.addEventListener('online', () => { 
-            coachAIAvailable = true; 
-            updateCoachOnlineStatus(); 
-        });
-        window.addEventListener('offline', () => { 
-            coachAIAvailable = false; 
-            updateCoachOnlineStatus(); 
-        });
-
-        function showCoachWelcome() {
-            const content = document.getElementById('coachContent');
-            const welcome = document.getElementById('coachWelcome');
-            const suggestions = document.getElementById('coachSuggestions');
-            
-            content.innerHTML = '';
-            content.style.display = 'none';
-            welcome.style.display = 'flex';
-            suggestions.classList.remove('hidden');
-            
-            const t = translations[currentLang];
-            const wTitle = document.getElementById('coachWelcomeTitle');
-            const wSub = document.getElementById('coachWelcomeSub');
-            if (wTitle) wTitle.textContent = t.coachWelcome || 'Hey! 👋';
-            if (wSub) wSub.textContent = t.coachSubtitle || '';
-        }
-
-        function activateCoachChat() {
-            const content = document.getElementById('coachContent');
-            const welcome = document.getElementById('coachWelcome');
-            const suggestions = document.getElementById('coachSuggestions');
-            
-            welcome.style.display = 'none';
-            suggestions.classList.add('hidden');
-            content.style.display = 'block';
-        }
-
-        // Sidebar toggle
-        function toggleCoachSidebar() {
-            const sidebar = document.getElementById('coachSidebar');
-            const overlay = document.getElementById('coachSidebarOverlay');
-            const isActive = sidebar.classList.contains('active');
-            
-            if (isActive) {
-                closeCoachSidebar();
-            } else {
-                sidebar.classList.add('active');
-                overlay.classList.add('active');
-                renderCoachSidebar();
-            }
-        }
-        function closeCoachSidebar() {
-            document.getElementById('coachSidebar').classList.remove('active');
-            document.getElementById('coachSidebarOverlay').classList.remove('active');
-        }
-
-        // Render sidebar chat list
-        function renderCoachSidebar() {
-            const list = document.getElementById('coachSidebarList');
-            const empty = document.getElementById('coachSidebarEmpty');
-            const t = translations[currentLang];
-            
-            if (coachChats.length === 0) {
-                list.innerHTML = '';
-                const emptyDiv = document.createElement('div');
-                emptyDiv.className = 'coach-sidebar-empty';
-                emptyDiv.id = 'coachSidebarEmpty';
-                emptyDiv.textContent = t.coachNoChats || 'Noch keine Chats';
-                list.appendChild(emptyDiv);
-                return;
-            }
-            
-            // Sort by date (newest first)
-            const sorted = [...coachChats].sort((a, b) => b.updatedAt - a.updatedAt);
-            
-            list.innerHTML = sorted.map(chat => {
-                const date = new Date(chat.updatedAt);
-                const dateStr = date.toLocaleDateString(currentLang === 'de' ? 'de-DE' : currentLang === 'es' ? 'es-ES' : 'en-US', { day: 'numeric', month: 'short' });
-                const isActive = chat.id === currentCoachChatId;
-                return `
-                    <div class="coach-chat-item ${isActive ? 'active' : ''}" onclick="loadCoachChat('${chat.id}')">
-                        <div class="coach-chat-item-icon">💬</div>
-                        <div class="coach-chat-item-info">
-                            <div class="coach-chat-item-title">${chat.title}</div>
-                            <div class="coach-chat-item-date">${dateStr}</div>
-                        </div>
-                        <button class="coach-chat-item-delete" onclick="event.stopPropagation(); deleteCoachChat('${chat.id}')" title="Löschen">🗑</button>
-                    </div>
-                `;
-            }).join('');
-        }
-
-        // New chat
-        function newCoachChat() {
-            currentCoachChatId = null;
-            coachMessageHistory = [];
-            showCoachWelcome();
-            closeCoachSidebar();
-        }
-
-        // Load a chat from history
-        function loadCoachChat(chatId) {
-            const chat = coachChats.find(c => c.id === chatId);
-            if (!chat) return;
-            
-            currentCoachChatId = chatId;
-            coachMessageHistory = chat.messages || [];
-            
-            activateCoachChat();
-            
-            const content = document.getElementById('coachContent');
-            content.innerHTML = '';
-            
-            chat.messages.forEach(msg => {
-                const div = document.createElement('div');
-                div.className = `message ${msg.role === 'user' ? 'user' : 'assistant'}`;
-                const avatar = msg.role === 'user' ? '👤' : '🧠';
-                div.innerHTML = `
-                    <div class="msg-avatar">${avatar}</div>
-                    <div class="message-bubble">${msg.content}</div>
-                `;
-                content.appendChild(div);
-            });
-            
-            content.scrollTop = content.scrollHeight;
-            closeCoachSidebar();
-            renderCoachSidebar();
-        }
-
-        // Delete a chat
-        function deleteCoachChat(chatId) {
-            coachChats = coachChats.filter(c => c.id !== chatId);
-            localStorage.setItem('fysCoachChats', JSON.stringify(coachChats));
-            
-            if (currentCoachChatId === chatId) {
-                newCoachChat();
-            }
-            renderCoachSidebar();
-        }
-
-        // Save current chat
-        function saveCurrentCoachChat(userMsg, assistantMsg) {
-            if (!currentCoachChatId) {
-                // Create new chat
-                currentCoachChatId = 'chat_' + Date.now();
-                const title = userMsg.length > 35 ? userMsg.substring(0, 35) + '…' : userMsg;
-                coachChats.push({
-                    id: currentCoachChatId,
-                    title: title,
-                    createdAt: Date.now(),
-                    updatedAt: Date.now(),
-                    messages: []
-                });
-            }
-            
-            const chat = coachChats.find(c => c.id === currentCoachChatId);
-            if (chat) {
-                chat.messages.push({ role: 'user', content: userMsg });
-                if (assistantMsg) {
-                    chat.messages.push({ role: 'assistant', content: assistantMsg });
-                }
-                chat.updatedAt = Date.now();
-                // Keep only last 50 messages per chat
-                if (chat.messages.length > 50) {
-                    chat.messages = chat.messages.slice(-50);
-                }
-                localStorage.setItem('fysCoachChats', JSON.stringify(coachChats));
-            }
-            renderCoachSidebar();
-        }
-
-        // ============================================
-        // COACH OFFLINE TIPS DATABASE
-        // ============================================
-        const coachOfflineTips = {
-            de: {
-                sleep: [
-                    "Versuche jeden Tag zur gleichen Zeit ins Bett zu gehen – dein Körper liebt Routine. Vermeide Bildschirme 30 Min vor dem Schlafen und halte dein Zimmer kühl (ca. 18°C).",
-                    "Koffein hat eine Halbwertszeit von 5-6 Stunden. Dein letzter Kaffee sollte spätestens um 14 Uhr sein, wenn du um 22 Uhr schlafen willst.",
-                    "Probiere die 4-7-8 Atemtechnik: 4 Sek einatmen, 7 Sek halten, 8 Sek ausatmen. Das aktiviert dein parasympathisches Nervensystem und hilft beim Einschlafen.",
-                    "Magnesium vor dem Schlafen kann Wunder wirken. Auch ein kurzer Spaziergang am Abend hilft, den Cortisolspiegel zu senken.",
-                    "Schlafqualität > Schlafdauer. 7h tiefer Schlaf sind besser als 9h unruhiger Schlaf. Dunkelheit und Stille sind deine besten Freunde."
-                ],
-                motivation: [
-                    "Motivation kommt selten vor der Aktion – sie kommt DURCH die Aktion. Starte mit nur 2 Minuten und der Rest folgt von allein. 💪",
-                    "Vergleiche dich nicht mit anderen, sondern mit dir selbst von gestern. Jeder kleine Fortschritt zählt – auch 1% besser pro Tag ergibt über ein Jahr eine 37-fache Verbesserung!",
-                    "Setze dir für heute EIN konkretes Ziel. Nicht 'mehr Sport', sondern '20 Min spazieren nach dem Mittagessen'. Je spezifischer, desto wahrscheinlicher setzt du es um.",
-                    "Dein zukünftiges Ich wird dir dankbar sein für das, was du JETZT tust. Jede gute Entscheidung ist ein Geschenk an dich selbst.",
-                    "Disziplin schlägt Motivation. Motivation ist ein Gefühl – Disziplin ist eine Entscheidung. Bau Gewohnheiten auf, die auch ohne Motivation funktionieren."
-                ],
-                focus: [
-                    "Probiere die Pomodoro-Technik: 25 Min fokussierte Arbeit, dann 5 Min Pause. Nach 4 Runden machst du 15-30 Min Pause. Dein Gehirn braucht Rhythmus.",
-                    "Entferne alle Ablenkungen BEVOR du anfängst. Handy in einen anderen Raum, Benachrichtigungen aus, Browser-Tabs schließen. Willenskraft ist begrenzt – mach es dir leicht.",
-                    "Dein Fokus ist morgens am stärksten. Erledige die wichtigste Aufgabe zuerst ('Eat the Frog'). Emails und Meetings können warten.",
-                    "Multitasking ist ein Mythos. Dein Gehirn wechselt nur zwischen Aufgaben hin und her und verliert dabei jedes Mal Energie. Mach eins nach dem anderen.",
-                    "Trinke genug Wasser! Schon 2% Dehydration reduziert deine kognitive Leistung messbar. Halte immer eine Flasche griffbereit."
-                ],
-                energy: [
-                    "Deine Energie kommt aus drei Quellen: Schlaf, Ernährung und Bewegung. Wenn eine davon fehlt, leidet alles andere. Checke alle drei.",
-                    "Ein kurzes Workout am Morgen (auch nur 10 Min) gibt dir mehr Energie für den ganzen Tag als jeder Kaffee. Dein Körper schüttet Endorphine und Dopamin aus.",
-                    "Große Mahlzeiten machen müde. Iss lieber mehrere kleine, ausgewogene Mahlzeiten über den Tag verteilt. Vermeide Zucker-Crashes.",
-                    "Sonnenlicht in den ersten 30 Minuten nach dem Aufwachen setzt deine innere Uhr und steigert dein Energielevel den ganzen Tag.",
-                    "Power-Naps von 10-20 Min zwischen 13-15 Uhr sind ein Game-Changer. Nicht länger, sonst wirst du groggy!"
-                ],
-                nutrition: [
-                    "Iss den Regenbogen – je bunter dein Teller, desto mehr verschiedene Nährstoffe bekommst du. Gemüse sollte die Hälfte deines Tellers ausmachen.",
-                    "Protein ist der Schlüssel für Sättigung und Muskelerhalt. Versuche bei jeder Mahlzeit eine Proteinquelle einzubauen – Eier, Hülsenfrüchte, Fisch, Fleisch.",
-                    "Meal Prep spart Zeit UND hilft dir, gesündere Entscheidungen zu treffen. Sonntags 1-2 Stunden kochen = gesunde Woche.",
-                    "Trinke ein Glas Wasser vor jeder Mahlzeit. Das hilft bei der Verdauung und verhindert, dass du Durst mit Hunger verwechselst.",
-                    "80/20 Regel: Ernähre dich 80% der Zeit gesund, 20% darfst du genießen. Perfektion ist nicht nachhaltig – Balance schon."
-                ],
-                sport: [
-                    "Konsistenz schlägt Intensität. 3x pro Woche 30 Minuten moderat trainieren bringt mehr als 1x pro Woche 2 Stunden bis zum Umfallen.",
-                    "Finde eine Sportart, die dir SPASS macht. Die beste Trainingsmethode ist die, die du langfristig durchhältst. Probiere verschiedene Dinge aus!",
-                    "Vergiss nicht das Aufwärmen! 5-10 Min lockere Bewegung vor dem Training verhindert Verletzungen und verbessert deine Performance.",
-                    "Ruhetage sind genauso wichtig wie Trainingstage. Deine Muskeln wachsen in der Erholung, nicht im Training. Höre auf deinen Körper.",
-                    "Gehen ist die am meisten unterschätzte Übung. 10.000 Schritte pro Tag verbessern Herz-Kreislauf, Stimmung und Kreativität."
-                ],
-                mindset: [
-                    "Deine Gedanken formen deine Realität. Achte bewusst auf deinen inneren Dialog – sprichst du mit dir selbst wie mit einem guten Freund?",
-                    "Dankbarkeit ist ein Gamechanger. Schreibe jeden Abend 3 Dinge auf, für die du dankbar bist. Das trainiert dein Gehirn auf Positives zu fokussieren.",
-                    "Fehler sind keine Niederlagen, sondern Daten. Jeder Rückschlag lehrt dich etwas. Frag dich: 'Was kann ich daraus lernen?'",
-                    "Du musst nicht perfekt sein, um anzufangen. Und du musst nicht anfangen, um perfekt zu sein. Einfach MACHEN ist der Schlüssel.",
-                    "5 Minuten Meditation am Tag reduzieren Stress messbar. Setz dich hin, schließe die Augen, und beobachte einfach deinen Atem."
-                ],
-                social: [
-                    "Qualität vor Quantität bei sozialen Kontakten. Ein tiefes Gespräch mit einem Freund gibt mehr als 100 oberflächliche Interaktionen.",
-                    "Ruf heute jemanden an, an den du lange nicht gedacht hast. Echte Verbindungen sind das Fundament für Wohlbefinden.",
-                    "Lerne 'Nein' zu sagen ohne schlechtes Gewissen. Deine Zeit und Energie sind begrenzt – investiere sie bewusst.",
-                    "Umgib dich mit Menschen, die dich inspirieren und fördern. Du bist der Durchschnitt der 5 Menschen, mit denen du die meiste Zeit verbringst.",
-                    "Aktives Zuhören ist die wichtigste soziale Fähigkeit. Stelle Fragen, sei präsent, und leg das Handy weg."
-                ],
-                general: [
-                    "Kleine Gewohnheiten, konsequent umgesetzt, führen zu großen Veränderungen. Starte mit EINER Sache und baue darauf auf.",
-                    "Du bist auf dem richtigen Weg! Die Tatsache, dass du an dir arbeitest, unterscheidet dich bereits von der Masse. Weiter so! 🔥",
-                    "Der beste Zeitpunkt war gestern. Der zweitbeste ist JETZT. Warte nicht auf den perfekten Moment – er kommt nie.",
-                    "Selbstfürsorge ist kein Luxus, sondern eine Notwendigkeit. Du kannst nicht aus einem leeren Becher einschenken.",
-                    "Fortschritt ist nicht linear. Es gibt gute und schlechte Tage. Wichtig ist, dass du langfristig in die richtige Richtung gehst."
-                ]
-            },
-            en: {
-                sleep: [
-                    "Try going to bed at the same time every day – your body loves routine. Avoid screens 30 min before bed and keep your room cool (around 65°F).",
-                    "Caffeine has a half-life of 5-6 hours. Your last coffee should be at 2pm at the latest if you want to sleep at 10pm.",
-                    "Try the 4-7-8 breathing technique: inhale 4 sec, hold 7 sec, exhale 8 sec. This activates your parasympathetic nervous system and helps you fall asleep.",
-                    "Magnesium before bed can work wonders. A short evening walk also helps lower cortisol levels.",
-                    "Sleep quality > sleep duration. 7h of deep sleep is better than 9h of restless sleep. Darkness and quiet are your best friends."
-                ],
-                motivation: [
-                    "Motivation rarely comes before action – it comes THROUGH action. Start with just 2 minutes and the rest follows. 💪",
-                    "Don't compare yourself to others, compare yourself to who you were yesterday. Every small step counts – even 1% better per day equals 37x improvement over a year!",
-                    "Set ONE specific goal for today. Not 'exercise more', but '20 min walk after lunch'. The more specific, the more likely you'll do it.",
-                    "Your future self will thank you for what you do NOW. Every good decision is a gift to yourself.",
-                    "Discipline beats motivation. Motivation is a feeling – discipline is a decision. Build habits that work even without motivation."
-                ],
-                focus: [
-                    "Try the Pomodoro technique: 25 min focused work, then 5 min break. After 4 rounds, take a 15-30 min break. Your brain needs rhythm.",
-                    "Remove all distractions BEFORE you start. Phone in another room, notifications off, close browser tabs. Willpower is limited – make it easy.",
-                    "Your focus is strongest in the morning. Do the most important task first ('Eat the Frog'). Emails and meetings can wait.",
-                    "Multitasking is a myth. Your brain just switches between tasks and loses energy each time. Do one thing at a time.",
-                    "Drink enough water! Just 2% dehydration measurably reduces cognitive performance. Keep a bottle within reach."
-                ],
-                energy: [
-                    "Your energy comes from three sources: sleep, nutrition, and movement. If one is missing, everything else suffers.",
-                    "A short morning workout (even 10 min) gives you more energy all day than any coffee. Your body releases endorphins and dopamine.",
-                    "Large meals make you tired. Eat smaller, balanced meals throughout the day instead. Avoid sugar crashes.",
-                    "Sunlight in the first 30 minutes after waking sets your circadian rhythm and boosts energy all day.",
-                    "Power naps of 10-20 min between 1-3pm are a game changer. Not longer, or you'll feel groggy!"
-                ],
-                nutrition: [
-                    "Eat the rainbow – the more colorful your plate, the more diverse nutrients you get. Veggies should fill half your plate.",
-                    "Protein is key for satiety and muscle maintenance. Try to include a protein source in every meal.",
-                    "Meal prep saves time AND helps you make healthier choices. 1-2 hours on Sunday = healthy week.",
-                    "Drink a glass of water before every meal. It aids digestion and prevents confusing thirst with hunger.",
-                    "80/20 rule: Eat healthy 80% of the time, enjoy 20%. Perfection isn't sustainable – balance is."
-                ],
-                sport: [
-                    "Consistency beats intensity. Training 3x/week for 30 min is better than 1x/week for 2 hours until you drop.",
-                    "Find a sport you actually ENJOY. The best training method is the one you stick with long-term.",
-                    "Don't skip warm-up! 5-10 min of easy movement before training prevents injuries and improves performance.",
-                    "Rest days are as important as training days. Muscles grow during recovery, not during the workout. Listen to your body.",
-                    "Walking is the most underrated exercise. 10,000 steps daily improves cardiovascular health, mood, and creativity."
-                ],
-                mindset: [
-                    "Your thoughts shape your reality. Pay attention to your inner dialogue – do you talk to yourself like you would to a good friend?",
-                    "Gratitude is a game changer. Write down 3 things you're grateful for every evening. It trains your brain to focus on positives.",
-                    "Mistakes aren't failures, they're data. Every setback teaches you something. Ask: 'What can I learn from this?'",
-                    "You don't have to be perfect to start. And you don't have to start to be perfect. Just DO it.",
-                    "5 minutes of daily meditation measurably reduces stress. Sit down, close your eyes, and simply observe your breath."
-                ],
-                social: [
-                    "Quality over quantity in social connections. One deep conversation gives more than 100 superficial interactions.",
-                    "Call someone today you haven't thought about in a while. Real connections are the foundation of well-being.",
-                    "Learn to say 'No' without guilt. Your time and energy are limited – invest them consciously.",
-                    "Surround yourself with people who inspire and uplift you. You're the average of the 5 people you spend the most time with.",
-                    "Active listening is the most important social skill. Ask questions, be present, and put your phone away."
-                ],
-                general: [
-                    "Small habits, consistently applied, lead to big changes. Start with ONE thing and build from there.",
-                    "You're on the right track! The fact that you're working on yourself already sets you apart. Keep going! 🔥",
-                    "The best time was yesterday. The second best is NOW. Don't wait for the perfect moment – it never comes.",
-                    "Self-care isn't a luxury, it's a necessity. You can't pour from an empty cup.",
-                    "Progress isn't linear. There are good and bad days. What matters is that you're heading in the right direction long-term."
-                ]
-            },
-            es: {
-                sleep: [
-                    "Intenta acostarte a la misma hora cada día – tu cuerpo ama la rutina. Evita pantallas 30 min antes de dormir y mantén tu habitación fresca (18°C).",
-                    "La cafeína tiene una vida media de 5-6 horas. Tu último café debería ser a las 14h si quieres dormir a las 22h.",
-                    "Prueba la técnica de respiración 4-7-8: inhala 4 seg, mantén 7 seg, exhala 8 seg. Activa tu sistema nervioso parasimpático.",
-                    "El magnesio antes de dormir puede hacer maravillas. Un paseo corto por la noche también ayuda a bajar el cortisol.",
-                    "Calidad del sueño > duración. 7h de sueño profundo son mejores que 9h de sueño inquieto."
-                ],
-                motivation: [
-                    "La motivación rara vez viene antes de la acción – viene A TRAVÉS de la acción. Empieza con solo 2 minutos y el resto sigue. 💪",
-                    "No te compares con otros, compárate con quien eras ayer. Cada pequeño paso cuenta – ¡1% mejor por día = 37x mejora en un año!",
-                    "Ponte UN objetivo específico para hoy. No 'hacer más deporte', sino '20 min de caminata después del almuerzo'.",
-                    "Tu yo del futuro te agradecerá lo que hagas AHORA. Cada buena decisión es un regalo para ti mismo.",
-                    "La disciplina vence a la motivación. La motivación es un sentimiento – la disciplina es una decisión."
-                ],
-                focus: [
-                    "Prueba la técnica Pomodoro: 25 min de trabajo enfocado, luego 5 min de descanso. Después de 4 rondas, 15-30 min de pausa.",
-                    "Elimina todas las distracciones ANTES de empezar. Teléfono en otra habitación, notificaciones apagadas.",
-                    "Tu enfoque es más fuerte por la mañana. Haz la tarea más importante primero ('Eat the Frog').",
-                    "El multitasking es un mito. Tu cerebro solo cambia entre tareas y pierde energía cada vez. Haz una cosa a la vez.",
-                    "¡Bebe suficiente agua! Solo un 2% de deshidratación reduce tu rendimiento cognitivo. Ten una botella siempre a mano."
-                ],
-                general: [
-                    "Pequeños hábitos, aplicados consistentemente, llevan a grandes cambios. Empieza con UNA cosa.",
-                    "¡Vas por buen camino! El hecho de que trabajes en ti mismo ya te diferencia. ¡Sigue así! 🔥",
-                    "El mejor momento fue ayer. El segundo mejor es AHORA. No esperes el momento perfecto.",
-                    "El autocuidado no es un lujo, es una necesidad. No puedes servir de una taza vacía.",
-                    "El progreso no es lineal. Hay días buenos y malos. Lo importante es la dirección a largo plazo."
-                ]
-            }
-        };
-
-        // Detect which topic a message is about
-        function detectCoachTopic(message) {
-            const msg = message.toLowerCase();
-            const topicKeywords = {
-                sleep: ['schlaf', 'sleep', 'müde', 'tired', 'einschlafen', 'aufwachen', 'wach', 'bett', 'bed', 'nacht', 'night', 'sueño', 'dormir', 'cansado'],
-                motivation: ['motivation', 'motivat', 'antrieb', 'drive', 'keine lust', 'unmotiviert', 'prokrastin', 'aufschieb', 'lazy', 'faul', 'motivación'],
-                focus: ['fokus', 'focus', 'konzentrat', 'concentrat', 'abgelenkt', 'distract', 'aufmerksamkeit', 'attention', 'produktiv', 'product', 'enfoque', 'concentra'],
-                energy: ['energie', 'energy', 'müdigkeit', 'fatigue', 'erschöpft', 'exhausted', 'schlapp', 'kraft', 'power', 'energía'],
-                nutrition: ['ernährung', 'nutrition', 'essen', 'food', 'eat', 'diät', 'diet', 'gesund', 'healthy', 'nutrición', 'comer'],
-                sport: ['sport', 'training', 'workout', 'exercise', 'fitness', 'laufen', 'run', 'gym', 'bewegung', 'movement', 'ejercicio', 'deporte'],
-                mindset: ['mindset', 'mental', 'stress', 'angst', 'anxiety', 'gedanken', 'thought', 'meditation', 'achtsamkeit', 'mindful', 'mentalidad'],
-                social: ['sozial', 'social', 'freund', 'friend', 'beziehung', 'relationship', 'einsamkeit', 'lonely', 'menschen', 'people', 'amigo']
-            };
-            
-            for (const [topic, keywords] of Object.entries(topicKeywords)) {
-                if (keywords.some(kw => msg.includes(kw))) return topic;
-            }
-            return 'general';
-        }
-
-        // Get a random offline tip
-        function getOfflineTip(message) {
-            const topic = detectCoachTopic(message);
-            const lang = currentLang;
-            const tips = (coachOfflineTips[lang] && coachOfflineTips[lang][topic]) 
-                      || (coachOfflineTips[lang] && coachOfflineTips[lang].general)
-                      || coachOfflineTips.en.general;
-            return tips[Math.floor(Math.random() * tips.length)];
-        }
-
-        function useSuggestion(pill) {
-            const msg = pill.getAttribute('data-' + currentLang) || pill.textContent.trim();
+        function sendPillMessage(pill) {
             const input = document.getElementById('coachInput');
-            input.value = msg;
-            sendMessage();
+            if (input && pill.textContent) {
+                input.value = pill.textContent;
+                sendMessage();
+            }
+        }
+
+        function closeCoach() {
+            switchView('home');
         }
 
         async function sendMessage() {
@@ -8798,16 +8125,9 @@
             const content = document.getElementById('coachContent');
             const sendBtn = document.getElementById('sendBtn');
 
-            // Switch from welcome to chat mode
-            activateCoachChat();
-
-            // Add user message
             const userMsg = document.createElement('div');
             userMsg.className = 'message user';
-            userMsg.innerHTML = `
-                <div class="msg-avatar">👤</div>
-                <div class="message-bubble">${message}</div>
-            `;
+            userMsg.innerHTML = `<div class="message-bubble">${message}</div>`;
             content.appendChild(userMsg);
             content.scrollTop = content.scrollHeight;
 
@@ -8815,122 +8135,50 @@
             sendBtn.disabled = true;
             sendBtn.innerHTML = '<div class="loading"></div>';
 
-            // Show typing indicator
-            const typingMsg = document.createElement('div');
-            typingMsg.className = 'message assistant';
-            typingMsg.id = 'typingIndicator';
-            typingMsg.innerHTML = `
-                <div class="msg-avatar">🧠</div>
-                <div class="message-bubble">
-                    <div class="typing-indicator">
-                        <span></span><span></span><span></span>
-                    </div>
-                </div>
-            `;
-            content.appendChild(typingMsg);
-            content.scrollTop = content.scrollHeight;
+            let context = '';
+            if (coachDataAccess && performanceData.entries.length > 0) {
+                const latest = performanceData.entries[performanceData.entries.length - 1];
+                const t = translations[currentLang];
+                context = `Values: ${categories.map(cat => 
+                    `${t.categories[cat.id]}: ${latest.values[cat.id] || 10}`).join(', ')}. Sleep: ${latest.sleepHours}h. FYS: ${latest.fysIndex.toFixed(1)}. `;
+            }
 
-            let assistantText = '';
-            let usedOffline = false;
-
-            // Always TRY the API first, fall back to offline on ANY failure
             try {
-                // Build context from user data
-                let context = '';
-                if (coachDataAccess && performanceData.entries.length > 0) {
-                    const latest = performanceData.entries[performanceData.entries.length - 1];
-                    const t = translations[currentLang];
-                    context = `Values: ${categories.map(cat => 
-                        `${t.categories[cat.id]}: ${latest.values[cat.id] || 10}`).join(', ')}. Sleep: ${latest.sleepHours}h. FYS: ${latest.fysIndex.toFixed(1)}. `;
-                }
-
-                coachMessageHistory.push({ role: 'user', content: message });
-                const apiMessages = coachMessageHistory.slice(-10);
-
                 const systemPrompts = {
-                    de: `Du bist FYS Coach, ein persönlicher Performance-Coach. ${context}Antworte kurz und motivierend (max 3-4 Sätze).`,
-                    en: `You are FYS Coach, a personal performance coach. ${context}Be brief and motivating (max 3-4 sentences).`,
-                    es: `Eres FYS Coach, un coach personal de rendimiento. ${context}Sé breve y motivador (máx 3-4 frases).`
+                    de: `Du bist FYS Coach. ${context}Kurz (max 3 Sätze).`,
+                    en: `You are FYS coach. ${context}Brief (max 3 sentences).`,
+                    es: `Eres coach FYS. ${context}Breve (máx 3 frases).`
                 };
-
-                // Timeout after 8 seconds → treat as offline
-                const controller = new AbortController();
-                const timeout = setTimeout(() => controller.abort(), 8000);
 
                 const response = await fetch("https://api.anthropic.com/v1/messages", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
-                    signal: controller.signal,
                     body: JSON.stringify({
                         model: "claude-sonnet-4-20250514",
                         max_tokens: 1000,
                         system: systemPrompts[currentLang],
-                        messages: apiMessages
+                        messages: [{ role: "user", content: message }]
                     })
                 });
 
-                clearTimeout(timeout);
-
-                if (!response.ok) throw new Error(`API ${response.status}`);
-
                 const data = await response.json();
-                
-                if (!data.content || !data.content.length) throw new Error('Empty response');
-                
-                assistantText = data.content.filter(b => b.type === "text").map(b => b.text).join("\n");
-                
-                if (!assistantText.trim()) throw new Error('No text in response');
+                const assistantText = data.content.filter(b => b.type === "text").map(b => b.text).join("\n");
 
-                coachMessageHistory.push({ role: 'assistant', content: assistantText });
-
-                // API worked → mark as available
-                if (!coachAIAvailable) {
-                    coachAIAvailable = true;
-                    updateCoachOnlineStatus();
-                }
+                const assistantMsg = document.createElement('div');
+                assistantMsg.className = 'message assistant';
+                assistantMsg.innerHTML = `<div class="message-bubble">${assistantText}</div>`;
+                content.appendChild(assistantMsg);
+                content.scrollTop = content.scrollHeight;
 
             } catch (error) {
-                console.log('🧠 Coach API unavailable:', error.message, '→ using offline tips');
-                
-                // Remove the failed user message from history
-                if (coachMessageHistory.length && coachMessageHistory[coachMessageHistory.length - 1].role === 'user') {
-                    coachMessageHistory.pop();
-                }
-
-                // Get offline tip
-                assistantText = getOfflineTip(message);
-                usedOffline = true;
-
-                coachMessageHistory.push({ role: 'user', content: message });
-                coachMessageHistory.push({ role: 'assistant', content: assistantText });
-
-                // Mark AI as unavailable
-                coachAIAvailable = false;
-                updateCoachOnlineStatus();
+                const errorMsg = document.createElement('div');
+                errorMsg.className = 'message assistant';
+                errorMsg.innerHTML = `<div class="message-bubble">Technical issue!</div>`;
+                content.appendChild(errorMsg);
             }
 
-            // Remove typing indicator
-            const typing = document.getElementById('typingIndicator');
-            if (typing) typing.remove();
-
-            // Show response
-            const assistantMsg = document.createElement('div');
-            assistantMsg.className = 'message assistant';
-            const offlineLabel = usedOffline 
-                ? `<br><small style="opacity:0.45; margin-top:6px; display:inline-flex; align-items:center; gap:4px;">📴 ${currentLang === 'de' ? 'Offline-Tipp' : currentLang === 'es' ? 'Consejo offline' : 'Offline tip'}</small>` 
-                : '';
-            assistantMsg.innerHTML = `
-                <div class="msg-avatar">🧠</div>
-                <div class="message-bubble">${assistantText}${offlineLabel}</div>
-            `;
-            content.appendChild(assistantMsg);
-            content.scrollTop = content.scrollHeight;
-
-            // Save chat
-            saveCurrentCoachChat(message, assistantText);
-
             sendBtn.disabled = false;
-            sendBtn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M22 2L11 13"></path><path d="M22 2L15 22L11 13L2 9L22 2Z"></path></svg>';
+            sendBtn.innerHTML = '➤';
         }
 
         // Journal Functions
@@ -8938,13 +8186,24 @@
         let currentJournalMonth = new Date();
         let selectedJournalDate = null;
 
-        let journalOpenedFromView = null; // Merkt sich von wo das Journal geöffnet wurde
+        let journalOpenedFromView = null;
 
         function toggleJournal() {
             const journalModal = document.getElementById('journalModal');
-            if (journalModal && journalModal.classList.contains('active') && journalModal.style.display !== 'none') {
+            const isOpen = journalModal && journalModal.classList.contains('active') && journalModal.style.display !== 'none';
+            
+            if (isOpen) {
+                // Journal is visible → close it
                 closeJournal();
+            } else if (journalModal && journalModal.classList.contains('active') && journalModal.style.display === 'none') {
+                // Journal is active but hidden (we're on another tab) → switch to tools to show it
+                switchView('tools');
             } else {
+                // Journal is closed → open it, switch to tools if needed
+                const activeView = document.querySelector('.view-section.active');
+                if (!activeView || activeView.id !== 'toolsView') {
+                    switchView('tools');
+                }
                 openJournal();
             }
         }
@@ -8971,12 +8230,6 @@
             closeJournalEntry();
             lastActiveToolModal = null;
             toolsMenuVisible = true;
-            
-            // Zurück zum View von dem es geöffnet wurde
-            if (journalOpenedFromView) {
-                switchView(journalOpenedFromView);
-                journalOpenedFromView = null;
-            }
         }
 
         // Confirm Modal Functions
@@ -9851,8 +9104,20 @@
         // Update Check-In Widget basierend auf Status
         function updateCheckInWidget() {
             const today = new Date().toDateString();
+            const todayISO = new Date().toISOString().split('T')[0];
             const lastCheckInDate = localStorage.getItem('lastCheckInDate');
-            const hasCheckedInToday = lastCheckInDate === today;
+            
+            // Check both localStorage AND actual entries for robustness
+            const hasEntryToday = performanceData.entries && performanceData.entries.some(e => {
+                const entryDate = new Date(e.date).toISOString().split('T')[0];
+                return entryDate === todayISO;
+            });
+            const hasCheckedInToday = lastCheckInDate === today || hasEntryToday;
+            
+            // Sync localStorage if entry exists but lastCheckInDate doesn't match
+            if (hasEntryToday && lastCheckInDate !== today) {
+                localStorage.setItem('lastCheckInDate', today);
+            }
             
             const subtitle = document.getElementById('checkinWidgetSubtitle');
             const widget = document.querySelector('.checkin-widget');
@@ -9871,7 +9136,8 @@
                     widget.classList.add('completed');
                 }
             } else {
-                subtitle.textContent = 'Beantworte 8 Fragen zu deinem Tag';
+                const t = translations[currentLang];
+                subtitle.textContent = t ? t.checkinWidgetSubtitle || 'Beantworte 8 Fragen zu deinem Tag' : 'Beantworte 8 Fragen zu deinem Tag';
             }
         }
         
@@ -9988,9 +9254,10 @@
                 const minValue = isSleep ? 0 : 1;
                 const stepValue = isSleep ? 0.5 : 1;
                 const displayValue = isSleep ? defaultValue.toFixed(1) : defaultValue;
-                const labelText = isSleep ? 'Stunden' : 'von 10 Punkten';
+                const labelText = isSleep ? 'Stunden' : '';
                 const minLabel = isSleep ? '0h' : 'Sehr schlecht';
                 const maxLabel = isSleep ? '12h' : 'Perfekt';
+                const scaleDesc = isSleep ? '' : getScaleLabel(cat.id, defaultValue, currentLang);
                 
                 step.innerHTML = `
                     <div class="category-icon-wizard" style="background: ${cat.color}20; color: ${cat.color};">
@@ -10001,7 +9268,7 @@
                     <div class="input-area-wizard">
                         <div class="slider-value-display-wizard">
                             <div class="slider-value-wizard" id="wizard-value-${cat.id}">${displayValue}</div>
-                            <div class="slider-label-wizard">${labelText}</div>
+                            <div class="slider-label-wizard" id="wizard-scale-${cat.id}">${isSleep ? labelText : scaleDesc}</div>
                         </div>
                         <div style="padding: 0 12px;">
                             <input type="range" min="${minValue}" max="${maxValue}" step="${stepValue}" value="${defaultValue}" 
@@ -10033,9 +9300,20 @@
 
         function updateWizardSliderValue(id, value, isSleep = false) {
             const displayValue = isSleep ? parseFloat(value).toFixed(1) : value;
-            document.getElementById(`wizard-value-${id}`).textContent = displayValue;
+            const valueEl = document.getElementById(`wizard-value-${id}`);
+            const scaleEl = document.getElementById(`wizard-scale-${id}`);
+            if (valueEl) valueEl.textContent = displayValue;
+            if (scaleEl && !isSleep) scaleEl.textContent = getScaleLabel(id, parseFloat(value), currentLang);
             wizardDraft[id] = parseFloat(value);
             saveWizardDraft();
+            
+            // Also update inline summary slider if visible
+            const summaryVal = document.getElementById(`summary-val-${id}`);
+            const summaryScale = document.getElementById(`summary-scale-${id}`);
+            const summarySlider = document.getElementById(`summary-slider-${id}`);
+            if (summaryVal) summaryVal.textContent = displayValue;
+            if (summaryScale && !isSleep) summaryScale.textContent = getScaleLabel(id, parseFloat(value), currentLang);
+            if (summarySlider) summarySlider.value = value;
         }
 
         function updateWizardUI() {
@@ -10098,7 +9376,11 @@
                 console.error('wizardReviewList not found');
                 return;
             }
-            reviewList.innerHTML = wizardCategories.map((cat, index) => `
+            reviewList.innerHTML = wizardCategories.map((cat, index) => {
+                const val = wizardDraft[cat.id] || (cat.isSleep ? 8.0 : 5);
+                const displayVal = cat.isSleep ? parseFloat(val).toFixed(1) : val;
+                const scaleDesc = cat.isSleep ? `${displayVal}h` : getScaleLabel(cat.id, val, currentLang);
+                return `
                 <div class="review-item-wizard" onclick="goToWizardStep(${index})">
                     <div class="review-item-left-wizard">
                         <div class="review-icon-wizard" style="background: ${cat.color}20; color: ${cat.color};">
@@ -10106,12 +9388,12 @@
                         </div>
                         <div class="review-info-wizard">
                             <div class="review-category-wizard">${cat.name[currentLang]}</div>
-                            <div class="review-hint-wizard">${cat.hint[currentLang]}</div>
+                            <div class="review-hint-wizard">${scaleDesc}</div>
                         </div>
                     </div>
-                    <div class="review-value-wizard">${wizardDraft[cat.id] || (cat.id === 'sleep' ? '8.0' : '5')}</div>
-                </div>
-            `).join('');
+                    <div class="review-value-wizard">${displayVal}</div>
+                </div>`;
+            }).join('');
         }
 
         function wizardNextStep() {
@@ -10416,7 +9698,8 @@
                 });
             }
             
-            updateDailyProgress(); // Update badges, widget & streak
+            updateDailyProgress(); // Update badges
+            updateCheckInWidget(); // Widget aktualisieren
             
             console.log('✅ Charts updated with new data!');
 
@@ -10549,22 +9832,26 @@
                 renderPerformancePacks();
                 console.log('✓ Performance Packs gerendert');
                 
-                // 3. Update Charts
+                // 3. Update Progress Badges & Streak
+                updateDailyProgress(); // Ruft automatisch calculateStreak() auf
+                console.log('✓ Progress Badges & Streak aktualisiert');
+                
+                // 4. Update Charts
                 initMainChart();
                 updateUI();
-                console.log('✓ Charts & UI aktualisiert');
+                console.log('✓ Charts aktualisiert');
                 
-                // 4. Update Stock List
+                // 5. Update Check-In Widget Status
+                updateCheckInWidget();
+                console.log('✓ Check-In Widget aktualisiert');
+                
+                // 6. Update Stock List
                 createStockList();
                 console.log('✓ Stock List aktualisiert');
                 
-                // 5. Update Journal Stats
+                // 7. Update Journal Stats
                 updateJournalStats();
                 console.log('✓ Journal Stats aktualisiert');
-                
-                // 6. Update Progress Badges, Streak & Widget Status
-                updateDailyProgress();
-                console.log('✓ Progress Badges, Streak & Widget aktualisiert');
                 
                 // 8. Update Settings Toggles
                 if (coachDataAccess) {
@@ -10594,8 +9881,21 @@
                 
                 console.log('✅ App vollständig initialisiert!');
                 
+                // Hide loading screen after init
+                setTimeout(() => {
+                    const ls = document.getElementById('loadingScreen');
+                    if (ls) {
+                        ls.style.pointerEvents = 'none';
+                        ls.style.opacity = '0';
+                        setTimeout(() => { ls.style.display = 'none'; }, 650);
+                    }
+                }, 500);
+                
             } catch(e) {
                 console.error('❌ Fehler bei App-Initialisierung:', e);
+                // Always dismiss loading screen even on error
+                const ls = document.getElementById('loadingScreen');
+                if (ls) { ls.style.pointerEvents = 'none'; ls.style.opacity = '0'; setTimeout(() => { ls.style.display = 'none'; }, 650); }
             }
         }
         
@@ -10616,11 +9916,9 @@
                 console.log('✅ Fresh state initialized:', performanceData);
             }
             
-            // Hide loading screen immediately
-            const loadingScreen = document.getElementById('loadingScreen');
-            if (loadingScreen) {
-                loadingScreen.classList.add('hidden');
-            }
+            // Don't hide loading screen here - let initializeApp handle it
+            // const loadingScreen = document.getElementById('loadingScreen');
+            // if (loadingScreen) { loadingScreen.classList.add('hidden'); }
             
             // Load saved timeRange
             const savedTimeRange = localStorage.getItem('fys_timeRange');
@@ -10941,38 +10239,76 @@
             const content = safeGetElement('wizardContent');
             if (!content) return;
             
+            const summaryItems = wizardCategories.map((cat) => {
+                const isSleep = cat.isSleep;
+                const val = wizardDraft[cat.id] || (isSleep ? 8.0 : 5);
+                const displayVal = isSleep ? parseFloat(val).toFixed(1) : val;
+                const maxValue = isSleep ? 12 : 10;
+                const minValue = isSleep ? 0 : 1;
+                const stepValue = isSleep ? 0.5 : 1;
+                const scaleDesc = isSleep ? `${displayVal} Stunden` : getScaleLabel(cat.id, val, currentLang);
+                
+                return `
+                    <div class="summary-item-inline">
+                        <div class="summary-item-header">
+                            <div class="summary-item-left">
+                                <div class="summary-icon" style="background: ${cat.color}20; color: ${cat.color};">
+                                    ${categoryIcons[cat.id] || cat.icon}
+                                </div>
+                                <div class="summary-item-info">
+                                    <div class="summary-item-name">${cat.name[currentLang]}</div>
+                                    <div class="summary-item-scale" id="summary-scale-${cat.id}">${scaleDesc}</div>
+                                </div>
+                            </div>
+                            <div class="summary-value" id="summary-val-${cat.id}">${displayVal}</div>
+                        </div>
+                        <div class="summary-slider-row">
+                            <input type="range" min="${minValue}" max="${maxValue}" step="${stepValue}" value="${val}"
+                                   class="slider-wizard summary-slider" id="summary-slider-${cat.id}"
+                                   oninput="updateSummaryValue('${cat.id}', this.value, ${isSleep})">
+                        </div>
+                    </div>`;
+            }).join('');
+            
             content.innerHTML = `
                 <div class="summary-container">
                     <div class="summary-title">Zusammenfassung</div>
-                    <div class="summary-subtitle">Überprüfe deine Angaben</div>
+                    <div class="summary-subtitle">Passe deine Werte direkt an</div>
                     
-                    <div class="summary-list" id="summaryListItems"></div>
+                    <div class="summary-list" id="summaryListItems">
+                        ${summaryItems}
+                    </div>
                     
                     <div class="summary-actions">
-                        <button class="btn-secondary" onclick="editLastCategory()">
-                            Letzte Kategorie bearbeiten
-                        </button>
                         <button class="btn-primary-wizard" onclick="saveWizardCheckIn()">
                             ✓ Speichern & Abschließen
                         </button>
                     </div>
                 </div>
             `;
+        }
+        
+        function updateSummaryValue(id, value, isSleep = false) {
+            const numVal = parseFloat(value);
+            const displayVal = isSleep ? numVal.toFixed(1) : Math.round(numVal);
             
-            const summaryList = safeGetElement('summaryListItems');
-            if (summaryList) {
-                summaryList.innerHTML = wizardCategories.map((cat, index) => `
-                    <div class="summary-item" onclick="editCategory(${index})">
-                        <div class="summary-item-left">
-                            <div class="summary-icon" style="background: ${cat.color}20; color: ${cat.color};">
-                                ${categoryIcons[cat.id] || cat.icon}
-                            </div>
-                            <div style="font-size: 14px; font-weight: 500;">${cat.name[currentLang]}</div>
-                        </div>
-                        <div class="summary-value">${wizardDraft[cat.id] || (cat.isSleep ? '8.0' : '5')}</div>
-                    </div>
-                `).join('');
-            }
+            // Update summary UI
+            const valEl = document.getElementById(`summary-val-${id}`);
+            const scaleEl = document.getElementById(`summary-scale-${id}`);
+            if (valEl) valEl.textContent = displayVal;
+            if (scaleEl) scaleEl.textContent = isSleep ? `${displayVal} Stunden` : getScaleLabel(id, numVal, currentLang);
+            
+            // Sync to wizardDraft
+            wizardDraft[id] = numVal;
+            saveWizardDraft();
+            
+            // Sync to wizard step slider if exists
+            const wizSlider = document.getElementById(`wizard-slider-${id}`);
+            const wizValue = document.getElementById(`wizard-value-${id}`);
+            const wizScale = document.getElementById(`wizard-scale-${id}`);
+            if (wizSlider) wizSlider.value = value;
+            if (wizValue) wizValue.textContent = displayVal;
+            if (wizScale && !isSleep) wizScale.textContent = getScaleLabel(id, numVal, currentLang);
         }
 
         function editCategory(index) {
@@ -11269,7 +10605,6 @@
             let isSwiping = false;
 
             function getCurrentViewIndex() {
-                // Check which view is active
                 for (let i = 0; i < viewOrder.length; i++) {
                     const el = document.getElementById(viewOrder[i] + 'View');
                     if (el && el.classList.contains('active')) return i;
@@ -11278,7 +10613,6 @@
             }
 
             document.addEventListener('touchstart', function(e) {
-                // Don't swipe inside scrollable areas that scroll horizontally
                 const target = e.target;
                 if (target.closest('.coach-suggestions') || 
                     target.closest('.coach-sidebar') ||
@@ -11291,7 +10625,6 @@
                     return;
                 }
 
-                // Don't swipe if a modal is open
                 const journalModal = document.getElementById('journalModal');
                 const taskManagerModal = document.getElementById('taskManagerModal');
                 if ((journalModal && journalModal.classList.contains('active') && journalModal.style.display !== 'none') ||
@@ -11300,7 +10633,6 @@
                     return;
                 }
 
-                // Don't swipe if chartDetailsView is active
                 const chartDetails = document.getElementById('chartDetailsView');
                 if (chartDetails && chartDetails.classList.contains('active')) {
                     isSwiping = false;
@@ -11321,7 +10653,6 @@
                 const deltaY = e.changedTouches[0].clientY - swipeStartY;
                 const deltaTime = Date.now() - swipeStartTime;
 
-                // Must be horizontal swipe: |deltaX| > 60px, |deltaX| > |deltaY| * 1.5, < 400ms
                 if (Math.abs(deltaX) < 60 || Math.abs(deltaX) < Math.abs(deltaY) * 1.5 || deltaTime > 400) {
                     return;
                 }
@@ -11329,21 +10660,9 @@
                 const currentIdx = getCurrentViewIndex();
 
                 if (deltaX < 0 && currentIdx < viewOrder.length - 1) {
-                    // Swipe left → next view
-                    const nextView = viewOrder[currentIdx + 1];
-                    if (nextView === 'coach') {
-                        switchToCoach();
-                    } else {
-                        switchView(nextView);
-                    }
+                    switchView(viewOrder[currentIdx + 1]);
                 } else if (deltaX > 0 && currentIdx > 0) {
-                    // Swipe right → previous view
-                    const prevView = viewOrder[currentIdx - 1];
-                    if (prevView === 'coach') {
-                        switchToCoach();
-                    } else {
-                        switchView(prevView);
-                    }
+                    switchView(viewOrder[currentIdx - 1]);
                 }
             }, { passive: true });
         })();
