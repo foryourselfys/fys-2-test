@@ -741,7 +741,8 @@
         }
         
         /* Flatex-Style Chart Transition Animations */
-        .chart-transitioning .main-chart-container {
+        .chart-transitioning .main-chart-container,
+        .chart-transitioning .category-chart-container {
             animation: chartFadeSwap 0.45s cubic-bezier(0.25, 0.46, 0.45, 0.94);
         }
         
@@ -1248,45 +1249,146 @@
 
         /* Chart Details */
         .chart-details-view {
-            padding: 20px;
+            padding: 0 20px 100px;
+            padding-top: 70px;
         }
 
-        .back-button {
+        /* Chart Details Header */
+        .cd-header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 50;
             display: flex;
             align-items: center;
-            gap: 8px;
-            background: none;
-            border: none;
+            justify-content: space-between;
+            padding: 14px 20px;
+            background: var(--bg-primary);
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .cd-header-title {
+            font-size: 17px;
+            font-weight: 700;
             color: var(--text-primary);
-            font-size: 16px;
+        }
+
+        /* Hero Card */
+        .cd-hero-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            padding: 20px;
+            margin-bottom: 16px;
+        }
+        
+        .cd-hero-label {
+            font-size: 11px;
             font-weight: 600;
-            cursor: pointer;
-            padding: 10px 0;
-            margin-bottom: 20px;
-            font-family: inherit;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 8px;
+        }
+        
+        .cd-hero-row {
+            display: flex;
+            align-items: baseline;
+            gap: 14px;
+            margin-bottom: 16px;
+        }
+        
+        .cd-hero-value {
+            font-size: 40px;
+            font-weight: 800;
+            letter-spacing: -2px;
+            color: var(--accent-primary);
+            line-height: 1;
+        }
+        
+        .cd-hero-change {
+            font-size: 14px;
+            font-weight: 600;
+            padding: 4px 10px;
+            border-radius: 8px;
+            background: rgba(0, 201, 109, 0.12);
+            color: var(--accent-up);
+        }
+        
+        .cd-hero-change.negative {
+            background: rgba(255, 51, 102, 0.12);
+            color: var(--accent-down);
+        }
+        
+        .cd-hero-bar {
+            height: 6px;
+            background: var(--bg-secondary);
+            border-radius: 3px;
+            overflow: hidden;
+            margin-bottom: 6px;
+        }
+        
+        .cd-hero-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent-primary), #ff8f5f);
+            border-radius: 3px;
+            transition: width 0.5s ease;
+        }
+        
+        .cd-hero-bar-labels {
+            display: flex;
+            justify-content: space-between;
+            font-size: 10px;
+            color: var(--text-secondary);
+            opacity: 0.6;
+        }
+        
+        /* Time Selector in chart details */
+        .cd-time-selector {
+            display: flex;
+            gap: 4px;
+            margin-bottom: 16px;
+            padding: 4px;
+            background: var(--bg-secondary);
+            border-radius: 14px;
+        }
+        
+        .cd-time-selector .time-btn {
+            flex: 1;
+            text-align: center;
+            padding: 8px 0;
+            background: transparent;
+            border: none;
+            border-radius: 10px;
         }
 
         /* Flatex-Style Stock List */
         .stock-list-container {
             background: var(--bg-card);
-            border-radius: 20px;
+            border-radius: 16px;
             border: 1px solid var(--border);
             overflow: hidden;
-            margin-bottom: 20px;
+            margin-bottom: 16px;
         }
 
         .stock-list-header {
-            padding: 16px 20px;
-            border-bottom: 1px solid var(--border);
+            padding: 16px 20px 12px;
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
 
         .stock-list-title {
-            font-size: 18px;
+            font-size: 16px;
             font-weight: 700;
-            letter-spacing: -0.5px;
+            letter-spacing: -0.3px;
+        }
+        
+        .stock-list-count {
+            font-size: 12px;
+            color: var(--text-secondary);
+            font-weight: 500;
         }
 
         .stock-item {
@@ -1346,6 +1448,22 @@
             color: var(--text-secondary);
             font-weight: 500;
         }
+        
+        .stock-mini-bar {
+            height: 4px;
+            width: 100%;
+            max-width: 80px;
+            background: var(--bg-secondary);
+            border-radius: 2px;
+            overflow: hidden;
+            margin-top: 6px;
+        }
+        
+        .stock-mini-bar-fill {
+            height: 100%;
+            border-radius: 2px;
+            transition: width 0.4s ease;
+        }
 
         .stock-item-right {
             text-align: right;
@@ -1390,66 +1508,200 @@
             font-size: 10px;
         }
 
-        /* FYS Index Summary Card */
+        /* FYS Index Summary Card (legacy, kept for pack details) */
         .fys-index-summary {
             background: linear-gradient(135deg, var(--accent-primary) 0%, #ff8f5f 100%);
-            border-radius: 20px;
+            border-radius: 18px;
             padding: 24px;
-            margin-bottom: 20px;
+            margin-bottom: 16px;
             color: #ffffff;
-            box-shadow: 0 8px 24px rgba(255, 107, 53, 0.3);
+            box-shadow: 0 8px 24px rgba(255, 107, 53, 0.2);
         }
 
         .fys-index-label {
-            font-size: 16px;
-            font-weight: 700;
-            opacity: 1;
-            margin-bottom: 12px;
+            font-size: 11px;
+            font-weight: 600;
+            opacity: 0.9;
+            margin-bottom: 10px;
             text-transform: uppercase;
-            letter-spacing: 3px;
-            background: linear-gradient(135deg, #ffffff 0%, rgba(255, 255, 255, 0.85) 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            letter-spacing: 2px;
         }
 
         .fys-index-value {
-            font-size: 48px;
+            font-size: 44px;
             font-weight: 800;
             letter-spacing: -2px;
-            margin-bottom: 8px;
+            margin-bottom: 6px;
         }
 
         .fys-index-change {
-            font-size: 16px;
+            font-size: 15px;
             font-weight: 600;
-            opacity: 0.95;
+            opacity: 0.9;
         }
 
         .chart-card {
             background: var(--bg-card);
-            border-radius: 20px;
+            border-radius: 16px;
             border: 1px solid var(--border);
-            padding: 24px;
-            margin-bottom: 20px;
+            padding: 20px;
+            margin-bottom: 16px;
         }
 
         .chart-title {
-            font-size: 16px;
+            font-size: 15px;
             font-weight: 700;
-            margin-bottom: 20px;
-            letter-spacing: -0.3px;
+            margin-bottom: 16px;
+            letter-spacing: -0.2px;
         }
 
         .chart-container {
             position: relative;
-            height: 250px;
+            height: 220px;
         }
 
         .single-chart-container {
             position: relative;
             height: 180px;
+        }
+        
+        /* Chart Details Section Cards */
+        .cd-section-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 16px;
+        }
+        
+        .cd-section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            margin-bottom: 16px;
+        }
+        
+        .cd-section-title {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+        
+        .cd-section-sub {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+        
+        /* Radar Chart */
+        .cd-radar-container {
+            position: relative;
+            height: 260px;
+            max-width: 320px;
+            margin: 0 auto;
+        }
+        
+        /* Performance Grid */
+        .cd-perf-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+        
+        .cd-perf-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            background: var(--bg-secondary);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+        
+        .cd-perf-item:active {
+            transform: scale(0.97);
+        }
+        
+        .cd-perf-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+        
+        .cd-perf-info {
+            flex: 1;
+            min-width: 0;
+        }
+        
+        .cd-perf-name {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-primary);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .cd-perf-sub {
+            font-size: 10px;
+            color: var(--text-secondary);
+            margin-top: 1px;
+        }
+        
+        .cd-perf-right {
+            text-align: right;
+            flex-shrink: 0;
+        }
+        
+        .cd-perf-val {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+        
+        .cd-perf-change {
+            font-size: 10px;
+            font-weight: 600;
+            margin-top: 1px;
+        }
+        
+        /* Combined Chart Legend */
+        .cd-legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-bottom: 14px;
+        }
+        
+        .cd-legend-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            padding: 4px 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            background: var(--bg-secondary);
+        }
+        
+        .cd-legend-item.active {
+            color: var(--text-primary);
+            background: var(--bg-elevated);
+            border: 1px solid var(--border);
+        }
+        
+        .cd-legend-item.dimmed {
+            opacity: 0.35;
+        }
+        
+        .cd-legend-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
         }
 
         /* Category Detail Modal */
@@ -1463,16 +1715,12 @@
             z-index: 150;
             display: none;
             flex-direction: column;
-            animation: slideUp 0.3s ease-out;
+            animation: catDetailSlideUp 0.35s cubic-bezier(0.32, 0.72, 0, 1);
         }
 
-        @keyframes slideUp {
-            from {
-                transform: translateY(100%);
-            }
-            to {
-                transform: translateY(0);
-            }
+        @keyframes catDetailSlideUp {
+            from { transform: translateY(100%); opacity: 0.5; }
+            to { transform: translateY(0); opacity: 1; }
         }
 
         .category-detail-modal.active {
@@ -1777,108 +2025,171 @@
         }
 
         .category-detail-header {
-            padding: 20px;
-            border-bottom: 1px solid var(--border);
+            padding: 16px 20px;
             display: flex;
             align-items: center;
-            gap: 16px;
+            gap: 14px;
         }
 
-        .category-detail-icon {
-            width: 48px;
-            height: 48px;
-            border-radius: 12px;
+        .cat-detail-back {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            color: var(--text-primary);
+            cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
+            font-size: 18px;
+            flex-shrink: 0;
+            transition: all 0.15s;
+        }
+        
+        .cat-detail-back:active { transform: scale(0.9); }
+
+        .category-detail-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
         }
 
-        .category-detail-icon svg {
-            width: 26px;
-            height: 26px;
-        }
+        .category-detail-icon svg { width: 24px; height: 24px; }
 
-        .category-detail-info {
-            flex: 1;
-        }
+        .category-detail-info { flex: 1; min-width: 0; }
 
         .category-detail-name {
-            font-size: 20px;
+            font-size: 18px;
             font-weight: 700;
-            margin-bottom: 4px;
+            margin-bottom: 2px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         .category-detail-symbol {
-            font-size: 14px;
+            font-size: 12px;
             color: var(--text-secondary);
-            font-weight: 600;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 6px;
         }
 
         .category-detail-content {
             flex: 1;
             overflow-y: auto;
-            padding: 20px;
+            padding: 0 20px 100px;
+            -webkit-overflow-scrolling: touch;
         }
 
         .category-detail-price-section {
-            margin-bottom: 24px;
+            padding: 4px 0 20px;
+            display: flex;
+            align-items: baseline;
+            gap: 14px;
         }
 
         .category-detail-price {
-            font-size: 42px;
+            font-size: 44px;
             font-weight: 800;
-            letter-spacing: -1.5px;
-            margin-bottom: 8px;
+            letter-spacing: -2px;
+            line-height: 1;
         }
 
         .category-detail-change {
-            font-size: 16px;
+            font-size: 14px;
             font-weight: 600;
-            padding: 6px 12px;
+            padding: 5px 10px;
             border-radius: 8px;
             display: inline-flex;
             align-items: center;
             gap: 4px;
         }
+        
+        .category-detail-change.positive { background: rgba(0, 201, 109, 0.12); color: var(--accent-up); }
+        .category-detail-change.negative { background: rgba(255, 51, 102, 0.12); color: var(--accent-down); }
+        .category-detail-change.neutral { background: rgba(128, 128, 128, 0.08); color: var(--text-secondary); }
+
+        .cat-stats-row {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+        
+        .cat-stat-box {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 12px 8px;
+            text-align: center;
+        }
+        
+        .cat-stat-label {
+            font-size: 10px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 6px;
+        }
+        
+        .cat-stat-value {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
 
         .category-time-selector {
             display: flex;
-            justify-content: center;
-            gap: 8px;
-            margin-bottom: 24px;
+            gap: 4px;
+            margin-bottom: 16px;
+            padding: 4px;
+            background: var(--bg-secondary);
+            border-radius: 14px;
         }
 
         .category-time-btn {
-            padding: 8px 16px;
-            background: var(--bg-card);
-            border: 1px solid var(--border);
+            padding: 8px 0;
+            background: transparent;
+            border: none;
             color: var(--text-secondary);
-            border-radius: 20px;
+            border-radius: 10px;
             cursor: pointer;
             font-size: 13px;
             font-weight: 600;
             transition: all 0.2s;
             font-family: inherit;
+            flex: 1;
+            text-align: center;
         }
 
         .category-time-btn.active {
             background: var(--accent-primary);
             color: #000;
-            border-color: var(--accent-primary);
         }
+        
+        :root[data-theme="light"] .category-time-btn.active { color: #fff; }
 
         .category-chart-card {
             background: var(--bg-card);
-            border-radius: 20px;
+            border-radius: 16px;
             border: 1px solid var(--border);
-            padding: 20px;
-            margin-bottom: 20px;
+            padding: 16px;
+            margin-bottom: 16px;
         }
 
         .category-chart-container {
             position: relative;
-            height: 280px;
+            height: 220px;
         }
+
 
         /* Coach View - Full Page */
         #coachView {
@@ -3267,99 +3578,104 @@
         /* ENHANCED CATEGORY DETAILS */
         /* ============================================ */
         .category-influence-card {
-            background: var(--bg-elevated);
+            background: var(--bg-card);
             border: 1px solid var(--border);
-            border-radius: 12px;
+            border-radius: 14px;
             padding: 16px;
-            margin: 16px 0;
-            text-align: center;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
         }
+
+        .influence-left { display: flex; flex-direction: column; }
 
         .influence-title {
             font-size: 12px;
-            font-weight: 300;
+            font-weight: 500;
             color: var(--text-secondary);
-            margin-bottom: 8px;
+            margin-bottom: 2px;
+        }
+        
+        .influence-description {
+            font-size: 11px;
+            color: var(--text-secondary);
+            opacity: 0.7;
         }
 
         .influence-value {
-            font-size: 24px;
+            font-size: 22px;
             font-weight: 700;
             color: var(--accent-primary);
-            margin-bottom: 4px;
-        }
-
-        .influence-description {
-            font-size: 11px;
-            font-weight: 300;
-            color: var(--text-secondary);
         }
 
         .trend-badge {
-            font-size: 10px;
-            font-weight: 400;
-            padding: 2px 6px;
-            border-radius: 4px;
-            margin-left: 8px;
+            font-size: 11px;
+            font-weight: 600;
+            padding: 3px 8px;
+            border-radius: 6px;
         }
 
-        .trend-badge.bullish {
-            background: rgba(0, 255, 136, 0.1);
-            color: var(--accent-up);
-        }
-
-        .trend-badge.bearish {
-            background: rgba(255, 51, 102, 0.1);
-            color: var(--accent-down);
-        }
-
-        .trend-badge.neutral {
-            background: rgba(128, 128, 128, 0.1);
-            color: var(--text-secondary);
-        }
+        .trend-badge.bullish { background: rgba(0, 201, 109, 0.12); color: var(--accent-up); }
+        .trend-badge.bearish { background: rgba(255, 51, 102, 0.12); color: var(--accent-down); }
+        .trend-badge.neutral { background: rgba(128, 128, 128, 0.08); color: var(--text-secondary); }
 
         .recent-checkins-card {
-            background: var(--bg-elevated);
+            background: var(--bg-card);
             border: 1px solid var(--border);
-            border-radius: 12px;
+            border-radius: 14px;
             padding: 16px;
-            margin-top: 16px;
+            margin-bottom: 16px;
         }
 
         .checkins-title {
             font-size: 14px;
-            font-weight: 500;
-            margin-bottom: 12px;
+            font-weight: 600;
+            margin-bottom: 14px;
             color: var(--text-primary);
         }
 
         .checkin-item {
             display: flex;
-            justify-content: space-between;
             align-items: center;
-            padding: 8px 0;
+            padding: 10px 0;
             border-bottom: 1px solid var(--border);
+            gap: 12px;
         }
 
-        .checkin-item:last-child {
-            border-bottom: none;
-        }
+        .checkin-item:last-child { border-bottom: none; padding-bottom: 0; }
+        .checkin-item:first-child { padding-top: 0; }
 
         .checkin-date {
-            font-size: 12px;
-            font-weight: 300;
+            font-size: 13px;
+            font-weight: 500;
             color: var(--text-secondary);
+            min-width: 65px;
         }
-
-        .checkin-rating {
-            font-size: 10px;
+        
+        .checkin-bar-wrap {
+            flex: 1;
+            height: 6px;
+            background: var(--bg-secondary);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+        
+        .checkin-bar {
+            height: 100%;
+            border-radius: 3px;
+            transition: width 0.4s ease;
         }
 
         .checkin-value {
             font-size: 14px;
-            font-weight: 600;
+            font-weight: 700;
             color: var(--text-primary);
+            min-width: 36px;
+            text-align: right;
         }
+        
+        .checkin-rating { font-size: 10px; }
 
         /* ============================================ */
         /* WIZARD SUMMARY */
@@ -4028,51 +4344,74 @@
         <!-- Chart Details View -->
         <div id="chartDetailsView" class="view-section">
             <div class="chart-details-view">
-                <button class="back-button" onclick="closeChartDetails()">
-                    ← <span id="backText">Zurück</span>
-                </button>
+                <div class="cd-header">
+                    <button class="cat-detail-back" onclick="closeChartDetails()">‹</button>
+                    <div class="cd-header-title" id="cdHeaderTitle">Kategorien</div>
+                    <div style="width: 36px;"></div>
+                </div>
                 
-                <!-- FYS Index Summary -->
-                <div class="fys-index-summary">
-                    <div class="fys-index-label">Your FYS Score</div>
-                    <div class="fys-index-value" id="detailIndexValue">100.0</div>
-                    <div class="fys-index-change" id="detailIndexChange">+0.00%</div>
+                <!-- FYS Index Hero Card -->
+                <div class="cd-hero-card">
+                    <div class="cd-hero-label" id="cdHeroLabel">FYS-INDEX</div>
+                    <div class="cd-hero-row">
+                        <div class="cd-hero-value" id="detailIndexValue">100.0</div>
+                        <div class="cd-hero-change" id="detailIndexChange">+0.00%</div>
+                    </div>
+                    <div class="cd-hero-bar">
+                        <div class="cd-hero-bar-fill" id="cdHeroBarFill" style="width: 50%;"></div>
+                    </div>
+                    <div class="cd-hero-bar-labels">
+                        <span>0</span>
+                        <span id="cdHeroBarCenter">100</span>
+                        <span>200</span>
+                    </div>
+                </div>
+                
+                <!-- Time Selector -->
+                <div class="cd-time-selector">
+                    <button class="time-btn" onclick="changeTimeRange('1d')" data-range="1d">1D</button>
+                    <button class="time-btn" onclick="changeTimeRange('7d')" data-range="7d">7D</button>
+                    <button class="time-btn" onclick="changeTimeRange('1m')" data-range="1m">1M</button>
+                    <button class="time-btn" onclick="changeTimeRange('6m')" data-range="6m">6M</button>
+                    <button class="time-btn" onclick="changeTimeRange('1y')" data-range="1y">1Y</button>
+                    <button class="time-btn" onclick="changeTimeRange('all')" data-range="all">MAX</button>
                 </div>
 
-                <!-- Flatex-Style Stock List -->
+                <!-- Stock List -->
                 <div class="stock-list-container">
                     <div class="stock-list-header">
-                        <div class="stock-list-title" id="categoriesOverview">Kategorien-Übersicht</div>
+                        <div class="stock-list-title" id="categoriesOverview">Kategorien</div>
+                        <div class="stock-list-count" id="stockListCount">7 Kategorien</div>
                     </div>
-                    
-                    <!-- Time Selector for Categories -->
-                    <div class="time-selector" style="margin: 16px 0;">
-                        <button class="time-btn" onclick="changeTimeRange('1d')" data-range="1d">
-                            <span>1D</span>
-                        </button>
-                        <button class="time-btn" onclick="changeTimeRange('7d')" data-range="7d">
-                            <span>7D</span>
-                        </button>
-                        <button class="time-btn" onclick="changeTimeRange('1m')" data-range="1m">
-                            <span>1M</span>
-                        </button>
-                        <button class="time-btn" onclick="changeTimeRange('6m')" data-range="6m">
-                            <span>6M</span>
-                        </button>
-                        <button class="time-btn" onclick="changeTimeRange('1y')" data-range="1y">
-                            <span>1Y</span>
-                        </button>
-                        <button class="time-btn" onclick="changeTimeRange('all')" data-range="all">
-                            <span>MAX</span>
-                        </button>
-                    </div>
-                    
                     <div id="stockListItems"></div>
                 </div>
 
-                <!-- Combined Chart -->
-                <div class="chart-card">
-                    <div class="chart-title" id="allCategoriesTitle">Alle Kategorien</div>
+                <!-- Category Radar Snapshot -->
+                <div class="cd-section-card">
+                    <div class="cd-section-header">
+                        <div class="cd-section-title">Profil-Übersicht</div>
+                        <div class="cd-section-sub">Letzter Check-in</div>
+                    </div>
+                    <div class="cd-radar-container">
+                        <canvas id="radarChart"></canvas>
+                    </div>
+                </div>
+                
+                <!-- Performance Grid -->
+                <div class="cd-section-card">
+                    <div class="cd-section-header">
+                        <div class="cd-section-title">Performance Vergleich</div>
+                        <div class="cd-section-sub" id="perfGridSub"></div>
+                    </div>
+                    <div class="cd-perf-grid" id="perfGrid"></div>
+                </div>
+
+                <!-- Combined Chart with Legend -->
+                <div class="cd-section-card">
+                    <div class="cd-section-header">
+                        <div class="cd-section-title" id="allCategoriesTitle">Kursverlauf</div>
+                    </div>
+                    <div class="cd-legend" id="combinedLegend"></div>
                     <div class="chart-container">
                         <canvas id="combinedChart"></canvas>
                     </div>
@@ -5512,10 +5851,10 @@
                 if (pack) createPackStockList(pack);
             }
             
-            // Update Performance Pack charts
+            // Update Performance Pack charts (with animation)
             if (isPro && performanceData.activePacks && performanceData.activePacks.length > 0) {
                 performanceData.activePacks.forEach(packId => {
-                    createPackMiniChart(packId);
+                    createPackMiniChart(packId, true);
                 });
             }
         }
@@ -5640,36 +5979,48 @@
             const entries = getFilteredEntries();
             console.log('Filtered entries:', entries.length);
             
+            const heroValue = document.getElementById('detailIndexValue');
+            const heroChange = document.getElementById('detailIndexChange');
+            const heroBarFill = document.getElementById('cdHeroBarFill');
+            const stockCount = document.getElementById('stockListCount');
+            
+            if (stockCount) stockCount.textContent = `${categories.length} Kategorien`;
+            
             if (entries.length > 0) {
                 const latest = entries[entries.length - 1];
                 const first = entries[0];
                 
-                // Basis für Prozent-Berechnung
                 let baseValue;
                 if (performanceData.entries.length === 1) {
-                    // ALLERERSTER ENTRY: Vergleich mit 100
                     baseValue = 100;
                 } else {
-                    // Normale Entries: Vergleich mit erstem Wert im Zeitfenster
                     baseValue = first.fysIndex;
                 }
                 
                 const change = latest.fysIndex - baseValue;
                 const changePercent = baseValue !== 0 ? ((change / baseValue) * 100).toFixed(2) : '0.00';
                 
-                document.getElementById('detailIndexValue').textContent = latest.fysIndex.toFixed(1);
-                document.getElementById('detailIndexChange').textContent = 
-                    `${change >= 0 ? '+' : ''}${changePercent}%`;
+                if (heroValue) heroValue.textContent = latest.fysIndex.toFixed(1);
+                if (heroChange) {
+                    heroChange.textContent = `${change >= 0 ? '+' : ''}${changePercent}%`;
+                    heroChange.className = 'cd-hero-change' + (change < 0 ? ' negative' : '');
+                }
+                if (heroBarFill) heroBarFill.style.width = `${Math.min(100, Math.max(0, latest.fysIndex / 2))}%`;
                     
                 console.log(`FYS Index: ${baseValue} → ${latest.fysIndex} (${changePercent}%)`);
             } else {
-                // Demo-Werte wenn keine Daten
-                document.getElementById('detailIndexValue').textContent = '100.0';
-                document.getElementById('detailIndexChange').textContent = '+0.00%';
+                if (heroValue) heroValue.textContent = '100.0';
+                if (heroChange) { heroChange.textContent = '+0.00%'; heroChange.className = 'cd-hero-change'; }
+                if (heroBarFill) heroBarFill.style.width = '50%';
             }
             
             // Create Flatex-Style Stock List
             createStockList();
+            
+            // Render new overview components
+            renderRadarChart();
+            renderPerfGrid();
+            renderCombinedLegend();
             
             // Update charts
             try {
@@ -5686,17 +6037,17 @@
             document.getElementById('chartDetailsView').classList.remove('active');
             document.getElementById('homeView').classList.add('active');
             
-            // Reset label back to FYS-INDEX
+            // Reset labels
             const indexLabel = document.querySelector('#chartDetailsView .fys-index-label');
-            if (indexLabel) {
-                indexLabel.textContent = 'FYS-INDEX';
-            }
+            const heroLabel = document.getElementById('cdHeroLabel');
+            const headerTitle = document.getElementById('cdHeaderTitle');
+            if (indexLabel) indexLabel.textContent = 'FYS-INDEX';
+            if (heroLabel) heroLabel.textContent = 'FYS-INDEX';
+            if (headerTitle) headerTitle.textContent = 'Kategorien';
             
             // Clean up pack values table if it exists
             const packTable = document.getElementById('packValuesTableContainer');
-            if (packTable) {
-                packTable.remove();
-            }
+            if (packTable) packTable.remove();
         }
 
         // Create Flatex-Style Stock List
@@ -5787,13 +6138,20 @@
                 stockItem.className = 'stock-item';
                 stockItem.onclick = () => showCategoryDetail(cat.id);
                 
+                // Get last rating for mini bar
+                const lastRating = latest.values ? (latest.values[cat.id] || 5) : 5;
+                const barWidth = (lastRating / 10) * 100;
+                
                 stockItem.innerHTML = `
                     <div class="stock-item-left">
-                        <div class="stock-icon" style="background: ${cat.color}20; color: ${cat.color};">
+                        <div class="stock-icon" style="background: ${cat.color}15; color: ${cat.color};">
                             ${categoryIcons[cat.id]}
                         </div>
                         <div class="stock-info">
                             <div class="stock-name">${t.categories[cat.id]}</div>
+                            <div class="stock-mini-bar">
+                                <div class="stock-mini-bar-fill" style="width: ${barWidth}%; background: ${cat.color};"></div>
+                            </div>
                         </div>
                     </div>
                     <div class="stock-item-right">
@@ -6049,11 +6407,130 @@
         }
 
         function changeCategoryTimeRange(range) {
+            if (range === currentCategoryTimeRange) return;
+            
+            // Save old value for count-up
+            const priceEl = document.getElementById('categoryDetailPrice');
+            const changeEl = document.getElementById('categoryDetailChange');
+            const chartCard = document.querySelector('.category-chart-card');
+            const oldValue = priceEl ? parseFloat(priceEl.textContent) || 100 : 100;
+            
             currentCategoryTimeRange = range;
             document.querySelectorAll('.category-time-btn').forEach(btn => btn.classList.remove('active'));
             document.querySelectorAll(`.category-time-btn[data-cat-range="${range}"]`).forEach(btn => btn.classList.add('active'));
-            updateCategoryDetailData();
-            updateCategoryDetailChart();
+            
+            // Chart container animation
+            if (chartCard) {
+                chartCard.classList.add('chart-transitioning');
+                setTimeout(() => chartCard.classList.remove('chart-transitioning'), 500);
+            }
+            
+            // Fade out change text
+            if (changeEl) {
+                changeEl.style.opacity = '0';
+                changeEl.style.transition = 'opacity 0.15s';
+            }
+            
+            // Animated chart update
+            updateCategoryDetailChartAnimated(oldValue);
+        }
+        
+        function updateCategoryDetailChartAnimated(oldValue) {
+            if (!categoryDetailChart) return;
+            
+            const category = categories.find(c => c.id === currentCategoryId);
+            const entries = getCategoryFilteredEntries();
+            
+            if (entries.length === 0) {
+                const today = new Date();
+                const todayLabel = `${today.getDate()}.${today.getMonth()+1}.${today.getFullYear()}`;
+                categoryDetailChart.data.labels = [todayLabel];
+                categoryDetailChart.data.datasets[0].data = [100];
+                categoryDetailChart.update({ duration: 450, easing: 'easeInOutCubic' });
+                return;
+            }
+            
+            let chartLabels = [];
+            let chartData = [];
+            
+            if (performanceData.entries.length === 1) {
+                const today = new Date();
+                chartLabels.push(`${today.getDate()}.${today.getMonth()+1}.${today.getFullYear()}`);
+                chartData.push(100);
+                const e = entries[0];
+                const date = new Date(e.date);
+                chartLabels.push(`${date.getDate()}.${date.getMonth()+1}.${date.getFullYear()}`);
+                chartData.push(e.categoryValues ? e.categoryValues[currentCategoryId] : 100);
+            } else {
+                entries.forEach(e => {
+                    const date = new Date(e.date);
+                    chartLabels.push(`${date.getDate()}.${date.getMonth()+1}.${date.getFullYear()}`);
+                    chartData.push(e.categoryValues ? e.categoryValues[currentCategoryId] : 100);
+                });
+            }
+            
+            categoryDetailChart.data.labels = chartLabels;
+            categoryDetailChart.data.datasets[0].data = chartData;
+            if (category) {
+                categoryDetailChart.data.datasets[0].borderColor = category.color;
+                categoryDetailChart.data.datasets[0].backgroundColor = `${category.color}20`;
+                categoryDetailChart.data.datasets[0].pointHoverBackgroundColor = category.color;
+            }
+            categoryDetailChart.update({ duration: 450, easing: 'easeInOutCubic' });
+            
+            // Count-up and change text animation
+            if (entries.length > 0) {
+                const latest = entries[entries.length - 1];
+                const first = entries[0];
+                const newValue = latest.categoryValues ? latest.categoryValues[currentCategoryId] : 100;
+                const baseValue = performanceData.entries.length === 1 ? 100 : (first.categoryValues ? first.categoryValues[currentCategoryId] : 100);
+                const change = newValue - baseValue;
+                const changePercent = baseValue !== 0 ? ((change / baseValue) * 100).toFixed(1) : '0.0';
+                
+                // Count-up for price
+                animateCategoryCountUp(oldValue, newValue, 400, category ? category.color : '#ff6b35');
+                
+                // Change text slide-in
+                setTimeout(() => {
+                    const changeEl = document.getElementById('categoryDetailChange');
+                    if (changeEl) {
+                        const arrow = change > 0 ? '▲' : change < 0 ? '▼' : '—';
+                        const changeClass = change > 0 ? 'positive' : change < 0 ? 'negative' : 'neutral';
+                        changeEl.className = `category-detail-change ${changeClass}`;
+                        changeEl.innerHTML = `<span>${arrow}</span> ${Math.abs(parseFloat(changePercent)).toFixed(1)}%`;
+                        changeEl.style.opacity = '1';
+                        changeEl.classList.remove('change-text-animate');
+                        void changeEl.offsetWidth;
+                        changeEl.classList.add('change-text-animate');
+                    }
+                }, 200);
+            }
+        }
+        
+        function animateCategoryCountUp(from, to, duration, color) {
+            const priceEl = document.getElementById('categoryDetailPrice');
+            if (!priceEl) return;
+            
+            priceEl.classList.add('index-value-counting');
+            
+            const startTime = performance.now();
+            const diff = to - from;
+            
+            function tick(now) {
+                const elapsed = now - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+                const eased = 1 - Math.pow(1 - progress, 3);
+                priceEl.textContent = (from + diff * eased).toFixed(1);
+                
+                if (progress < 1) {
+                    requestAnimationFrame(tick);
+                } else {
+                    priceEl.textContent = to.toFixed(1);
+                    priceEl.classList.remove('index-value-counting');
+                }
+            }
+            
+            requestAnimationFrame(tick);
         }
 
         // Get filtered entries for category view
@@ -6330,7 +6807,6 @@
             });
 
             categories.forEach((cat, index) => {
-                // Verwende categoryValues
                 combinedChart.data.datasets[index].data = entries.map(e => 
                     e.categoryValues ? e.categoryValues[cat.id] : 100
                 );
@@ -6338,6 +6814,180 @@
 
             combinedChart.data.datasets[combinedChart.data.datasets.length - 1].data = entries.map(e => e.fysIndex);
             combinedChart.update();
+        }
+        
+        // ============================================
+        // RADAR CHART
+        // ============================================
+        let radarChartInstance = null;
+        
+        function renderRadarChart() {
+            const canvas = document.getElementById('radarChart');
+            if (!canvas) return;
+            
+            if (radarChartInstance) radarChartInstance.destroy();
+            
+            const t = translations[currentLang];
+            const entries = performanceData.entries;
+            const latest = entries.length > 0 ? entries[entries.length - 1] : null;
+            
+            const labels = categories.map(c => t.categories[c.id]);
+            const data = categories.map(c => latest ? (latest.values?.[c.id] || 5) : 5);
+            const colors = categories.map(c => c.color);
+            
+            const ctx = canvas.getContext('2d');
+            const actualTheme = document.documentElement.getAttribute('data-theme') || 'dark';
+            
+            radarChartInstance = new Chart(ctx, {
+                type: 'radar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Aktuell',
+                        data: data,
+                        backgroundColor: 'rgba(255, 107, 53, 0.12)',
+                        borderColor: '#ff6b35',
+                        borderWidth: 2.5,
+                        pointBackgroundColor: colors,
+                        pointBorderColor: colors,
+                        pointRadius: 5,
+                        pointHoverRadius: 7
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            backgroundColor: actualTheme === 'dark' ? 'rgba(17,17,17,0.95)' : 'rgba(255,255,255,0.98)',
+                            titleColor: actualTheme === 'dark' ? '#fff' : '#333',
+                            bodyColor: actualTheme === 'dark' ? '#999' : '#666',
+                            borderColor: actualTheme === 'dark' ? '#222' : '#eee',
+                            borderWidth: 1,
+                            padding: 10,
+                            displayColors: false,
+                            callbacks: {
+                                title: ctx => ctx[0].label,
+                                label: ctx => ctx.parsed.r + '/10'
+                            }
+                        }
+                    },
+                    scales: {
+                        r: {
+                            min: 0,
+                            max: 10,
+                            ticks: {
+                                stepSize: 2,
+                                display: false
+                            },
+                            grid: {
+                                color: actualTheme === 'dark' ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)',
+                                circular: true
+                            },
+                            angleLines: {
+                                color: actualTheme === 'dark' ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)'
+                            },
+                            pointLabels: {
+                                color: actualTheme === 'dark' ? '#888' : '#666',
+                                font: { size: 11, weight: '600' }
+                            }
+                        }
+                    },
+                    animation: {
+                        duration: 600,
+                        easing: 'easeOutCubic'
+                    }
+                }
+            });
+        }
+        
+        // ============================================
+        // PERFORMANCE GRID
+        // ============================================
+        function renderPerfGrid() {
+            const grid = document.getElementById('perfGrid');
+            const sub = document.getElementById('perfGridSub');
+            if (!grid) return;
+            
+            const t = translations[currentLang];
+            const entries = getFilteredEntries();
+            
+            if (sub) sub.textContent = entries.length > 0 ? `${entries.length} Einträge` : 'Keine Daten';
+            
+            const latest = entries.length > 0 ? entries[entries.length - 1] : null;
+            const first = entries.length > 1 ? entries[0] : null;
+            
+            grid.innerHTML = categories.map(cat => {
+                const val = latest?.categoryValues?.[cat.id] || 100;
+                const firstVal = first?.categoryValues?.[cat.id] || 100;
+                const baseVal = performanceData.entries.length === 1 ? 100 : firstVal;
+                const change = val - baseVal;
+                const changePct = baseVal ? ((change / baseVal) * 100).toFixed(1) : '0.0';
+                const changeColor = change > 0 ? 'var(--accent-up)' : change < 0 ? 'var(--accent-down)' : 'var(--text-secondary)';
+                const arrow = change > 0 ? '▲' : change < 0 ? '▼' : '—';
+                
+                return `
+                <div class="cd-perf-item" onclick="showCategoryDetail('${cat.id}')">
+                    <div class="cd-perf-dot" style="background: ${cat.color};"></div>
+                    <div class="cd-perf-info">
+                        <div class="cd-perf-name">${t.categories[cat.id]}</div>
+                        <div class="cd-perf-sub">${cat.id.toUpperCase()}</div>
+                    </div>
+                    <div class="cd-perf-right">
+                        <div class="cd-perf-val">${val.toFixed(1)}</div>
+                        <div class="cd-perf-change" style="color: ${changeColor};">${arrow} ${Math.abs(changePct)}%</div>
+                    </div>
+                </div>`;
+            }).join('');
+        }
+        
+        // ============================================
+        // COMBINED CHART LEGEND (Interactive)
+        // ============================================
+        let legendState = {}; // track toggled datasets
+        
+        function renderCombinedLegend() {
+            const container = document.getElementById('combinedLegend');
+            if (!container) return;
+            
+            const t = translations[currentLang];
+            
+            // Init all active
+            categories.forEach(c => { if (legendState[c.id] === undefined) legendState[c.id] = true; });
+            if (legendState['fys'] === undefined) legendState['fys'] = true;
+            
+            const items = categories.map(c => 
+                `<div class="cd-legend-item ${legendState[c.id] ? 'active' : 'dimmed'}" onclick="toggleLegend('${c.id}')">
+                    <div class="cd-legend-dot" style="background: ${c.color};"></div>
+                    ${t.categories[c.id]}
+                </div>`
+            );
+            
+            items.push(
+                `<div class="cd-legend-item ${legendState['fys'] ? 'active' : 'dimmed'}" onclick="toggleLegend('fys')">
+                    <div class="cd-legend-dot" style="background: #ff6b35;"></div>
+                    FYS-Index
+                </div>`
+            );
+            
+            container.innerHTML = items.join('');
+        }
+        
+        function toggleLegend(id) {
+            legendState[id] = !legendState[id];
+            renderCombinedLegend();
+            
+            if (!combinedChart) return;
+            
+            if (id === 'fys') {
+                const idx = combinedChart.data.datasets.length - 1;
+                combinedChart.data.datasets[idx].hidden = !legendState[id];
+            } else {
+                const idx = categories.findIndex(c => c.id === id);
+                if (idx >= 0) combinedChart.data.datasets[idx].hidden = !legendState[id];
+            }
+            combinedChart.update({ duration: 300 });
         }
 
         // Create individual charts
@@ -7055,19 +7705,12 @@
             });
         }
 
-        function createPackMiniChart(packId) {
+        function createPackMiniChart(packId, animate = false) {
             const canvas = document.getElementById(`packChart_${packId}`);
             if (!canvas) return;
 
-            const ctx = canvas.getContext('2d');
-            
-            // Destroy existing chart
-            if (window[`packMiniChart_${packId}`]) {
-                window[`packMiniChart_${packId}`].destroy();
-            }
-
             // Use SAME time range as FYS Index (synchronized)
-            const entries = getFilteredEntries(); // Uses currentTimeRange!
+            const entries = getFilteredEntries();
             
             // Filter for entries with pack data
             const packEntries = entries.filter(e => 
@@ -7084,23 +7727,36 @@
                 labels.push(startLabel);
                 data.push(100);
                 
-                // Dann der erste Entry
                 const e = packEntries[0];
                 const date = new Date(e.date);
-                const label = `${date.getDate()}.${date.getMonth() + 1}.${date.getFullYear()}`;
-                labels.push(label);
+                labels.push(`${date.getDate()}.${date.getMonth() + 1}.${date.getFullYear()}`);
                 data.push(e.packIndices[packId]);
             } else {
-                // Normale Entries
                 labels = packEntries.map(e => {
                     const date = new Date(e.date);
-                    const day = date.getDate();
-                    const month = date.getMonth() + 1;
-                    const year = date.getFullYear();
-                    return `${day}.${month}.${year}`;
+                    return `${date.getDate()}.${date.getMonth() + 1}.${date.getFullYear()}`;
                 });
                 data = packEntries.map(e => e.packIndices[packId]);
             }
+
+            // UPDATE existing chart if it exists (enables morph animation)
+            const existingChart = window[`packMiniChart_${packId}`];
+            if (existingChart && animate) {
+                existingChart.data.labels = labels;
+                existingChart.data.datasets[0].data = data;
+                existingChart.update({
+                    duration: 450,
+                    easing: 'easeInOutCubic'
+                });
+                return;
+            }
+            
+            // Destroy and recreate only on first render
+            if (existingChart) {
+                existingChart.destroy();
+            }
+
+            const ctx = canvas.getContext('2d');
 
             // 1:1 COPY of FYS Index Chart Config!
             window[`packMiniChart_${packId}`] = new Chart(ctx, {
@@ -7110,19 +7766,19 @@
                     datasets: [{
                         label: packId,
                         data: data,
-                        borderColor: '#ff6b35', // Same as FYS Index
-                        backgroundColor: 'rgba(255, 107, 53, 0.1)', // Same as FYS Index
-                        borderWidth: 3, // Same as FYS Index
-                        tension: 0.4, // Same as FYS Index
-                        pointRadius: 0, // Same as FYS Index
-                        pointHoverRadius: 6, // Same as FYS Index
-                        fill: true // Same as FYS Index
+                        borderColor: '#ff6b35',
+                        backgroundColor: 'rgba(255, 107, 53, 0.1)',
+                        borderWidth: 3,
+                        tension: 0.4,
+                        pointRadius: 0,
+                        pointHoverRadius: 6,
+                        fill: true
                     }]
                 },
                 options: {
                     responsive: true,
-                    maintainAspectRatio: false, // Same as FYS Index
-                    interaction: { mode: 'index', intersect: false }, // Same as FYS Index
+                    maintainAspectRatio: false,
+                    interaction: { mode: 'index', intersect: false },
                     plugins: {
                         legend: { display: false },
                         tooltip: {
@@ -7149,9 +7805,8 @@
                             ticks: { display: false }
                         },
                         y: {
-                            // 1:1 SAME as FYS Index!
                             beginAtZero: false,
-                            grace: '5%', // 5% Padding oben und unten
+                            grace: '5%',
                             grid: { 
                                 color: currentTheme === 'dark' ? '#1a1a1a' : '#fff5f0', 
                                 drawBorder: false 
@@ -10095,7 +10750,9 @@
             const container = document.getElementById('recentCheckinsList');
             if (!container) return;
             
-            const entries = performanceData.entries.slice(-5).reverse();
+            const category = categories.find(c => c.id === categoryId);
+            const color = category?.color || '#ff6b35';
+            const entries = performanceData.entries.slice(-7).reverse();
             
             if (entries.length === 0) {
                 container.innerHTML = '<div style="text-align: center; padding: 20px; color: var(--text-secondary); font-size: 13px;">Keine Check-ins vorhanden</div>';
@@ -10105,12 +10762,17 @@
             container.innerHTML = entries.map(entry => {
                 const date = new Date(entry.date);
                 const value = entry.categoryValues?.[categoryId] || 100;
-                const rating = entry.ratings?.[categoryId] || 5;
+                const rating = entry.values?.[categoryId] || 5;
+                const barWidth = Math.max(5, (rating / 10) * 100);
+                const dayName = date.toLocaleDateString('de-DE', { weekday: 'short' });
+                const dateStr = `${date.getDate()}.${date.getMonth()+1}`;
                 
                 return `
                     <div class="checkin-item">
-                        <div class="checkin-date">${date.toLocaleDateString('de-DE')}</div>
-                        <div class="checkin-rating">${'⭐'.repeat(rating)}</div>
+                        <div class="checkin-date">${dayName} ${dateStr}</div>
+                        <div class="checkin-bar-wrap">
+                            <div class="checkin-bar" style="width: ${barWidth}%; background: ${color};"></div>
+                        </div>
                         <div class="checkin-value">${value.toFixed(1)}</div>
                     </div>
                 `;
@@ -10127,8 +10789,8 @@
             currentCategoryId = categoryId;
             
             const modal = safeGetElement('categoryDetailModal');
-            const header = safeGetElement('categoryDetailHeader');
-            const content = safeGetElement('categoryDetailContent');
+            const header = modal?.querySelector('.category-detail-header');
+            const content = modal?.querySelector('.category-detail-content');
             
             if (!modal || !header || !content) return;
             
@@ -10137,10 +10799,20 @@
             let changeValue = 0;
             let changePercent = 0;
             let trend = 'neutral';
+            let high = 100, low = 100, avg = 100, last = 100;
+            let lastRating = 5;
             
             if (entries.length > 0) {
                 const latest = entries[entries.length - 1];
                 currentValue = latest.categoryValues?.[categoryId] || 100;
+                lastRating = latest.values?.[categoryId] || 5;
+                
+                // Calculate stats
+                const vals = entries.map(e => e.categoryValues?.[categoryId] || 100);
+                high = Math.max(...vals);
+                low = Math.min(...vals);
+                avg = vals.reduce((a, b) => a + b, 0) / vals.length;
+                last = lastRating;
                 
                 if (entries.length > 1) {
                     const first = entries[0];
@@ -10155,35 +10827,55 @@
             
             const indexInfluence = calculateCategoryIndexInfluence(categoryId);
             const iconHtml = categoryIcons[categoryId] || category.icon;
+            const t = translations[currentLang];
+            const catName = category.name?.[currentLang] || category.name || categoryId;
+            const changeClass = changeValue > 0 ? 'positive' : changeValue < 0 ? 'negative' : 'neutral';
+            const arrow = changeValue > 0 ? '▲' : changeValue < 0 ? '▼' : '—';
+            const scaleLabel = typeof getScaleLabel === 'function' ? getScaleLabel(categoryId, lastRating, currentLang) : '';
             
             header.innerHTML = `
-                <div class="category-detail-icon" style="background: ${category.color}20; color: ${category.color};">
+                <button class="cat-detail-back" onclick="closeCategoryDetail()">‹</button>
+                <div class="category-detail-icon" style="background: ${category.color}15; color: ${category.color};">
                     ${iconHtml}
                 </div>
                 <div class="category-detail-info">
-                    <div class="category-detail-name">${category.name[currentLang]}</div>
+                    <div class="category-detail-name">${catName}</div>
                     <div class="category-detail-symbol">
-                        ${category.id.toUpperCase()} 
-                        <span class="trend-badge ${trend}">${getTrendLabel(trend)}</span>
+                        ${categoryId.toUpperCase()} · <span class="trend-badge ${trend}">${getTrendLabel(trend)}</span>
                     </div>
                 </div>
-                <button class="close-btn" onclick="closeCategoryDetail()">×</button>
             `;
             
             content.innerHTML = `
                 <div class="category-detail-price-section">
-                    <div class="category-detail-price" style="color: ${changeValue >= 0 ? 'var(--accent-up)' : 'var(--accent-down)'};">
-                        ${currentValue.toFixed(1)}
+                    <div>
+                        <div class="category-detail-price" id="categoryDetailPrice" style="color: ${category.color};">
+                            ${currentValue.toFixed(1)}
+                        </div>
+                        ${scaleLabel ? `<div style="font-size: 12px; color: var(--text-secondary); margin-top: 4px;">Letzter Check-in: ${scaleLabel}</div>` : ''}
                     </div>
-                    <div class="category-detail-change" style="background: ${changeValue >= 0 ? 'rgba(0, 255, 136, 0.1)' : 'rgba(255, 51, 102, 0.1)'}; color: ${changeValue >= 0 ? 'var(--accent-up)' : 'var(--accent-down)'};">
-                        ${changeValue >= 0 ? '▲' : '▼'} ${Math.abs(changePercent).toFixed(2)}%
+                    <div class="category-detail-change ${changeClass}" id="categoryDetailChange">
+                        ${arrow} ${Math.abs(changePercent).toFixed(2)}%
                     </div>
                 </div>
                 
-                <div class="category-influence-card">
-                    <div class="influence-title">Index Influence</div>
-                    <div class="influence-value">${indexInfluence >= 0 ? '+' : ''}${indexInfluence.toFixed(2)}%</div>
-                    <div class="influence-description">Impact on ${getActiveIndexName()}</div>
+                <div class="cat-stats-row">
+                    <div class="cat-stat-box">
+                        <div class="cat-stat-label">Hoch</div>
+                        <div class="cat-stat-value" style="color: var(--accent-up);">${high.toFixed(1)}</div>
+                    </div>
+                    <div class="cat-stat-box">
+                        <div class="cat-stat-label">Tief</div>
+                        <div class="cat-stat-value" style="color: var(--accent-down);">${low.toFixed(1)}</div>
+                    </div>
+                    <div class="cat-stat-box">
+                        <div class="cat-stat-label">⌀ Avg</div>
+                        <div class="cat-stat-value">${avg.toFixed(1)}</div>
+                    </div>
+                    <div class="cat-stat-box">
+                        <div class="cat-stat-label">Rating</div>
+                        <div class="cat-stat-value">${last}/10</div>
+                    </div>
                 </div>
                 
                 <div class="category-time-selector">
@@ -10201,8 +10893,16 @@
                     </div>
                 </div>
                 
+                <div class="category-influence-card">
+                    <div class="influence-left">
+                        <div class="influence-title">Index-Einfluss</div>
+                        <div class="influence-description">Auswirkung auf ${getActiveIndexName()}</div>
+                    </div>
+                    <div class="influence-value">${indexInfluence >= 0 ? '+' : ''}${indexInfluence.toFixed(2)}%</div>
+                </div>
+                
                 <div class="recent-checkins-card">
-                    <div class="checkins-title">Recent Check-ins</div>
+                    <div class="checkins-title">Letzte Check-ins</div>
                     <div id="recentCheckinsList"></div>
                 </div>
             `;
@@ -10210,7 +10910,6 @@
             modal.classList.add('active');
             
             setTimeout(() => {
-                // Activate correct category time button
                 document.querySelectorAll('.category-time-btn').forEach(btn => btn.classList.remove('active'));
                 document.querySelectorAll(`.category-time-btn[data-cat-range="${currentCategoryTimeRange}"]`).forEach(btn => btn.classList.add('active'));
                 
