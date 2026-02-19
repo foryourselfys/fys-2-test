@@ -5593,7 +5593,8 @@
                         tension: 0.4,
                         pointRadius: 0,
                         pointHoverRadius: 6,
-                        fill: true
+                        fill: true,
+                        spanGaps: false
                     }]
                 },
                 options: {
@@ -5647,84 +5648,117 @@
         }
 
         // Update main chart
-        function updateMainChart() {
-            console.log('updateMainChart called');
-            console.log('mainChart exists?', !!mainChart);
-            console.log('entries count:', performanceData.entries.length);
+        // Fill date gaps in entries — inserts null for missing days so chart shows gaps
+        function fillDateGaps(entries, valueKey) {
+            if (entries.length < 2) return { labels: [], data: [] };
             
-            if (!mainChart) {
-                console.log('mainChart is null, skipping chart update');
-                return;
+            const labels = [];
+            const data = [];
+            const today = new Date();
+            today.setHours(0,0,0,0);
+            
+            for (let i = 0; i < entries.length; i++) {
+                const e = entries[i];
+                const date = new Date(e.date);
+                date.setHours(0,0,0,0);
+                
+                // If there's a gap > 1 day from previous entry, insert null points
+                if (i > 0) {
+                    const prev = new Date(entries[i-1].date);
+                    prev.setHours(0,0,0,0);
+                    const diffDays = Math.round((date - prev) / (1000 * 60 * 60 * 24));
+                    
+                    if (diffDays > 1) {
+                        // Add one null after the previous point to break the line
+                        const nextDay = new Date(prev);
+                        nextDay.setDate(nextDay.getDate() + 1);
+                        labels.push(`${nextDay.getDate()}.${nextDay.getMonth()+1}`);
+                        data.push(null);
+                        
+                        // If gap > 2 days, add another null before current point
+                        if (diffDays > 2) {
+                            const dayBefore = new Date(date);
+                            dayBefore.setDate(dayBefore.getDate() - 1);
+                            labels.push(`${dayBefore.getDate()}.${dayBefore.getMonth()+1}`);
+                            data.push(null);
+                        }
+                    }
+                }
+                
+                labels.push(`${date.getDate()}.${date.getMonth()+1}.${date.getFullYear()}`);
+                data.push(typeof valueKey === 'function' ? valueKey(e) : e[valueKey]);
             }
             
+            // If last entry is not today, add today with null to show gap extends to now
+            const lastDate = new Date(entries[entries.length - 1].date);
+            lastDate.setHours(0,0,0,0);
+            const daysToToday = Math.round((today - lastDate) / (1000 * 60 * 60 * 24));
+            
+            if (daysToToday > 0) {
+                // Add null gap marker
+                if (daysToToday > 1) {
+                    const nextDay = new Date(lastDate);
+                    nextDay.setDate(nextDay.getDate() + 1);
+                    labels.push(`${nextDay.getDate()}.${nextDay.getMonth()+1}`);
+                    data.push(null);
+                }
+                // Add today label with last known value (dashed to current)
+                labels.push(`${today.getDate()}.${today.getMonth()+1}.${today.getFullYear()}`);
+                data.push(null);
+            }
+            
+            return { labels, data };
+        }
+
+        function updateMainChart() {
+            console.log('updateMainChart called');
+            
+            if (!mainChart) return;
+            
             if (performanceData.entries.length === 0) {
-                console.log('No entries - showing starting point at 100');
-                
-                // Zeige Startpunkt bei 100
                 const today = new Date();
                 const todayLabel = `${today.getDate()}.${today.getMonth()+1}.${today.getFullYear()}`;
                 mainChart.data.labels = [todayLabel];
                 mainChart.data.datasets[0].data = [100];
                 mainChart.update('none');
                 
-                // Zeige 100.0 als aktuellen Wert
                 const valueEl = document.getElementById('mainIndexValue');
-                if (valueEl) {
-                    valueEl.textContent = '100.0';
-                    valueEl.className = 'index-value-number';
-                }
-                
-                // Keine Prozent-Änderung anzeigen (leer lassen)
+                if (valueEl) { valueEl.textContent = '100.0'; valueEl.className = 'index-value-number'; }
                 const changeText = document.getElementById('mainChangeText');
-                if (changeText) {
-                    changeText.textContent = '';
-                }
-                
+                if (changeText) changeText.textContent = '';
                 return;
             }
 
             const entries = getFilteredEntries();
-            console.log('Filtered entries:', entries.length);
             
             if (mainChart) {
                 let chartLabels = [];
                 let chartData = [];
                 
                 if (entries.length === 0) {
-                    // Wenn keine Entries, zeige Startpunkt bei 100
                     const today = new Date();
-                    const startLabel = `${today.getDate()}.${today.getMonth()+1}.${today.getFullYear()}`;
-                    chartLabels = [startLabel];
+                    chartLabels = [`${today.getDate()}.${today.getMonth()+1}.${today.getFullYear()}`];
                     chartData = [100];
                 } else if (performanceData.entries.length === 1) {
-                    // ALLERERSTER ENTRY: Zeige 100 → Entry
                     const today = new Date();
-                    const startLabel = `${today.getDate()}.${today.getMonth()+1}.${today.getFullYear()}`;
-                    chartLabels.push(startLabel);
+                    chartLabels.push(`${today.getDate()}.${today.getMonth()+1}.${today.getFullYear()}`);
                     chartData.push(100);
                     
-                    // Dann der erste Entry
                     const e = entries[0];
                     const date = new Date(e.date);
-                    const label = `${date.getDate()}.${date.getMonth() + 1}.${date.getFullYear()}`;
-                    chartLabels.push(label);
+                    chartLabels.push(`${date.getDate()}.${date.getMonth()+1}.${date.getFullYear()}`);
                     chartData.push(e.fysIndex);
-                    
-                    console.log('First entry ever: showing 100 → entry');
                 } else {
-                    // Normale Entries: Zeige NUR die gefilterten Entries
-                    entries.forEach(e => {
-                        const date = new Date(e.date);
-                        const label = `${date.getDate()}.${date.getMonth() + 1}.${date.getFullYear()}`;
-                        chartLabels.push(label);
-                        chartData.push(e.fysIndex);
-                    });
+                    // Fill gaps for missing days
+                    const filled = fillDateGaps(entries, 'fysIndex');
+                    chartLabels = filled.labels;
+                    chartData = filled.data;
                 }
                 
                 mainChart.data.labels = chartLabels;
                 mainChart.data.datasets[0].data = chartData;
+                mainChart.options.spanGaps = false; // Don't connect across nulls
                 mainChart.update('none');
-                console.log('Chart updated with', chartData.length, 'points');
             }
 
             if (entries.length > 0) {
@@ -5882,11 +5916,9 @@
                 chartLabels.push(`${date.getDate()}.${date.getMonth()+1}.${date.getFullYear()}`);
                 chartData.push(e.fysIndex);
             } else {
-                entries.forEach(e => {
-                    const date = new Date(e.date);
-                    chartLabels.push(`${date.getDate()}.${date.getMonth()+1}.${date.getFullYear()}`);
-                    chartData.push(e.fysIndex);
-                });
+                const filled = fillDateGaps(entries, 'fysIndex');
+                chartLabels = filled.labels;
+                chartData = filled.data;
             }
             
             // Chart.js Morph-Animation
@@ -6658,7 +6690,6 @@
             const entries = getCategoryFilteredEntries();
             
             if (entries.length === 0) {
-                // Zeige Startpunkt bei 100 wenn keine Daten
                 const today = new Date();
                 const todayLabel = `${today.getDate()}.${today.getMonth()+1}.${today.getFullYear()}`;
                 categoryDetailChart.data.labels = [todayLabel];
@@ -6671,43 +6702,27 @@
             let chartData = [];
             
             if (performanceData.entries.length === 1) {
-                // ALLERERSTER ENTRY: Zeige 100 → Entry
                 const today = new Date();
-                const startLabel = `${today.getDate()}.${today.getMonth()+1}.${today.getFullYear()}`;
-                chartLabels.push(startLabel);
+                chartLabels.push(`${today.getDate()}.${today.getMonth()+1}.${today.getFullYear()}`);
                 chartData.push(100);
-                
-                // Dann der erste Entry
                 const e = entries[0];
                 const date = new Date(e.date);
-                const label = `${date.getDate()}.${date.getMonth() + 1}.${date.getFullYear()}`;
-                chartLabels.push(label);
-                
-                const value = e.categoryValues ? e.categoryValues[currentCategoryId] : 100;
-                chartData.push(value);
+                chartLabels.push(`${date.getDate()}.${date.getMonth()+1}.${date.getFullYear()}`);
+                chartData.push(e.categoryValues ? e.categoryValues[currentCategoryId] : 100);
             } else {
-                // Normale Entries: Zeige NUR die gefilterten Entries
-                entries.forEach(e => {
-                    const date = new Date(e.date);
-                    const label = `${date.getDate()}.${date.getMonth() + 1}.${date.getFullYear()}`;
-                    chartLabels.push(label);
-                    
-                    // Verwende categoryValues
-                    const value = e.categoryValues ? e.categoryValues[currentCategoryId] : 100;
-                    chartData.push(value);
-                });
+                const catId = currentCategoryId;
+                const filled = fillDateGaps(entries, e => e.categoryValues ? e.categoryValues[catId] : 100);
+                chartLabels = filled.labels;
+                chartData = filled.data;
             }
             
             categoryDetailChart.data.labels = chartLabels;
             categoryDetailChart.data.datasets[0].data = chartData;
-
-            // Update colors
             categoryDetailChart.data.datasets[0].borderColor = category.color;
             categoryDetailChart.data.datasets[0].backgroundColor = `${category.color}20`;
             categoryDetailChart.data.datasets[0].pointHoverBackgroundColor = category.color;
-
+            categoryDetailChart.data.datasets[0].spanGaps = false;
             categoryDetailChart.update('none');
-            console.log('Category Detail Chart updated with', chartData.length, 'points');
         }
 
         // Initialize combined chart
@@ -7148,7 +7163,7 @@
         // DAILY CHECK-IN REMINDER
         // ============================================
         
-        let reminderEnabled = localStorage.getItem('fysReminder') !== 'false'; // Default: true
+        let reminderEnabled = localStorage.getItem('fysReminder') === 'true';
         let reminderTime = localStorage.getItem('fysReminderTime') || '20:00';
         let notificationPermission = 'default';
         
@@ -7206,7 +7221,7 @@
                 console.log('❌ Daily Reminder deaktiviert');
             }
             
-            localStorage.setItem('fysReminder', reminderEnabled);
+            localStorage.setItem('fysReminder', reminderEnabled ? 'true' : 'false');
         }
         
         function updateReminderTime() {
@@ -7313,8 +7328,9 @@
             
             // Speichere initial state wenn noch nicht gesetzt
             if (localStorage.getItem('fysReminder') === null) {
-                localStorage.setItem('fysReminder', reminderEnabled);
-                console.log('💾 Initial reminder state gespeichert:', reminderEnabled);
+                localStorage.setItem('fysReminder', 'false');
+                reminderEnabled = false;
+                console.log('💾 Initial reminder state gespeichert: false');
             }
             
             // Check if elements exist
