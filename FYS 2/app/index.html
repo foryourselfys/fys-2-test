@@ -515,70 +515,68 @@
         /* Streak Card */
         .streak-card {
             margin: 16px 0;
-            padding: 20px;
-            background: rgba(255, 107, 53, 0.05);
-            border: 2px solid rgba(255, 107, 53, 0.2);
+            background: var(--bg-card);
+            border: 1px solid var(--border);
             border-radius: 16px;
-            animation: fadeIn 0.5s;
+            padding: 16px;
         }
         
-        .streak-card-content {
+        .streak-row {
             display: flex;
-            align-items: center;
-            gap: 16px;
+            gap: 10px;
         }
         
-        .streak-flame {
-            font-size: 48px;
-            line-height: 1;
-            animation: flameFlicker 2s infinite;
-        }
-        
-        @keyframes flameFlicker {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-        }
-        
-        .streak-info {
+        .streak-item {
             flex: 1;
+            text-align: center;
+            padding: 12px 8px;
+            background: var(--bg-secondary);
+            border-radius: 12px;
+            position: relative;
         }
         
-        .streak-number {
-            font-size: 32px;
+        .streak-item.active {
+            background: rgba(255, 107, 53, 0.08);
+            border: 1px solid rgba(255, 107, 53, 0.2);
+        }
+        
+        .streak-emoji {
+            font-size: 22px;
+            margin-bottom: 6px;
+        }
+        
+        .streak-count {
+            font-size: 24px;
             font-weight: 800;
-            color: var(--accent-primary);
+            color: var(--text-primary);
             line-height: 1;
         }
         
-        .streak-label {
-            font-size: 14px;
+        .streak-item.active .streak-count {
+            color: var(--accent-primary);
+        }
+        
+        .streak-item-label {
+            font-size: 10px;
             font-weight: 600;
-            color: var(--text-primary);
+            color: var(--text-secondary);
             margin-top: 4px;
         }
         
-        .streak-sublabel {
-            font-size: 11px;
+        .streak-record-badge {
+            font-size: 9px;
             color: var(--text-secondary);
-            margin-top: 2px;
+            margin-top: 4px;
+            opacity: 0.7;
+        }
+
+        @keyframes flameFlicker {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.15); }
         }
         
-        .streak-record {
-            text-align: right;
-        }
-        
-        .streak-record-label {
-            font-size: 10px;
-            color: var(--text-secondary);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-        
-        .streak-record-number {
-            font-size: 20px;
-            font-weight: 700;
-            color: var(--text-primary);
-            margin-top: 2px;
+        .streak-item.active .streak-emoji {
+            animation: flameFlicker 2s infinite;
         }
 
         /* ============================================ */
@@ -1557,7 +1555,7 @@
 
         .chart-container {
             position: relative;
-            height: 220px;
+            height: 320px;
         }
 
         .single-chart-container {
@@ -1703,7 +1701,7 @@
             height: 8px;
             border-radius: 50%;
         }
-
+        
         /* Category Detail Modal */
         .category-detail-modal {
             position: fixed;
@@ -2842,6 +2840,7 @@
             overflow: hidden;
             position: relative;
             min-height: 0; /* Important for flex children */
+            -webkit-overflow-scrolling: touch;
         }
 
         .step-container-wizard {
@@ -2856,9 +2855,10 @@
             opacity: 0;
             transform: translateX(100%);
             transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            overflow-y: auto;
+            overflow-y: scroll;
             overflow-x: hidden;
             -webkit-overflow-scrolling: touch;
+            overscroll-behavior: contain;
         }
 
         .step-container-wizard.active {
@@ -3069,6 +3069,57 @@
             align-items: center;
             justify-content: center;
             gap: 8px;
+        }
+        
+        .pack-add-card {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 16px;
+            background: var(--bg-card);
+            border: 1px dashed var(--border);
+            border-radius: 16px;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+        
+        .pack-add-card:active {
+            transform: scale(0.98);
+            opacity: 0.8;
+        }
+        
+        .pack-add-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            background: rgba(255, 107, 53, 0.1);
+            color: var(--accent-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            font-weight: 300;
+            flex-shrink: 0;
+        }
+        
+        .pack-add-text { flex: 1; }
+        
+        .pack-add-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+        
+        .pack-add-sub {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-top: 2px;
+        }
+        
+        .pack-add-arrow {
+            font-size: 22px;
+            color: var(--text-secondary);
+            font-weight: 300;
         }
 
         .performance-pack-card {
@@ -4293,16 +4344,24 @@
                 
                 <!-- Streak Display Card -->
                 <div class="streak-card" id="streakCard" style="display: none;">
-                    <div class="streak-card-content">
-                        <div class="streak-flame">🔥</div>
-                        <div class="streak-info">
-                            <div class="streak-number" id="streakNumber">0</div>
-                            <div class="streak-label">Tage Streak</div>
-                            <div class="streak-sublabel">CheckIn + Tagebuch</div>
+                    <div class="streak-row">
+                        <div class="streak-item" id="streakCheckin">
+                            <div class="streak-emoji">📊</div>
+                            <div class="streak-count" id="streakCheckinCount">0</div>
+                            <div class="streak-item-label">Check-in</div>
+                            <div class="streak-record-badge" id="streakCheckinRecord"></div>
                         </div>
-                        <div class="streak-record">
-                            <div class="streak-record-label">Rekord</div>
-                            <div class="streak-record-number" id="streakRecord">0</div>
+                        <div class="streak-item" id="streakJournal">
+                            <div class="streak-emoji">📔</div>
+                            <div class="streak-count" id="streakJournalCount">0</div>
+                            <div class="streak-item-label">Tagebuch</div>
+                            <div class="streak-record-badge" id="streakJournalRecord"></div>
+                        </div>
+                        <div class="streak-item" id="streakCombo">
+                            <div class="streak-emoji">🔥</div>
+                            <div class="streak-count" id="streakComboCount">0</div>
+                            <div class="streak-item-label">Kombi</div>
+                            <div class="streak-record-badge" id="streakComboRecord"></div>
                         </div>
                     </div>
                 </div>
@@ -4330,12 +4389,21 @@
                 </div>
 
                 <!-- Performance Packs Section -->
-                <div class="performance-packs-container" id="performancePacksContainer" style="display: none;">
+                <div class="performance-packs-container" id="performancePacksContainer">
                     <div class="performance-packs-title">
                         PERFORMANCE PACKS
                         <span style="background: linear-gradient(135deg, #ffd700, #ffed4e); color: #000; padding: 2px 6px; border-radius: 4px; font-size: 9px; font-weight: 800;">PRO</span>
                     </div>
                     <div id="performancePacksList"></div>
+                    <!-- Add Pack Card (shown when no packs active) -->
+                    <div class="pack-add-card" id="packAddCard" onclick="handleAddPack()">
+                        <div class="pack-add-icon">＋</div>
+                        <div class="pack-add-text">
+                            <div class="pack-add-title">Performance Pack hinzufügen</div>
+                            <div class="pack-add-sub">Tracke zusätzliche Lebensbereiche</div>
+                        </div>
+                        <div class="pack-add-arrow">›</div>
+                    </div>
                 </div>
 
             </div>
@@ -4381,7 +4449,7 @@
                 <div class="stock-list-container">
                     <div class="stock-list-header">
                         <div class="stock-list-title" id="categoriesOverview">Kategorien</div>
-                        <div class="stock-list-count" id="stockListCount">7 Kategorien</div>
+                        <div class="stock-list-count" id="stockListCount"></div>
                     </div>
                     <div id="stockListItems"></div>
                 </div>
@@ -4389,21 +4457,12 @@
                 <!-- Category Radar Snapshot -->
                 <div class="cd-section-card">
                     <div class="cd-section-header">
-                        <div class="cd-section-title">Profil-Übersicht</div>
-                        <div class="cd-section-sub">Letzter Check-in</div>
+                        <div class="cd-section-title" id="radarSectionTitle">Profil-Übersicht</div>
+                        <div class="cd-section-sub" id="radarSectionSub">Letzter Check-in</div>
                     </div>
                     <div class="cd-radar-container">
                         <canvas id="radarChart"></canvas>
                     </div>
-                </div>
-                
-                <!-- Performance Grid -->
-                <div class="cd-section-card">
-                    <div class="cd-section-header">
-                        <div class="cd-section-title">Performance Vergleich</div>
-                        <div class="cd-section-sub" id="perfGridSub"></div>
-                    </div>
-                    <div class="cd-perf-grid" id="perfGrid"></div>
                 </div>
 
                 <!-- Combined Chart with Legend -->
@@ -4856,6 +4915,9 @@
     </div>
 
     <script>
+        // Record page load time for loading screen minimum duration
+        window._appLoadTime = Date.now();
+        
         // ============================================
         // SAFE DOM HELPERS (Prevents null errors)
         // ============================================
@@ -5363,15 +5425,27 @@
             
             if (todayEntry && !container.querySelector('#checkinForm')) {
                 const today = new Date();
-                container.innerHTML = `
-                    <div class="checkin-status">
-                        <div class="status-icon">✓</div>
-                        <div class="status-title">${t.checkinDone} ${formatDate(today)}</div>
-                        <div class="status-subtitle">${t.checkinDoneText}</div>
-                        <button class="edit-btn" onclick="editCheckin()">${t.editCheckin}</button>
-                        <div style="margin-top: 16px; font-size: 13px; color: var(--text-secondary);">${t.checkinDoneSub}</div>
-                    </div>
-                `;
+                if (isPro) {
+                    container.innerHTML = `
+                        <div class="checkin-status" onclick="startWizardEdit()" style="cursor: pointer;">
+                            <div class="status-icon">✓</div>
+                            <div class="status-title">${t.checkinDone} ${formatDate(today)}</div>
+                            <div class="status-subtitle">${t.checkinDoneText}</div>
+                            <div style="margin-top: 16px; padding: 12px 24px; background: rgba(255,107,53,0.1); border-radius: 12px; color: var(--accent-primary); font-weight: 600; font-size: 14px; display: inline-block;">
+                                ✏️ Zusammenfassung bearbeiten
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    container.innerHTML = `
+                        <div class="checkin-status">
+                            <div class="status-icon">✓</div>
+                            <div class="status-title">${t.checkinDone} ${formatDate(today)}</div>
+                            <div class="status-subtitle">${t.checkinDoneText}</div>
+                            <div style="margin-top: 16px; font-size: 13px; color: var(--text-secondary);">${t.checkinDoneSub}</div>
+                        </div>
+                    `;
+                }
             } else if (!todayEntry) {
                 container.innerHTML = '<div id="checkinForm"></div>';
                 updateCheckinForm();
@@ -5593,8 +5667,7 @@
                         tension: 0.4,
                         pointRadius: 0,
                         pointHoverRadius: 6,
-                        fill: true,
-                        spanGaps: false
+                        fill: true
                     }]
                 },
                 options: {
@@ -5648,66 +5721,80 @@
         }
 
         // Update main chart
-        // Fill date gaps in entries — inserts null for missing days so chart shows gaps
+        // Fill date gaps: creates a continuous timeline from first entry to today
+        // Gap days get the last known value but are flagged for dashed rendering
         function fillDateGaps(entries, valueKey) {
-            if (entries.length < 2) return { labels: [], data: [] };
+            if (entries.length === 0) return { labels: [], data: [], gapFlags: [] };
             
-            const labels = [];
-            const data = [];
+            const getValue = typeof valueKey === 'function' ? valueKey : (e => e[valueKey]);
+            
+            // Local YYYY-MM-DD helper (avoids UTC timezone issues)
+            function toLocalDateStr(d) {
+                return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+            }
+            
+            // Build a date→value map (normalize to local YYYY-MM-DD)
+            const dateMap = {};
+            entries.forEach(e => {
+                const d = toLocalDateStr(new Date(e.date));
+                dateMap[d] = getValue(e);
+            });
+            
+            // Determine range: first entry to today
+            const firstDate = new Date(entries[0].date);
+            firstDate.setHours(0,0,0,0);
             const today = new Date();
             today.setHours(0,0,0,0);
             
-            for (let i = 0; i < entries.length; i++) {
-                const e = entries[i];
-                const date = new Date(e.date);
-                date.setHours(0,0,0,0);
+            const labels = [];
+            const data = [];
+            const gapFlags = []; // true = this point is in a gap
+            
+            let lastValue = getValue(entries[0]);
+            let current = new Date(firstDate);
+            
+            while (current <= today) {
+                const dateStr = toLocalDateStr(current);
+                const label = `${current.getDate()}.${current.getMonth()+1}`;
                 
-                // If there's a gap > 1 day from previous entry, insert null points
-                if (i > 0) {
-                    const prev = new Date(entries[i-1].date);
-                    prev.setHours(0,0,0,0);
-                    const diffDays = Math.round((date - prev) / (1000 * 60 * 60 * 24));
-                    
-                    if (diffDays > 1) {
-                        // Add one null after the previous point to break the line
-                        const nextDay = new Date(prev);
-                        nextDay.setDate(nextDay.getDate() + 1);
-                        labels.push(`${nextDay.getDate()}.${nextDay.getMonth()+1}`);
-                        data.push(null);
-                        
-                        // If gap > 2 days, add another null before current point
-                        if (diffDays > 2) {
-                            const dayBefore = new Date(date);
-                            dayBefore.setDate(dayBefore.getDate() - 1);
-                            labels.push(`${dayBefore.getDate()}.${dayBefore.getMonth()+1}`);
-                            data.push(null);
-                        }
+                if (dateMap[dateStr] !== undefined) {
+                    lastValue = dateMap[dateStr];
+                    labels.push(label);
+                    data.push(lastValue);
+                    gapFlags.push(false);
+                } else {
+                    // Gap day: carry forward last value (flat line) but flag it
+                    labels.push(label);
+                    data.push(lastValue);
+                    gapFlags.push(true);
+                }
+                
+                current.setDate(current.getDate() + 1);
+            }
+            
+            return { labels, data, gapFlags };
+        }
+        
+        // Create Chart.js segment callback for dashed gap lines
+        function createGapSegment(gapFlags) {
+            return {
+                borderColor: function(ctx) {
+                    const i = ctx.p0DataIndex;
+                    const j = ctx.p1DataIndex;
+                    if (gapFlags[i] || gapFlags[j]) {
+                        return 'rgba(255, 107, 53, 0.25)';
                     }
+                    return undefined; // use default
+                },
+                borderDash: function(ctx) {
+                    const i = ctx.p0DataIndex;
+                    const j = ctx.p1DataIndex;
+                    if (gapFlags[i] || gapFlags[j]) {
+                        return [6, 4]; // dashed
+                    }
+                    return undefined; // solid
                 }
-                
-                labels.push(`${date.getDate()}.${date.getMonth()+1}.${date.getFullYear()}`);
-                data.push(typeof valueKey === 'function' ? valueKey(e) : e[valueKey]);
-            }
-            
-            // If last entry is not today, add today with null to show gap extends to now
-            const lastDate = new Date(entries[entries.length - 1].date);
-            lastDate.setHours(0,0,0,0);
-            const daysToToday = Math.round((today - lastDate) / (1000 * 60 * 60 * 24));
-            
-            if (daysToToday > 0) {
-                // Add null gap marker
-                if (daysToToday > 1) {
-                    const nextDay = new Date(lastDate);
-                    nextDay.setDate(nextDay.getDate() + 1);
-                    labels.push(`${nextDay.getDate()}.${nextDay.getMonth()+1}`);
-                    data.push(null);
-                }
-                // Add today label with last known value (dashed to current)
-                labels.push(`${today.getDate()}.${today.getMonth()+1}.${today.getFullYear()}`);
-                data.push(null);
-            }
-            
-            return { labels, data };
+            };
         }
 
         function updateMainChart() {
@@ -5737,27 +5824,26 @@
                 
                 if (entries.length === 0) {
                     const today = new Date();
-                    chartLabels = [`${today.getDate()}.${today.getMonth()+1}.${today.getFullYear()}`];
+                    chartLabels = [`${today.getDate()}.${today.getMonth()+1}`];
                     chartData = [100];
-                } else if (performanceData.entries.length === 1) {
-                    const today = new Date();
-                    chartLabels.push(`${today.getDate()}.${today.getMonth()+1}.${today.getFullYear()}`);
-                    chartData.push(100);
-                    
-                    const e = entries[0];
-                    const date = new Date(e.date);
-                    chartLabels.push(`${date.getDate()}.${date.getMonth()+1}.${date.getFullYear()}`);
-                    chartData.push(e.fysIndex);
+                    mainChart.data.datasets[0].segment = undefined;
                 } else {
-                    // Fill gaps for missing days
                     const filled = fillDateGaps(entries, 'fysIndex');
                     chartLabels = filled.labels;
                     chartData = filled.data;
+                    mainChart.data.datasets[0].segment = createGapSegment(filled.gapFlags);
+                    
+                    // Ensure at least 2 points for a visible line
+                    if (chartData.length === 1) {
+                        // Add baseline 100 before the single point
+                        chartLabels.unshift('Start');
+                        chartData.unshift(100);
+                        filled.gapFlags.unshift(false);
+                    }
                 }
                 
                 mainChart.data.labels = chartLabels;
                 mainChart.data.datasets[0].data = chartData;
-                mainChart.options.spanGaps = false; // Don't connect across nulls
                 mainChart.update('none');
             }
 
@@ -5891,6 +5977,8 @@
                     createPackMiniChart(packId, true);
                 });
             }
+            
+            // Update category mini charts in overview
         }
         
         // Animated chart update with count-up and morph
@@ -5905,20 +5993,20 @@
             
             if (entries.length === 0) {
                 const today = new Date();
-                chartLabels = [`${today.getDate()}.${today.getMonth()+1}.${today.getFullYear()}`];
+                chartLabels = [`${today.getDate()}.${today.getMonth()+1}`];
                 chartData = [100];
-            } else if (performanceData.entries.length === 1) {
-                const today = new Date();
-                chartLabels.push(`${today.getDate()}.${today.getMonth()+1}.${today.getFullYear()}`);
-                chartData.push(100);
-                const e = entries[0];
-                const date = new Date(e.date);
-                chartLabels.push(`${date.getDate()}.${date.getMonth()+1}.${date.getFullYear()}`);
-                chartData.push(e.fysIndex);
+                mainChart.data.datasets[0].segment = undefined;
             } else {
                 const filled = fillDateGaps(entries, 'fysIndex');
                 chartLabels = filled.labels;
                 chartData = filled.data;
+                mainChart.data.datasets[0].segment = createGapSegment(filled.gapFlags);
+                
+                if (chartData.length === 1) {
+                    chartLabels.unshift('Start');
+                    chartData.unshift(100);
+                    filled.gapFlags.unshift(false);
+                }
             }
             
             // Chart.js Morph-Animation
@@ -6015,8 +6103,10 @@
             const heroChange = document.getElementById('detailIndexChange');
             const heroBarFill = document.getElementById('cdHeroBarFill');
             const stockCount = document.getElementById('stockListCount');
+            const categoriesTitle = document.getElementById('categoriesOverview');
             
             if (stockCount) stockCount.textContent = `${categories.length} Kategorien`;
+            if (categoriesTitle) categoriesTitle.textContent = 'Kategorien';
             
             if (entries.length > 0) {
                 const latest = entries[entries.length - 1];
@@ -6051,7 +6141,6 @@
             
             // Render new overview components
             renderRadarChart();
-            renderPerfGrid();
             renderCombinedLegend();
             
             // Update charts
@@ -6076,6 +6165,17 @@
             if (indexLabel) indexLabel.textContent = 'FYS-INDEX';
             if (heroLabel) heroLabel.textContent = 'FYS-INDEX';
             if (headerTitle) headerTitle.textContent = 'Kategorien';
+            
+            // Reset section titles
+            const radarTitle = document.getElementById('radarSectionTitle');
+            const radarSub = document.getElementById('radarSectionSub');
+            const chartTitle = document.getElementById('allCategoriesTitle');
+            if (radarTitle) radarTitle.textContent = 'Profil-Übersicht';
+            if (radarSub) radarSub.textContent = 'Letzter Check-in';
+            if (chartTitle) chartTitle.textContent = 'Kursverlauf';
+            
+            // Reset pack legend state
+            window._packLegendState = {};
             
             // Clean up pack values table if it exists
             const packTable = document.getElementById('packValuesTableContainer');
@@ -6201,20 +6301,17 @@
 
         // Create Stock List for Performance Pack Categories (1:1 copy)
         function createPackStockList(pack) {
-            currentStockListType = pack.id; // Mark which pack is displayed
+            currentStockListType = pack.id;
             
             const container = document.getElementById('stockListItems');
             const categoriesOverview = document.getElementById('categoriesOverview');
+            const stockCount = document.getElementById('stockListCount');
             
-            if (!container) {
-                console.error('stockListItems container not found!');
-                return;
-            }
+            if (!container) return;
             
-            // Update title
-            if (categoriesOverview) {
-                categoriesOverview.textContent = `${pack.name} Kategorien`;
-            }
+            // Update title and count for this pack
+            if (categoriesOverview) categoriesOverview.textContent = `${pack.name}`;
+            if (stockCount) stockCount.textContent = `${pack.categories.length} Kategorien`;
             
             container.innerHTML = '';
 
@@ -6485,21 +6582,24 @@
             let chartLabels = [];
             let chartData = [];
             
-            if (performanceData.entries.length === 1) {
-                const today = new Date();
-                chartLabels.push(`${today.getDate()}.${today.getMonth()+1}.${today.getFullYear()}`);
-                chartData.push(100);
-                const e = entries[0];
-                const date = new Date(e.date);
-                chartLabels.push(`${date.getDate()}.${date.getMonth()+1}.${date.getFullYear()}`);
-                chartData.push(e.categoryValues ? e.categoryValues[currentCategoryId] : 100);
-            } else {
-                entries.forEach(e => {
-                    const date = new Date(e.date);
-                    chartLabels.push(`${date.getDate()}.${date.getMonth()+1}.${date.getFullYear()}`);
-                    chartData.push(e.categoryValues ? e.categoryValues[currentCategoryId] : 100);
-                });
+            const catId = currentCategoryId;
+            const filled = fillDateGaps(entries, e => e.categoryValues ? e.categoryValues[catId] : 100);
+            chartLabels = filled.labels;
+            chartData = filled.data;
+            
+            // Ensure at least 2 points
+            if (chartData.length === 1) {
+                chartLabels.unshift('Start');
+                chartData.unshift(100);
+                filled.gapFlags.unshift(false);
             }
+            
+            // Gap segment with category color
+            const catColor = category ? category.color : '#ff6b35';
+            categoryDetailChart.data.datasets[0].segment = {
+                borderColor: ctx => (filled.gapFlags[ctx.p0DataIndex] || filled.gapFlags[ctx.p1DataIndex]) ? catColor + '40' : undefined,
+                borderDash: ctx => (filled.gapFlags[ctx.p0DataIndex] || filled.gapFlags[ctx.p1DataIndex]) ? [6, 4] : undefined
+            };
             
             categoryDetailChart.data.labels = chartLabels;
             categoryDetailChart.data.datasets[0].data = chartData;
@@ -6701,27 +6801,41 @@
             let chartLabels = [];
             let chartData = [];
             
-            if (performanceData.entries.length === 1) {
-                const today = new Date();
-                chartLabels.push(`${today.getDate()}.${today.getMonth()+1}.${today.getFullYear()}`);
-                chartData.push(100);
-                const e = entries[0];
-                const date = new Date(e.date);
-                chartLabels.push(`${date.getDate()}.${date.getMonth()+1}.${date.getFullYear()}`);
-                chartData.push(e.categoryValues ? e.categoryValues[currentCategoryId] : 100);
-            } else {
-                const catId = currentCategoryId;
-                const filled = fillDateGaps(entries, e => e.categoryValues ? e.categoryValues[catId] : 100);
-                chartLabels = filled.labels;
-                chartData = filled.data;
+            const catId = currentCategoryId;
+            const filled = fillDateGaps(entries, e => e.categoryValues ? e.categoryValues[catId] : 100);
+            chartLabels = filled.labels;
+            chartData = filled.data;
+            
+            // Ensure at least 2 points
+            if (chartData.length === 1) {
+                chartLabels.unshift('Start');
+                chartData.unshift(100);
+                filled.gapFlags.unshift(false);
             }
+            
+            // Create color-matched gap segment
+            const catColor = category.color;
+            const gapSegment = {
+                borderColor: function(ctx) {
+                    const i = ctx.p0DataIndex;
+                    const j = ctx.p1DataIndex;
+                    if (filled.gapFlags[i] || filled.gapFlags[j]) return catColor + '40';
+                    return undefined;
+                },
+                borderDash: function(ctx) {
+                    const i = ctx.p0DataIndex;
+                    const j = ctx.p1DataIndex;
+                    if (filled.gapFlags[i] || filled.gapFlags[j]) return [6, 4];
+                    return undefined;
+                }
+            };
             
             categoryDetailChart.data.labels = chartLabels;
             categoryDetailChart.data.datasets[0].data = chartData;
+            categoryDetailChart.data.datasets[0].segment = gapSegment;
             categoryDetailChart.data.datasets[0].borderColor = category.color;
             categoryDetailChart.data.datasets[0].backgroundColor = `${category.color}20`;
             categoryDetailChart.data.datasets[0].pointHoverBackgroundColor = category.color;
-            categoryDetailChart.data.datasets[0].spanGaps = false;
             categoryDetailChart.update('none');
         }
 
@@ -6729,6 +6843,7 @@
         function initCombinedChart() {
             const ctx = document.getElementById('combinedChart').getContext('2d');
             const t = translations[currentLang];
+            const actualTheme = document.documentElement.getAttribute('data-theme') || 'dark';
             
             const datasets = categories.map(cat => ({
                 label: t.categories[cat.id],
@@ -6738,7 +6853,7 @@
                 borderWidth: 2,
                 tension: 0.4,
                 pointRadius: 0,
-                pointHoverRadius: 5
+                pointHoverRadius: 4
             }));
 
             datasets.push({
@@ -6749,7 +6864,7 @@
                 borderWidth: 3,
                 tension: 0.4,
                 pointRadius: 0,
-                pointHoverRadius: 6
+                pointHoverRadius: 5
             });
 
             combinedChart = new Chart(ctx, {
@@ -6762,20 +6877,34 @@
                     plugins: {
                         legend: { display: false },
                         tooltip: {
-                            backgroundColor: currentTheme === 'dark' ? 'rgba(17, 17, 17, 0.95)' : 'rgba(255, 255, 255, 0.98)',
-                            titleColor: currentTheme === 'dark' ? '#ffffff' : '#ff6b35',
-                            bodyColor: currentTheme === 'dark' ? '#6b6b6b' : '#ff8f5f',
-                            borderColor: currentTheme === 'dark' ? '#1a1a1a' : '#ffe8e0',
+                            backgroundColor: actualTheme === 'dark' ? 'rgba(20, 20, 20, 0.96)' : 'rgba(255, 255, 255, 0.98)',
+                            titleColor: actualTheme === 'dark' ? '#aaa' : '#666',
+                            bodyColor: actualTheme === 'dark' ? '#fff' : '#333',
+                            borderColor: actualTheme === 'dark' ? '#333' : '#e0e0e0',
                             borderWidth: 1,
-                            padding: 12,
+                            padding: { top: 10, bottom: 10, left: 14, right: 14 },
+                            cornerRadius: 10,
+                            titleFont: { size: 11, weight: '500' },
+                            bodyFont: { size: 12, weight: '600' },
+                            bodySpacing: 6,
+                            usePointStyle: true,
+                            boxWidth: 8,
+                            boxHeight: 8,
+                            boxPadding: 4,
+                            filter: function(tooltipItem) {
+                                return !tooltipItem.dataset.hidden;
+                            },
                             callbacks: {
-                                // Wert oben
                                 title: function(context) {
-                                    return context[0].dataset.label + ': ' + context[0].parsed.y.toFixed(1);
+                                    return context[0].label;
                                 },
-                                // Datum unten
                                 label: function(context) {
-                                    return context.label;
+                                    const val = context.parsed.y;
+                                    if (val === null || val === undefined) return null;
+                                    return ` ${context.dataset.label}:  ${val.toFixed(1)}`;
+                                },
+                                labelPointStyle: function() {
+                                    return { pointStyle: 'circle', rotation: 0 };
                                 }
                             }
                         }
@@ -6783,24 +6912,24 @@
                     scales: {
                         x: {
                             grid: { 
-                                color: currentTheme === 'dark' ? '#1a1a1a' : '#fff5f0', 
+                                color: actualTheme === 'dark' ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.04)', 
                                 drawBorder: false 
                             },
                             ticks: { 
-                                color: currentTheme === 'dark' ? '#404040' : '#ff8f5f', 
-                                font: { size: 10 } 
+                                color: actualTheme === 'dark' ? '#555' : '#999', 
+                                font: { size: 10 },
+                                maxRotation: 0
                             }
                         },
                         y: {
-                            // Auto-Scale für Trading-Platform-Look
                             beginAtZero: false,
                             grace: '5%',
                             grid: { 
-                                color: currentTheme === 'dark' ? '#1a1a1a' : '#fff5f0', 
+                                color: actualTheme === 'dark' ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.04)', 
                                 drawBorder: false 
                             },
                             ticks: { 
-                                color: currentTheme === 'dark' ? '#404040' : '#ff8f5f', 
+                                color: actualTheme === 'dark' ? '#555' : '#999', 
                                 font: { size: 10 },
                                 padding: 5
                             }
@@ -6816,27 +6945,61 @@
 
             const entries = getFilteredEntries();
             
-            combinedChart.data.labels = entries.map(e => {
-                const date = new Date(e.date);
-                return `${date.getDate()}.${date.getMonth() + 1}`;
-            });
-
+            if (entries.length === 0) {
+                const today = new Date();
+                combinedChart.data.labels = [`${today.getDate()}.${today.getMonth()+1}`];
+                categories.forEach((cat, i) => { combinedChart.data.datasets[i].data = [100]; });
+                combinedChart.data.datasets[combinedChart.data.datasets.length - 1].data = [100];
+                combinedChart.update();
+                return;
+            }
+            
+            // Use fillDateGaps for FYS Index to get the shared timeline
+            const fysGaps = fillDateGaps(entries, 'fysIndex');
+            let labels = fysGaps.labels;
+            let fysData = fysGaps.data;
+            let gapFlags = fysGaps.gapFlags;
+            
+            // Add Start=100 baseline if only 1 data point
+            const needsStart = labels.length === 1;
+            if (needsStart) {
+                labels.unshift('Start');
+                fysData.unshift(100);
+                gapFlags.unshift(false);
+            }
+            
+            combinedChart.data.labels = labels;
+            
+            // Update each category dataset
             categories.forEach((cat, index) => {
-                combinedChart.data.datasets[index].data = entries.map(e => 
-                    e.categoryValues ? e.categoryValues[cat.id] : 100
-                );
+                const catGaps = fillDateGaps(entries, e => e.categoryValues ? e.categoryValues[cat.id] : 100);
+                let catData = catGaps.data;
+                
+                if (needsStart) catData.unshift(100);
+                
+                combinedChart.data.datasets[index].data = catData;
+                
+                // Gap segment per category
+                const color = cat.color;
+                combinedChart.data.datasets[index].segment = {
+                    borderColor: ctx => (gapFlags[ctx.p0DataIndex] || gapFlags[ctx.p1DataIndex]) ? color + '40' : undefined,
+                    borderDash: ctx => (gapFlags[ctx.p0DataIndex] || gapFlags[ctx.p1DataIndex]) ? [6, 4] : undefined
+                };
             });
-
-            combinedChart.data.datasets[combinedChart.data.datasets.length - 1].data = entries.map(e => e.fysIndex);
+            
+            // FYS Index dataset (last one)
+            const fysIdx = combinedChart.data.datasets.length - 1;
+            combinedChart.data.datasets[fysIdx].data = fysData;
+            combinedChart.data.datasets[fysIdx].segment = createGapSegment(gapFlags);
+            
             combinedChart.update();
         }
         
-        // ============================================
         // RADAR CHART
         // ============================================
         let radarChartInstance = null;
         
-        function renderRadarChart() {
+        function renderRadarChart(pack) {
             const canvas = document.getElementById('radarChart');
             if (!canvas) return;
             
@@ -6846,9 +7009,19 @@
             const entries = performanceData.entries;
             const latest = entries.length > 0 ? entries[entries.length - 1] : null;
             
-            const labels = categories.map(c => t.categories[c.id]);
-            const data = categories.map(c => latest ? (latest.values?.[c.id] || 5) : 5);
-            const colors = categories.map(c => c.color);
+            let labels, data, colors;
+            
+            if (pack) {
+                // Pack mode: use pack categories
+                labels = pack.categories.map(c => c.name[currentLang] || c.name.de || c.name.en);
+                data = pack.categories.map(c => latest ? (latest.values?.[c.id] || 5) : 5);
+                colors = pack.categories.map(c => c.color);
+            } else {
+                // FYS mode: use base categories
+                labels = categories.map(c => t.categories[c.id]);
+                data = categories.map(c => latest ? (latest.values?.[c.id] || 5) : 5);
+                colors = categories.map(c => c.color);
+            }
             
             const ctx = canvas.getContext('2d');
             const actualTheme = document.documentElement.getAttribute('data-theme') || 'dark';
@@ -7163,20 +7336,18 @@
         // DAILY CHECK-IN REMINDER
         // ============================================
         
+        // Read saved state: only 'true' means enabled, everything else is disabled
         let reminderEnabled = localStorage.getItem('fysReminder') === 'true';
         let reminderTime = localStorage.getItem('fysReminderTime') || '20:00';
         let notificationPermission = 'default';
         
         async function requestNotificationPermission() {
             if (!('Notification' in window)) {
-                alert('❌ Benachrichtigungen werden von deinem Browser nicht unterstützt.');
+                console.warn('Notifications not supported');
                 return false;
             }
             
-            if (Notification.permission === 'granted') {
-                return true;
-            }
-            
+            if (Notification.permission === 'granted') return true;
             if (Notification.permission === 'denied') {
                 alert('❌ Benachrichtigungen wurden blockiert. Bitte aktiviere sie in deinen Browser-Einstellungen.');
                 return false;
@@ -7184,44 +7355,33 @@
             
             const permission = await Notification.requestPermission();
             notificationPermission = permission;
-            
-            if (permission === 'granted') {
-                return true;
-            } else {
-                alert('❌ Benachrichtigungen wurden abgelehnt. Aktiviere sie in den Einstellungen um Erinnerungen zu erhalten.');
-                return false;
-            }
+            return permission === 'granted';
         }
         
         async function toggleReminder() {
-            reminderEnabled = !reminderEnabled;
+            const toggle = document.getElementById('reminderToggle');
+            const container = document.getElementById('reminderTimeContainer');
             
-            if (reminderEnabled) {
-                // Request permission
+            if (!reminderEnabled) {
+                // Trying to enable
                 const hasPermission = await requestNotificationPermission();
+                if (!hasPermission) return; // Don't change state
                 
-                if (!hasPermission) {
-                    reminderEnabled = false;
-                    return;
-                }
-                
-                // Show time picker
-                document.getElementById('reminderTimeContainer').style.display = 'block';
-                document.getElementById('reminderToggle').classList.add('active');
-                
-                // Schedule reminder
+                reminderEnabled = true;
+                localStorage.setItem('fysReminder', 'true');
+                if (toggle) toggle.classList.add('active');
+                if (container) container.style.display = 'block';
                 scheduleReminder();
-                
                 console.log('✅ Daily Reminder aktiviert für', reminderTime);
             } else {
-                // Hide time picker
-                document.getElementById('reminderTimeContainer').style.display = 'none';
-                document.getElementById('reminderToggle').classList.remove('active');
-                
+                // Disabling
+                reminderEnabled = false;
+                localStorage.setItem('fysReminder', 'false');
+                if (toggle) toggle.classList.remove('active');
+                if (container) container.style.display = 'none';
+                if (reminderIntervalId) { clearInterval(reminderIntervalId); reminderIntervalId = null; }
                 console.log('❌ Daily Reminder deaktiviert');
             }
-            
-            localStorage.setItem('fysReminder', reminderEnabled ? 'true' : 'false');
         }
         
         function updateReminderTime() {
@@ -7322,49 +7482,32 @@
         
         // Initialize reminder on page load
         function initializeReminder() {
-            console.log('🔔 Initializing Reminder System...');
-            console.log('   reminderEnabled:', reminderEnabled);
-            console.log('   reminderTime:', reminderTime);
-            
-            // Speichere initial state wenn noch nicht gesetzt
-            if (localStorage.getItem('fysReminder') === null) {
-                localStorage.setItem('fysReminder', 'false');
-                reminderEnabled = false;
-                console.log('💾 Initial reminder state gespeichert: false');
-            }
-            
-            // Check if elements exist
             const timeInput = document.getElementById('reminderTime');
             const toggle = document.getElementById('reminderToggle');
             const container = document.getElementById('reminderTimeContainer');
             
             if (!timeInput || !toggle || !container) {
-                console.warn('⚠️ Reminder elements not found yet, will retry...');
                 setTimeout(initializeReminder, 100);
                 return;
             }
             
-            // Set time input value
+            // Restore saved time
             timeInput.value = reminderTime;
             
-            // Update UI based on saved state
+            // Restore saved toggle state
             if (reminderEnabled) {
                 toggle.classList.add('active');
                 container.style.display = 'block';
-                console.log('✅ Reminder UI aktiviert');
-                
-                // Schedule reminder
                 scheduleReminder();
+                console.log('🔔 Reminder restored: ON at', reminderTime);
             } else {
                 toggle.classList.remove('active');
                 container.style.display = 'none';
-                console.log('❌ Reminder UI deaktiviert');
+                console.log('🔔 Reminder restored: OFF');
             }
             
-            // Check notification permission
             if ('Notification' in window) {
                 notificationPermission = Notification.permission;
-                console.log('🔔 Notification Permission:', notificationPermission);
             }
         }
 
@@ -7646,21 +7789,24 @@
         function renderPerformancePacks() {
             const container = document.getElementById('performancePacksContainer');
             const listContainer = document.getElementById('performancePacksList');
+            const addCard = document.getElementById('packAddCard');
 
-            if (!isPro) {
-                container.style.display = 'none';
-                return;
-            }
-
-            const activePacks = performanceData.activePacks || [];
-            
-            if (activePacks.length === 0) {
-                container.style.display = 'none';
-                return;
-            }
+            if (!container || !listContainer || !addCard) return;
 
             container.style.display = 'block';
+            
+            const activePacks = (isPro && performanceData.activePacks) ? performanceData.activePacks : [];
+            
+            // Show/hide add card
+            if (activePacks.length === 0) {
+                addCard.style.display = 'flex';
+            } else {
+                addCard.style.display = 'none';
+            }
+
             listContainer.innerHTML = '';
+            
+            if (!isPro || activePacks.length === 0) return;
 
             // Render each active pack like FYS-Index
             activePacks.forEach(packId => {
@@ -7677,11 +7823,9 @@
                     packIndexValue = lastEntry.packIndices?.[pack.id] || 100.0;
                     
                     if (performanceData.entries.length === 1) {
-                        // ALLERERSTER ENTRY: Vergleich mit 100
                         changeValue = packIndexValue - 100;
                         changePercent = (changeValue / 100) * 100;
                     } else if (performanceData.entries.length > 1) {
-                        // Normale Entries: Vergleich mit vorherigem Entry
                         const prevEntry = performanceData.entries[performanceData.entries.length - 2];
                         const prevValue = prevEntry.packIndices?.[pack.id] || 100.0;
                         changeValue = packIndexValue - prevValue;
@@ -7689,7 +7833,6 @@
                     }
                 }
 
-                // Create main chart section like FYS Index
                 const packSection = document.createElement('div');
                 packSection.className = 'main-chart-section';
                 packSection.style.marginBottom = '20px';
@@ -7714,81 +7857,79 @@
 
                 listContainer.appendChild(packSection);
 
-                // Create chart after DOM insertion
                 setTimeout(() => {
                     createPackMiniChart(pack.id);
                 }, 100);
             });
+        }
+        
+        function handleAddPack() {
+            if (!isPro) {
+                // Show upgrade prompt
+                const upgrade = confirm('🌟 Performance Packs sind ein Pro-Feature!\n\nTracke zusätzliche Lebensbereiche wie Finanzen, Kreativität und mehr.\n\nJetzt FYS Pro aktivieren?');
+                if (upgrade) {
+                    togglePro();
+                }
+                return;
+            }
+            
+            // Pro user — go to settings to manage packs
+            switchView('settings');
         }
 
         function createPackMiniChart(packId, animate = false) {
             const canvas = document.getElementById(`packChart_${packId}`);
             if (!canvas) return;
 
-            // Use SAME time range as FYS Index (synchronized)
             const entries = getFilteredEntries();
-            
-            // Filter for entries with pack data
-            const packEntries = entries.filter(e => 
-                e.packIndices && e.packIndices[packId] !== undefined
-            );
+            const packEntries = entries.filter(e => e.packIndices && e.packIndices[packId] !== undefined);
+            const actualTheme = document.documentElement.getAttribute('data-theme') || 'dark';
 
-            let labels = [];
-            let data = [];
+            let labels, chartData, gapFlags;
             
-            // ALLERERSTER ENTRY: Zeige 100 → Entry
-            if (performanceData.entries.length === 1 && packEntries.length === 1) {
+            if (packEntries.length === 0) {
                 const today = new Date();
-                const startLabel = `${today.getDate()}.${today.getMonth()+1}.${today.getFullYear()}`;
-                labels.push(startLabel);
-                data.push(100);
-                
-                const e = packEntries[0];
-                const date = new Date(e.date);
-                labels.push(`${date.getDate()}.${date.getMonth() + 1}.${date.getFullYear()}`);
-                data.push(e.packIndices[packId]);
+                labels = [`${today.getDate()}.${today.getMonth()+1}`];
+                chartData = [100];
+                gapFlags = [false];
             } else {
-                labels = packEntries.map(e => {
-                    const date = new Date(e.date);
-                    return `${date.getDate()}.${date.getMonth() + 1}.${date.getFullYear()}`;
-                });
-                data = packEntries.map(e => e.packIndices[packId]);
+                const filled = fillDateGaps(packEntries, e => e.packIndices[packId]);
+                labels = filled.labels;
+                chartData = filled.data;
+                gapFlags = filled.gapFlags;
+                
+                if (chartData.length === 1) {
+                    labels.unshift('Start');
+                    chartData.unshift(100);
+                    gapFlags.unshift(false);
+                }
             }
 
-            // UPDATE existing chart if it exists (enables morph animation)
             const existingChart = window[`packMiniChart_${packId}`];
             if (existingChart && animate) {
                 existingChart.data.labels = labels;
-                existingChart.data.datasets[0].data = data;
-                existingChart.update({
-                    duration: 450,
-                    easing: 'easeInOutCubic'
-                });
+                existingChart.data.datasets[0].data = chartData;
+                existingChart.data.datasets[0].segment = createGapSegment(gapFlags);
+                existingChart.update({ duration: 450, easing: 'easeInOutCubic' });
                 return;
             }
             
-            // Destroy and recreate only on first render
-            if (existingChart) {
-                existingChart.destroy();
-            }
+            if (existingChart) existingChart.destroy();
 
-            const ctx = canvas.getContext('2d');
-
-            // 1:1 COPY of FYS Index Chart Config!
-            window[`packMiniChart_${packId}`] = new Chart(ctx, {
+            window[`packMiniChart_${packId}`] = new Chart(canvas.getContext('2d'), {
                 type: 'line',
                 data: {
                     labels: labels,
                     datasets: [{
-                        label: packId,
-                        data: data,
+                        data: chartData,
                         borderColor: '#ff6b35',
                         backgroundColor: 'rgba(255, 107, 53, 0.1)',
                         borderWidth: 3,
                         tension: 0.4,
                         pointRadius: 0,
                         pointHoverRadius: 6,
-                        fill: true
+                        fill: true,
+                        segment: createGapSegment(gapFlags)
                     }]
                 },
                 options: {
@@ -7798,40 +7939,23 @@
                     plugins: {
                         legend: { display: false },
                         tooltip: {
-                            backgroundColor: currentTheme === 'dark' ? 'rgba(17, 17, 17, 0.95)' : 'rgba(255, 255, 255, 0.98)',
-                            titleColor: currentTheme === 'dark' ? '#ffffff' : '#ff6b35',
-                            bodyColor: currentTheme === 'dark' ? '#6b6b6b' : '#ff8f5f',
-                            borderColor: currentTheme === 'dark' ? '#1a1a1a' : '#ffe8e0',
-                            borderWidth: 1,
-                            padding: 12,
-                            displayColors: false,
+                            backgroundColor: actualTheme === 'dark' ? 'rgba(17,17,17,0.95)' : 'rgba(255,255,255,0.98)',
+                            titleColor: actualTheme === 'dark' ? '#fff' : '#ff6b35',
+                            bodyColor: actualTheme === 'dark' ? '#6b6b6b' : '#ff8f5f',
+                            borderColor: actualTheme === 'dark' ? '#1a1a1a' : '#ffe8e0',
+                            borderWidth: 1, padding: 12, displayColors: false,
                             callbacks: {
-                                title: function(context) {
-                                    return context[0].parsed.y.toFixed(1);
-                                },
-                                label: function(context) {
-                                    return context.label;
-                                }
+                                title: ctx => ctx[0].parsed.y.toFixed(1),
+                                label: ctx => ctx.label
                             }
                         }
                     },
                     scales: {
-                        x: {
-                            grid: { display: false },
-                            ticks: { display: false }
-                        },
+                        x: { grid: { display: false }, ticks: { display: false } },
                         y: {
-                            beginAtZero: false,
-                            grace: '5%',
-                            grid: { 
-                                color: currentTheme === 'dark' ? '#1a1a1a' : '#fff5f0', 
-                                drawBorder: false 
-                            },
-                            ticks: { 
-                                color: currentTheme === 'dark' ? '#404040' : '#ff8f5f', 
-                                font: { size: 10 },
-                                padding: 5
-                            }
+                            beginAtZero: false, grace: '5%',
+                            grid: { color: actualTheme === 'dark' ? '#1a1a1a' : '#f5f5f5', drawBorder: false },
+                            ticks: { color: actualTheme === 'dark' ? '#404040' : '#999', font: { size: 10 }, padding: 5 }
                         }
                     }
                 }
@@ -7863,9 +7987,11 @@
             
             // Update FYS-INDEX label to PACK NAME
             const indexLabel = document.querySelector('#chartDetailsView .fys-index-label');
-            if (indexLabel) {
-                indexLabel.textContent = pack.name.toUpperCase();
-            }
+            const heroLabel = document.getElementById('cdHeroLabel');
+            const headerTitle = document.getElementById('cdHeaderTitle');
+            if (indexLabel) indexLabel.textContent = pack.name.toUpperCase();
+            if (heroLabel) heroLabel.textContent = pack.name.toUpperCase();
+            if (headerTitle) headerTitle.textContent = pack.name;
             
             // Update index summary
             let currentValue = 100;
@@ -7891,6 +8017,21 @@
             
             // Create stock list for pack categories (with CONSISTENT ICONS)
             createPackStockList(pack);
+            
+            // Force correct count (redundant safety)
+            const packStockCount = document.getElementById('stockListCount');
+            if (packStockCount) packStockCount.textContent = `${pack.categories.length} Kategorien`;
+            
+            // Render radar chart with pack categories
+            renderRadarChart(pack);
+            
+            // Update section titles for pack context
+            const radarTitle = document.getElementById('radarSectionTitle');
+            const radarSub = document.getElementById('radarSectionSub');
+            const chartTitle = document.getElementById('allCategoriesTitle');
+            if (radarTitle) radarTitle.textContent = pack.name + ' Übersicht';
+            if (radarSub) radarSub.textContent = 'Letzter Check-in';
+            if (chartTitle) chartTitle.textContent = pack.name + ' Kursverlauf';
             
             // Update combined chart with pack data
             updatePackCombinedChart(packId);
@@ -8053,87 +8194,170 @@
         function updatePackCombinedChart(packId) {
             const canvas = document.getElementById('combinedChart');
             if (!canvas) return;
-
-            const ctx = canvas.getContext('2d');
             
-            if (combinedChart) {
-                combinedChart.destroy();
-            }
+            if (combinedChart) combinedChart.destroy();
 
-            const entries = getFilteredEntries();
+            const pack = performancePacks.find(p => p.id === packId);
+            if (!pack) return;
+            
+            const entries = getFilteredEntries().filter(e => e.packIndices && e.packIndices[packId] !== undefined);
+            const actualTheme = document.documentElement.getAttribute('data-theme') || 'dark';
+            
             if (entries.length === 0) {
                 combinedChart = null;
                 return;
             }
 
-            const pack = performancePacks.find(p => p.id === packId);
-            if (!pack) return;
-
-            const labels = entries.map(e => {
-                const d = new Date(e.date);
-                return d.toLocaleDateString('de-DE', { month: 'short', day: 'numeric' });
-            });
+            // Use fillDateGaps for timeline
+            const packGaps = fillDateGaps(entries, e => e.packIndices[packId]);
+            let labels = packGaps.labels;
+            let gapFlags = packGaps.gapFlags;
+            const needsStart = labels.length === 1;
+            
+            if (needsStart) {
+                labels.unshift('Start');
+                gapFlags.unshift(false);
+            }
 
             // Create datasets for all pack categories
             const datasets = pack.categories.map(cat => {
-                const data = entries.map(e => e.categoryValues?.[cat.id] || 100);
+                const catGaps = fillDateGaps(entries, e => e.categoryValues?.[cat.id] || 100);
+                let catData = catGaps.data;
+                if (needsStart) catData.unshift(100);
                 
                 return {
-                    label: cat.name,
-                    data: data,
+                    label: cat.name[currentLang] || cat.name.de || cat.name.en,
+                    data: catData,
                     borderColor: cat.color,
-                    backgroundColor: `${cat.color}10`,
-                    fill: false,
+                    backgroundColor: 'transparent',
+                    borderWidth: 2,
                     tension: 0.4,
                     pointRadius: 0,
-                    borderWidth: 2
+                    pointHoverRadius: 4,
+                    segment: {
+                        borderColor: ctx => (gapFlags[ctx.p0DataIndex] || gapFlags[ctx.p1DataIndex]) ? cat.color + '40' : undefined,
+                        borderDash: ctx => (gapFlags[ctx.p0DataIndex] || gapFlags[ctx.p1DataIndex]) ? [6, 4] : undefined
+                    }
                 };
             });
 
-            combinedChart = new Chart(ctx, {
+            // Add pack index line
+            let packData = packGaps.data;
+            if (needsStart) packData.unshift(100);
+            
+            datasets.push({
+                label: pack.name,
+                data: packData,
+                borderColor: '#ff6b35',
+                backgroundColor: 'transparent',
+                borderWidth: 3,
+                tension: 0.4,
+                pointRadius: 0,
+                pointHoverRadius: 5,
+                segment: createGapSegment(gapFlags)
+            });
+
+            combinedChart = new Chart(canvas.getContext('2d'), {
                 type: 'line',
-                data: {
-                    labels: labels,
-                    datasets: datasets
-                },
+                data: { labels, datasets },
                 options: {
                     responsive: true,
-                    maintainAspectRatio: true,
+                    maintainAspectRatio: false,
+                    interaction: { mode: 'index', intersect: false },
                     plugins: {
-                        legend: {
-                            display: true,
-                            position: 'bottom',
-                            labels: {
-                                color: '#666',
-                                usePointStyle: true,
-                                padding: 15,
-                                font: { size: 11 }
-                            }
-                        },
+                        legend: { display: false },
                         tooltip: {
-                            mode: 'index',
-                            intersect: false,
-                            backgroundColor: 'rgba(0, 0, 0, 0.8)',
-                            padding: 12
+                            backgroundColor: actualTheme === 'dark' ? 'rgba(20,20,20,0.96)' : 'rgba(255,255,255,0.98)',
+                            titleColor: actualTheme === 'dark' ? '#aaa' : '#666',
+                            bodyColor: actualTheme === 'dark' ? '#fff' : '#333',
+                            borderColor: actualTheme === 'dark' ? '#333' : '#e0e0e0',
+                            borderWidth: 1,
+                            padding: { top: 10, bottom: 10, left: 14, right: 14 },
+                            cornerRadius: 10,
+                            titleFont: { size: 11, weight: '500' },
+                            bodyFont: { size: 12, weight: '600' },
+                            bodySpacing: 6,
+                            usePointStyle: true,
+                            boxWidth: 8, boxHeight: 8, boxPadding: 4,
+                            filter: item => !item.dataset.hidden,
+                            callbacks: {
+                                title: ctx => ctx[0].label,
+                                label: ctx => {
+                                    const val = ctx.parsed.y;
+                                    if (val === null || val === undefined) return null;
+                                    return ` ${ctx.dataset.label}:  ${val.toFixed(1)}`;
+                                },
+                                labelPointStyle: () => ({ pointStyle: 'circle', rotation: 0 })
+                            }
                         }
                     },
                     scales: {
                         x: {
-                            grid: { display: false },
-                            ticks: { color: '#666', maxTicksLimit: 6 }
+                            grid: { color: actualTheme === 'dark' ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.04)', drawBorder: false },
+                            ticks: { color: actualTheme === 'dark' ? '#555' : '#999', font: { size: 10 }, maxRotation: 0 }
                         },
                         y: {
-                            grid: { color: '#1a1a1a' },
-                            ticks: { color: '#666' }
+                            beginAtZero: false, grace: '5%',
+                            grid: { color: actualTheme === 'dark' ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.04)', drawBorder: false },
+                            ticks: { color: actualTheme === 'dark' ? '#555' : '#999', font: { size: 10 }, padding: 5 }
                         }
-                    },
-                    interaction: {
-                        mode: 'nearest',
-                        axis: 'x',
-                        intersect: false
                     }
                 }
             });
+            
+            // Render pack-specific legend
+            renderPackCombinedLegend(pack);
+        }
+        
+        function renderPackCombinedLegend(pack) {
+            const container = document.getElementById('combinedLegend');
+            if (!container || !combinedChart) return;
+            
+            // Build legend items: all pack categories + pack index
+            const items = pack.categories.map((cat, i) => ({
+                id: cat.id,
+                label: cat.name[currentLang] || cat.name.de || cat.name.en,
+                color: cat.color,
+                datasetIndex: i
+            }));
+            
+            items.push({
+                id: pack.id,
+                label: pack.name,
+                color: '#ff6b35',
+                datasetIndex: pack.categories.length
+            });
+            
+            // Init legend state
+            if (!window._packLegendState) window._packLegendState = {};
+            items.forEach(item => {
+                if (window._packLegendState[item.id] === undefined) window._packLegendState[item.id] = true;
+            });
+            
+            container.innerHTML = items.map(item => {
+                const active = window._packLegendState[item.id];
+                return `<div class="cd-legend-item ${active ? 'active' : 'dimmed'}" 
+                    onclick="togglePackLegend('${item.id}', ${item.datasetIndex})" 
+                    style="${active ? `border-color: ${item.color}40;` : ''}">
+                    <div class="cd-legend-dot" style="background: ${item.color};"></div>
+                    ${item.label}
+                </div>`;
+            }).join('');
+        }
+        
+        function togglePackLegend(id, datasetIndex) {
+            if (!window._packLegendState) window._packLegendState = {};
+            window._packLegendState[id] = !window._packLegendState[id];
+            
+            if (combinedChart && combinedChart.data.datasets[datasetIndex]) {
+                combinedChart.data.datasets[datasetIndex].hidden = !window._packLegendState[id];
+                combinedChart.update('none');
+            }
+            
+            // Re-render legend with current pack
+            const currentPackId = currentStockListType;
+            const pack = performancePacks.find(p => p.id === currentPackId);
+            if (pack) renderPackCombinedLegend(pack);
         }
 
         function openPackCategoryDetail(packId, categoryId) {
@@ -8526,68 +8750,106 @@
         function calculateStreak() {
             console.log('🔥 calculateStreak called');
             
-            let streak = 0;
             const today = new Date();
             today.setHours(0, 0, 0, 0);
             
-            // Prüfe rückwärts ab heute, ob CheckIn + Journal existiert
-            let checkDate = new Date(today);
-            
-            while (true) {
-                const dateStr = checkDate.toISOString().split('T')[0];
+            // Helper: count consecutive days backwards from today for a condition
+            function countStreak(checkFn) {
+                let streak = 0;
+                let checkDate = new Date(today);
                 
-                // Hat CheckIn?
-                const hasCheckin = performanceData.entries && performanceData.entries.some(e => {
-                    const entryDate = new Date(e.date).toISOString().split('T')[0];
-                    return entryDate === dateStr;
-                });
-                
-                // Hat Journal?
-                const hasJournal = journalData && journalData[dateStr] && journalData[dateStr].trim().length > 0;
-                
-                // Beide müssen vorhanden sein
-                if (hasCheckin && hasJournal) {
-                    streak++;
-                    checkDate.setDate(checkDate.getDate() - 1); // Einen Tag zurück
-                } else {
-                    break; // Streak unterbrochen
+                while (true) {
+                    const dateStr = checkDate.toISOString().split('T')[0];
+                    if (checkFn(dateStr)) {
+                        streak++;
+                        checkDate.setDate(checkDate.getDate() - 1);
+                    } else {
+                        break;
+                    }
+                    if (streak > 365) break;
                 }
-                
-                // Sicherheitsabbruch nach 365 Tagen
-                if (streak > 365) break;
+                return streak;
             }
             
-            currentStreak = streak;
-            localStorage.setItem('fysStreak', streak);
+            const hasCheckinOn = (dateStr) => performanceData.entries && performanceData.entries.some(e => {
+                return new Date(e.date).toISOString().split('T')[0] === dateStr;
+            });
             
-            // Longest Streak aktualisieren
-            if (streak > longestStreak) {
-                longestStreak = streak;
-                localStorage.setItem('fysLongestStreak', streak);
-            }
+            const hasJournalOn = (dateStr) => journalData && journalData[dateStr] && journalData[dateStr].trim().length > 0;
             
-            console.log(`🔥 Current Streak: ${currentStreak} days`);
-            console.log(`🏆 Longest Streak: ${longestStreak} days`);
+            // Calculate all 3 streaks
+            const checkinStreak = countStreak(hasCheckinOn);
+            const journalStreak = countStreak(hasJournalOn);
+            const comboStreak = countStreak(d => hasCheckinOn(d) && hasJournalOn(d));
+            
+            // Only count streak if >= 2 consecutive days
+            currentStreak = comboStreak >= 2 ? comboStreak : 0;
+            const displayCheckin = checkinStreak >= 2 ? checkinStreak : 0;
+            const displayJournal = journalStreak >= 2 ? journalStreak : 0;
+            const displayCombo = comboStreak >= 2 ? comboStreak : 0;
+            
+            // Save
+            localStorage.setItem('fysStreak', currentStreak);
+            localStorage.setItem('fysCheckinStreak', displayCheckin);
+            localStorage.setItem('fysJournalStreak', displayJournal);
+            
+            // Update longest records
+            const longestCheckin = Math.max(displayCheckin, parseInt(localStorage.getItem('fysLongestCheckinStreak')) || 0);
+            const longestJournal = Math.max(displayJournal, parseInt(localStorage.getItem('fysLongestJournalStreak')) || 0);
+            const longestCombo = Math.max(displayCombo, parseInt(localStorage.getItem('fysLongestStreak')) || 0);
+            
+            localStorage.setItem('fysLongestCheckinStreak', longestCheckin);
+            localStorage.setItem('fysLongestJournalStreak', longestJournal);
+            localStorage.setItem('fysLongestStreak', longestCombo);
+            longestStreak = longestCombo;
+            
+            console.log(`📊 Check-in Streak: ${displayCheckin} (Rekord: ${longestCheckin})`);
+            console.log(`📔 Journal Streak: ${displayJournal} (Rekord: ${longestJournal})`);
+            console.log(`🔥 Kombi Streak: ${displayCombo} (Rekord: ${longestCombo})`);
             
             // Update UI
-            updateStreakDisplay();
+            updateStreakDisplay(displayCheckin, displayJournal, displayCombo, longestCheckin, longestJournal, longestCombo);
         }
         
-        // Update Streak Display in Header
-        function updateStreakDisplay() {
-            const streakCard = document.getElementById('streakCard');
-            const streakNumber = document.getElementById('streakNumber');
-            const streakRecord = document.getElementById('streakRecord');
+        function updateStreakDisplay(checkin, journal, combo, recCheckin, recJournal, recCombo) {
+            const card = document.getElementById('streakCard');
+            if (!card) return;
             
-            if (!streakCard || !streakNumber || !streakRecord) return;
-            
-            if (currentStreak > 0) {
-                streakNumber.textContent = currentStreak;
-                streakRecord.textContent = longestStreak;
-                streakCard.style.display = 'block';
-            } else {
-                streakCard.style.display = 'none';
+            // Default values from localStorage if called without args
+            if (checkin === undefined) {
+                checkin = parseInt(localStorage.getItem('fysCheckinStreak')) || 0;
+                journal = parseInt(localStorage.getItem('fysJournalStreak')) || 0;
+                combo = parseInt(localStorage.getItem('fysStreak')) || 0;
+                recCheckin = parseInt(localStorage.getItem('fysLongestCheckinStreak')) || 0;
+                recJournal = parseInt(localStorage.getItem('fysLongestJournalStreak')) || 0;
+                recCombo = parseInt(localStorage.getItem('fysLongestStreak')) || 0;
             }
+            
+            const anyActive = checkin > 0 || journal > 0 || combo > 0;
+            
+            if (!anyActive) {
+                card.style.display = 'none';
+                return;
+            }
+            
+            card.style.display = 'block';
+            
+            // Update counts
+            const setItem = (id, count, recordId, record) => {
+                const el = document.getElementById(id);
+                const recEl = document.getElementById(recordId);
+                const item = el?.closest('.streak-item');
+                if (el) el.textContent = count;
+                if (recEl) recEl.textContent = record > count ? `Rekord: ${record}` : count > 0 ? `Tage` : '';
+                if (item) {
+                    if (count > 0) item.classList.add('active');
+                    else item.classList.remove('active');
+                }
+            };
+            
+            setItem('streakCheckinCount', checkin, 'streakCheckinRecord', recCheckin);
+            setItem('streakJournalCount', journal, 'streakJournalRecord', recJournal);
+            setItem('streakComboCount', combo, 'streakComboRecord', recCombo);
         }
 
 
@@ -9765,7 +10027,8 @@
             // Pro-User der heute bereits eingecheckt hat → direkt zum Bearbeiten
             if (isPro && lastCheckInDate === today) {
                 console.log('🔧 Pro user editing today\'s check-in');
-                startWizardEdit();
+                switchView('checkin');
+                setTimeout(() => startWizardEdit(), 50);
             } else {
                 // Normaler Check-In Flow
                 switchView('checkin');
@@ -9843,19 +10106,24 @@
                     } else {
                         wizardDraft[cat.id] = todayEntry.values[cat.id] || 5;
                     }
-                    console.log(`Loaded ${cat.id}:`, wizardDraft[cat.id]);
                 });
                 
-                // Starte normalen Wizard
+                // Starte normalen Wizard (der rendert alle Steps)
                 startWizard();
                 
                 // Spring direkt zur Zusammenfassung (nach kurzer Verzögerung)
                 setTimeout(() => {
                     wizardCurrentStep = wizardCategories.length; // Letzter Step = Review
                     updateWizardUI();
-                    renderWizardReview();
+                    
+                    // Scroll to top of review
+                    const reviewStep = document.getElementById('wizard-step-review');
+                    if (reviewStep) {
+                        reviewStep.scrollTop = 0;
+                    }
+                    
                     console.log('✓ Jumped to review step');
-                }, 100);
+                }, 150);
                 
             } catch (error) {
                 console.error('Error starting wizard edit:', error);
@@ -10170,16 +10438,19 @@
             // Use existing submitCheckIn logic
             const isFirstEntry = performanceData.entries.length === 0;
             let entryDate;
-            if (isFirstEntry) {
-                entryDate = new Date();
-            } else {
-                const lastEntry = performanceData.entries[performanceData.entries.length - 1];
-                entryDate = new Date(lastEntry.date);
-                entryDate.setDate(entryDate.getDate() + 1);
-                
-                if (testMode) {
+            if (testMode) {
+                // TEST MODE: Simulate sequential days from last entry
+                if (isFirstEntry) {
+                    entryDate = new Date();
+                } else {
+                    const lastEntry = performanceData.entries[performanceData.entries.length - 1];
+                    entryDate = new Date(lastEntry.date);
+                    entryDate.setDate(entryDate.getDate() + 1);
                     console.log('🧪 TEST MODE: Adding +1 day to simulate new day');
                 }
+            } else {
+                // NORMAL MODE: Always use today's date
+                entryDate = new Date();
             }
 
             let fysIndex;
@@ -10442,7 +10713,7 @@
                 const pullDistance = (touchCurrentY - touchStartY) / pullResistance;
                 
                 if (pullDistance >= pullThreshold) {
-                    // Trigger refresh - sofortiger Reload
+                    // Trigger refresh - reinitialize without page reload
                     isRefreshing = true;
                     pullIndicator.classList.add('loading');
                     
@@ -10453,8 +10724,35 @@
                         window.navigator.vibrate(25);
                     }
                     
-                    // Sofortiger Reload (kein Timeout)
-                    location.reload();
+                    // Reinitialize app data without full page reload
+                    try {
+                        const savedData = localStorage.getItem('fysPerformanceData');
+                        if (savedData) {
+                            performanceData = JSON.parse(savedData);
+                        }
+                        const savedJournal = localStorage.getItem('fysJournal');
+                        if (savedJournal) {
+                            journalData = JSON.parse(savedJournal);
+                        }
+                        
+                        // Refresh UI
+                        updateMainChart();
+                        updateDailyProgress();
+                        updateCheckInWidget();
+                        renderPerformancePacks();
+                        updateStreakDisplay();
+                        createStockList();
+                        console.log('✅ App refreshed');
+                    } catch(e) {
+                        console.error('Refresh error:', e);
+                    }
+                    
+                    // Hide indicator after short delay
+                    setTimeout(() => {
+                        pullIndicator.classList.remove('loading', 'visible');
+                        pullIndicator.querySelector('.pull-to-refresh-icon').style.transform = 'rotate(0deg)';
+                        isRefreshing = false;
+                    }, 400);
                 } else {
                     // Reset indicator
                     pullIndicator.classList.remove('visible');
@@ -10553,21 +10851,29 @@
                 
                 console.log('✅ App vollständig initialisiert!');
                 
-                // Hide loading screen after init
+                // Hide loading screen — guarantee minimum 2.5s from page load
+                const elapsed = Date.now() - window._appLoadTime;
+                const remaining = Math.max(0, 2500 - elapsed);
+                console.log(`⏱️ Loading screen: ${elapsed}ms elapsed, waiting ${remaining}ms more`);
+                
                 setTimeout(() => {
                     const ls = document.getElementById('loadingScreen');
                     if (ls) {
                         ls.style.pointerEvents = 'none';
                         ls.style.opacity = '0';
-                        setTimeout(() => { ls.style.display = 'none'; }, 650);
+                        ls.style.transition = 'opacity 0.8s ease';
+                        setTimeout(() => { ls.style.display = 'none'; }, 850);
                     }
-                }, 500);
+                }, remaining);
                 
             } catch(e) {
                 console.error('❌ Fehler bei App-Initialisierung:', e);
-                // Always dismiss loading screen even on error
-                const ls = document.getElementById('loadingScreen');
-                if (ls) { ls.style.pointerEvents = 'none'; ls.style.opacity = '0'; setTimeout(() => { ls.style.display = 'none'; }, 650); }
+                const elapsed = Date.now() - window._appLoadTime;
+                const remaining = Math.max(0, 2500 - elapsed);
+                setTimeout(() => {
+                    const ls = document.getElementById('loadingScreen');
+                    if (ls) { ls.style.pointerEvents = 'none'; ls.style.opacity = '0'; ls.style.transition = 'opacity 0.8s ease'; setTimeout(() => { ls.style.display = 'none'; }, 850); }
+                }, remaining);
             }
         }
         
