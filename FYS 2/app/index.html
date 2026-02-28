@@ -5667,7 +5667,8 @@
                         tension: 0.4,
                         pointRadius: 0,
                         pointHoverRadius: 6,
-                        fill: true
+                        fill: true,
+                        spanGaps: false
                     }]
                 },
                 options: {
@@ -5722,7 +5723,7 @@
 
         // Update main chart
         // Fill date gaps: creates a continuous timeline from first entry to today
-        // Gap days get the last known value but are flagged for dashed rendering
+        // Gap days get null (line break) and are flagged for marker rendering
         function fillDateGaps(entries, valueKey) {
             if (entries.length === 0) return { labels: [], data: [], gapFlags: [] };
             
@@ -5750,7 +5751,6 @@
             const data = [];
             const gapFlags = []; // true = this point is in a gap
             
-            let lastValue = getValue(entries[0]);
             let current = new Date(firstDate);
             
             while (current <= today) {
@@ -5758,14 +5758,13 @@
                 const label = `${current.getDate()}.${current.getMonth()+1}`;
                 
                 if (dateMap[dateStr] !== undefined) {
-                    lastValue = dateMap[dateStr];
                     labels.push(label);
-                    data.push(lastValue);
+                    data.push(dateMap[dateStr]);
                     gapFlags.push(false);
                 } else {
-                    // Gap day: carry forward last value (flat line) but flag it
+                    // Gap day: null = line break, flag for marker
                     labels.push(label);
-                    data.push(lastValue);
+                    data.push(null);
                     gapFlags.push(true);
                 }
                 
@@ -5775,27 +5774,78 @@
             return { labels, data, gapFlags };
         }
         
-        // Create Chart.js segment callback for dashed gap lines
+        // Create Chart.js segment callback — no longer needed for dashed lines
+        // but kept for category charts that may want subtle styling
         function createGapSegment(gapFlags) {
-            return {
-                borderColor: function(ctx) {
-                    const i = ctx.p0DataIndex;
-                    const j = ctx.p1DataIndex;
-                    if (gapFlags[i] || gapFlags[j]) {
-                        return 'rgba(255, 107, 53, 0.25)';
-                    }
-                    return undefined; // use default
-                },
-                borderDash: function(ctx) {
-                    const i = ctx.p0DataIndex;
-                    const j = ctx.p1DataIndex;
-                    if (gapFlags[i] || gapFlags[j]) {
-                        return [6, 4]; // dashed
-                    }
-                    return undefined; // solid
-                }
-            };
+            return {}; // Gaps are now null → no line drawn
         }
+        
+        // Custom Chart.js plugin: draws small markers at gap start/end positions
+        const gapMarkerPlugin = {
+            id: 'gapMarkers',
+            afterDraw(chart) {
+                const gapFlags = chart.options.plugins.gapMarkers?.gapFlags;
+                if (!gapFlags || gapFlags.length === 0) return;
+                
+                // Find gap boundaries: where gap starts (real→gap) and ends (gap→real)
+                const boundaries = [];
+                for (let i = 0; i < gapFlags.length; i++) {
+                    const isGap = gapFlags[i];
+                    const prevIsGap = i > 0 ? gapFlags[i-1] : false;
+                    const nextIsGap = i < gapFlags.length - 1 ? gapFlags[i+1] : false;
+                    
+                    // Last real point before a gap starts
+                    if (!isGap && nextIsGap) {
+                        boundaries.push({ index: i, type: 'start' });
+                    }
+                    // First real point after a gap ends
+                    if (!isGap && prevIsGap) {
+                        boundaries.push({ index: i, type: 'end' });
+                    }
+                }
+                
+                if (boundaries.length === 0) return;
+                
+                const ctx = chart.ctx;
+                const xAxis = chart.scales.x;
+                const yAxis = chart.scales.y;
+                const actualTheme = document.documentElement.getAttribute('data-theme') || 'dark';
+                const markerColor = actualTheme === 'dark' ? 'rgba(255,255,255,0.25)' : 'rgba(0,0,0,0.15)';
+                
+                ctx.save();
+                
+                boundaries.forEach(b => {
+                    const x = xAxis.getPixelForValue(b.index);
+                    
+                    // Find the y value at this data point
+                    const dataset = chart.data.datasets[0];
+                    const val = dataset.data[b.index];
+                    if (val === null || val === undefined) return;
+                    
+                    const y = yAxis.getPixelForValue(val);
+                    
+                    // Draw small vertical tick mark
+                    ctx.strokeStyle = markerColor;
+                    ctx.lineWidth = 1.5;
+                    ctx.setLineDash([]);
+                    ctx.beginPath();
+                    ctx.moveTo(x, y - 8);
+                    ctx.lineTo(x, y + 8);
+                    ctx.stroke();
+                    
+                    // Draw small dot
+                    ctx.fillStyle = markerColor;
+                    ctx.beginPath();
+                    ctx.arc(x, y, 3, 0, Math.PI * 2);
+                    ctx.fill();
+                });
+                
+                ctx.restore();
+            }
+        };
+        
+        // Register the plugin globally
+        Chart.register(gapMarkerPlugin);
 
         function updateMainChart() {
             console.log('updateMainChart called');
@@ -5832,13 +5882,15 @@
                     chartLabels = filled.labels;
                     chartData = filled.data;
                     mainChart.data.datasets[0].segment = createGapSegment(filled.gapFlags);
+                    mainChart.data.datasets[0].spanGaps = false;
+                    mainChart.options.plugins.gapMarkers = { gapFlags: filled.gapFlags };
                     
                     // Ensure at least 2 points for a visible line
-                    if (chartData.length === 1) {
-                        // Add baseline 100 before the single point
+                    if (chartData.filter(v => v !== null).length === 1) {
                         chartLabels.unshift('Start');
                         chartData.unshift(100);
                         filled.gapFlags.unshift(false);
+                        mainChart.options.plugins.gapMarkers = { gapFlags: filled.gapFlags };
                     }
                 }
                 
@@ -5900,33 +5952,49 @@
         function getFilteredEntries() {
             if (performanceData.entries.length === 0) return [];
             
-            let count;
+            if (currentTimeRange === 'all') return performanceData.entries;
+            
+            const now = new Date();
+            now.setHours(0,0,0,0);
+            let cutoffDate;
             
             switch(currentTimeRange) {
                 case '1d':
-                    count = 2; // Letzten 2 Entries (gestern + heute) um 1-Tages-Veränderung zu sehen
+                    // Only entries from today and yesterday
+                    cutoffDate = new Date(now);
+                    cutoffDate.setDate(cutoffDate.getDate() - 1);
                     break;
                 case '7d':
-                    count = 8; // Letzten 8 Entries (vor 7 Tagen + letzte 7 Tage)
+                    cutoffDate = new Date(now);
+                    cutoffDate.setDate(cutoffDate.getDate() - 7);
                     break;
                 case '1m':
-                    count = 31; // Letzten 31 Entries (vor 30 Tagen + letzte 30 Tage)
+                    cutoffDate = new Date(now);
+                    cutoffDate.setMonth(cutoffDate.getMonth() - 1);
                     break;
                 case '6m':
-                    count = 181; // Letzten 181 Entries
+                    cutoffDate = new Date(now);
+                    cutoffDate.setMonth(cutoffDate.getMonth() - 6);
                     break;
                 case '1y':
-                    count = 366; // Letzten 366 Entries
+                    cutoffDate = new Date(now);
+                    cutoffDate.setFullYear(cutoffDate.getFullYear() - 1);
                     break;
-                case 'all':
-                    return performanceData.entries; // Alle Entries
+                default:
+                    return performanceData.entries;
             }
             
-            // Nimm die letzten X Entries
-            const startIndex = Math.max(0, performanceData.entries.length - count);
-            const filtered = performanceData.entries.slice(startIndex);
+            const filtered = performanceData.entries.filter(e => {
+                const d = new Date(e.date);
+                d.setHours(0,0,0,0);
+                return d >= cutoffDate;
+            });
             
-            console.log(`Filtered entries for ${currentTimeRange}: showing last ${count} entries (${filtered.length} available)`);
+            // For 1D: if no entries today/yesterday, show last 2 entries as fallback
+            if (filtered.length === 0 && currentTimeRange === '1d') {
+                return performanceData.entries.slice(-2);
+            }
+            
             return filtered;
         }
 
@@ -6001,11 +6069,14 @@
                 chartLabels = filled.labels;
                 chartData = filled.data;
                 mainChart.data.datasets[0].segment = createGapSegment(filled.gapFlags);
+                mainChart.data.datasets[0].spanGaps = false;
+                mainChart.options.plugins.gapMarkers = { gapFlags: filled.gapFlags };
                 
-                if (chartData.length === 1) {
+                if (chartData.filter(v => v !== null).length === 1) {
                     chartLabels.unshift('Start');
                     chartData.unshift(100);
                     filled.gapFlags.unshift(false);
+                    mainChart.options.plugins.gapMarkers = { gapFlags: filled.gapFlags };
                 }
             }
             
@@ -6587,19 +6658,16 @@
             chartLabels = filled.labels;
             chartData = filled.data;
             
-            // Ensure at least 2 points
-            if (chartData.length === 1) {
+            // Ensure at least 2 real points
+            if (chartData.filter(v => v !== null).length === 1) {
                 chartLabels.unshift('Start');
                 chartData.unshift(100);
                 filled.gapFlags.unshift(false);
             }
             
-            // Gap segment with category color
-            const catColor = category ? category.color : '#ff6b35';
-            categoryDetailChart.data.datasets[0].segment = {
-                borderColor: ctx => (filled.gapFlags[ctx.p0DataIndex] || filled.gapFlags[ctx.p1DataIndex]) ? catColor + '40' : undefined,
-                borderDash: ctx => (filled.gapFlags[ctx.p0DataIndex] || filled.gapFlags[ctx.p1DataIndex]) ? [6, 4] : undefined
-            };
+            categoryDetailChart.data.datasets[0].segment = {};
+            categoryDetailChart.data.datasets[0].spanGaps = false;
+            categoryDetailChart.options.plugins.gapMarkers = { gapFlags: filled.gapFlags };
             
             categoryDetailChart.data.labels = chartLabels;
             categoryDetailChart.data.datasets[0].data = chartData;
@@ -6806,36 +6874,21 @@
             chartLabels = filled.labels;
             chartData = filled.data;
             
-            // Ensure at least 2 points
-            if (chartData.length === 1) {
+            // Ensure at least 2 real points
+            if (chartData.filter(v => v !== null).length === 1) {
                 chartLabels.unshift('Start');
                 chartData.unshift(100);
                 filled.gapFlags.unshift(false);
             }
             
-            // Create color-matched gap segment
-            const catColor = category.color;
-            const gapSegment = {
-                borderColor: function(ctx) {
-                    const i = ctx.p0DataIndex;
-                    const j = ctx.p1DataIndex;
-                    if (filled.gapFlags[i] || filled.gapFlags[j]) return catColor + '40';
-                    return undefined;
-                },
-                borderDash: function(ctx) {
-                    const i = ctx.p0DataIndex;
-                    const j = ctx.p1DataIndex;
-                    if (filled.gapFlags[i] || filled.gapFlags[j]) return [6, 4];
-                    return undefined;
-                }
-            };
-            
             categoryDetailChart.data.labels = chartLabels;
             categoryDetailChart.data.datasets[0].data = chartData;
-            categoryDetailChart.data.datasets[0].segment = gapSegment;
+            categoryDetailChart.data.datasets[0].spanGaps = false;
+            categoryDetailChart.data.datasets[0].segment = {};
             categoryDetailChart.data.datasets[0].borderColor = category.color;
             categoryDetailChart.data.datasets[0].backgroundColor = `${category.color}20`;
             categoryDetailChart.data.datasets[0].pointHoverBackgroundColor = category.color;
+            categoryDetailChart.options.plugins.gapMarkers = { gapFlags: filled.gapFlags };
             categoryDetailChart.update('none');
         }
 
@@ -6853,7 +6906,8 @@
                 borderWidth: 2,
                 tension: 0.4,
                 pointRadius: 0,
-                pointHoverRadius: 4
+                pointHoverRadius: 4,
+                spanGaps: false
             }));
 
             datasets.push({
@@ -6960,8 +7014,9 @@
             let fysData = fysGaps.data;
             let gapFlags = fysGaps.gapFlags;
             
-            // Add Start=100 baseline if only 1 data point
-            const needsStart = labels.length === 1;
+            // Add Start=100 baseline if only 1 real data point
+            const realPoints = fysData.filter(v => v !== null).length;
+            const needsStart = realPoints <= 1;
             if (needsStart) {
                 labels.unshift('Start');
                 fysData.unshift(100);
@@ -6969,6 +7024,7 @@
             }
             
             combinedChart.data.labels = labels;
+            combinedChart.options.plugins.gapMarkers = { gapFlags: gapFlags };
             
             // Update each category dataset
             categories.forEach((cat, index) => {
@@ -6978,19 +7034,15 @@
                 if (needsStart) catData.unshift(100);
                 
                 combinedChart.data.datasets[index].data = catData;
-                
-                // Gap segment per category
-                const color = cat.color;
-                combinedChart.data.datasets[index].segment = {
-                    borderColor: ctx => (gapFlags[ctx.p0DataIndex] || gapFlags[ctx.p1DataIndex]) ? color + '40' : undefined,
-                    borderDash: ctx => (gapFlags[ctx.p0DataIndex] || gapFlags[ctx.p1DataIndex]) ? [6, 4] : undefined
-                };
+                combinedChart.data.datasets[index].spanGaps = false;
+                combinedChart.data.datasets[index].segment = {};
             });
             
             // FYS Index dataset (last one)
             const fysIdx = combinedChart.data.datasets.length - 1;
             combinedChart.data.datasets[fysIdx].data = fysData;
-            combinedChart.data.datasets[fysIdx].segment = createGapSegment(gapFlags);
+            combinedChart.data.datasets[fysIdx].spanGaps = false;
+            combinedChart.data.datasets[fysIdx].segment = {};
             
             combinedChart.update();
         }
@@ -8234,10 +8286,8 @@
                     tension: 0.4,
                     pointRadius: 0,
                     pointHoverRadius: 4,
-                    segment: {
-                        borderColor: ctx => (gapFlags[ctx.p0DataIndex] || gapFlags[ctx.p1DataIndex]) ? cat.color + '40' : undefined,
-                        borderDash: ctx => (gapFlags[ctx.p0DataIndex] || gapFlags[ctx.p1DataIndex]) ? [6, 4] : undefined
-                    }
+                    spanGaps: false,
+                    segment: {}
                 };
             });
 
@@ -8254,7 +8304,8 @@
                 tension: 0.4,
                 pointRadius: 0,
                 pointHoverRadius: 5,
-                segment: createGapSegment(gapFlags)
+                spanGaps: false,
+                segment: {}
             });
 
             combinedChart = new Chart(canvas.getContext('2d'), {
