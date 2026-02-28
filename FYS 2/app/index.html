@@ -5797,65 +5797,93 @@
             return { labels, data, gapFlags };
         }
         
-        // No dashed segments — gaps are carry-forward with solid lines
+        // Gaps use carry-forward values — line draws normally through gaps
         function createGapSegment(gapFlags) {
             return {};
         }
         
         // Plugin: subtle aesthetic markers at start and end of each gap period
+        // with a connecting line between them
         const gapMarkerPlugin = {
             id: 'gapMarkers',
             afterDatasetsDraw(chart) {
                 const gapFlags = chart.options.plugins.gapMarkers?.gapFlags;
                 if (!gapFlags || gapFlags.length < 2) return;
                 
-                // Delay rendering until after morph animation
                 const opacity = chart.options.plugins.gapMarkers?._opacity ?? 0;
                 if (opacity <= 0) return;
                 
-                const markers = [];
+                // Find gap ranges: [startIndex, endIndex] for each gap period
+                const gapRanges = [];
+                let gapStart = null;
                 for (let i = 0; i < gapFlags.length; i++) {
-                    if (!gapFlags[i]) continue;
-                    const prevIsGap = i > 0 && gapFlags[i - 1];
-                    const nextIsGap = i < gapFlags.length - 1 && gapFlags[i + 1];
-                    if (!prevIsGap) markers.push(i);
-                    if (!nextIsGap && markers[markers.length - 1] !== i) markers.push(i);
+                    if (gapFlags[i] && gapStart === null) gapStart = i;
+                    if (!gapFlags[i] && gapStart !== null) {
+                        gapRanges.push([gapStart, i - 1]);
+                        gapStart = null;
+                    }
                 }
+                if (gapStart !== null) gapRanges.push([gapStart, gapFlags.length - 1]);
                 
-                if (markers.length === 0) return;
+                if (gapRanges.length === 0) return;
                 
                 const ctx = chart.ctx;
                 const xAxis = chart.scales.x;
                 const yAxis = chart.scales.y;
                 const actualTheme = document.documentElement.getAttribute('data-theme') || 'dark';
+                const markerAlpha = actualTheme === 'dark' ? 0.35 : 0.2;
+                const lineColor = actualTheme === 'dark' ? `rgba(255,255,255,${0.12 * opacity})` : `rgba(0,0,0,${0.08 * opacity})`;
                 
                 ctx.save();
                 ctx.globalAlpha = opacity;
                 
-                markers.forEach(i => {
-                    const x = xAxis.getPixelForValue(i);
+                gapRanges.forEach(([start, end]) => {
                     const dataset = chart.data.datasets[0];
-                    const val = dataset.data[i];
-                    if (val === null || val === undefined) return;
-                    const y = yAxis.getPixelForValue(val);
+                    const startVal = dataset.data[start];
+                    const endVal = dataset.data[end];
+                    if (startVal == null || endVal == null) return;
                     
-                    const gradient = ctx.createRadialGradient(x, y, 0, x, y, 6);
-                    if (actualTheme === 'dark') {
-                        gradient.addColorStop(0, 'rgba(255,255,255,0.18)');
-                        gradient.addColorStop(1, 'rgba(255,255,255,0)');
-                    } else {
-                        gradient.addColorStop(0, 'rgba(0,0,0,0.12)');
-                        gradient.addColorStop(1, 'rgba(0,0,0,0)');
-                    }
-                    ctx.fillStyle = gradient;
-                    ctx.beginPath();
-                    ctx.arc(x, y, 6, 0, Math.PI * 2);
-                    ctx.fill();
+                    const x1 = xAxis.getPixelForValue(start);
+                    const x2 = xAxis.getPixelForValue(end);
+                    const y1 = yAxis.getPixelForValue(startVal);
+                    const y2 = yAxis.getPixelForValue(endVal);
                     
-                    ctx.fillStyle = actualTheme === 'dark' ? 'rgba(255,255,255,0.45)' : 'rgba(0,0,0,0.25)';
+                    // Connecting line through the gap
+                    ctx.globalAlpha = opacity;
+                    ctx.strokeStyle = lineColor;
+                    ctx.lineWidth = 1;
+                    ctx.setLineDash([]);
                     ctx.beginPath();
-                    ctx.arc(x, y, 1.5, 0, Math.PI * 2);
-                    ctx.fill();
+                    ctx.moveTo(x1, y1);
+                    ctx.lineTo(x2, y2);
+                    ctx.stroke();
+                    
+                    // Draw dots at start and end
+                    [{ x: x1, y: y1 }, { x: x2, y: y2 }].forEach(p => {
+                        // Glow
+                        ctx.globalAlpha = opacity;
+                        const gradient = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, 6);
+                        if (actualTheme === 'dark') {
+                            gradient.addColorStop(0, `rgba(255,255,255,0.18)`);
+                            gradient.addColorStop(1, `rgba(255,255,255,0)`);
+                        } else {
+                            gradient.addColorStop(0, `rgba(0,0,0,0.12)`);
+                            gradient.addColorStop(1, `rgba(0,0,0,0)`);
+                        }
+                        ctx.fillStyle = gradient;
+                        ctx.beginPath();
+                        ctx.arc(p.x, p.y, 6, 0, Math.PI * 2);
+                        ctx.fill();
+                        
+                        // Center dot
+                        ctx.fillStyle = actualTheme === 'dark' ? `rgba(255,255,255,${markerAlpha})` : `rgba(0,0,0,${markerAlpha})`;
+                        ctx.beginPath();
+                        ctx.arc(p.x, p.y, 1.5, 0, Math.PI * 2);
+                        ctx.fill();
+                    });
+                    
+                    // Single-day gap: only one marker
+                    if (start === end) return;
                 });
                 
                 ctx.restore();
@@ -5922,13 +5950,11 @@
                     
                     mainChart.options.plugins.gapMarkers = { gapFlags: filled.gapFlags, _opacity: 1 };
                     
-                    // Ensure at least 2 points for a visible line
-                    if (entries.length === 1) {
-                        chartLabels.unshift('Start');
-                        chartData.unshift(100);
-                        filled.gapFlags.unshift(false);
-                        mainChart.options.plugins.gapMarkers = { gapFlags: filled.gapFlags, _opacity: 1 };
-                    }
+                    // Always add Start=100 baseline
+                    chartLabels.unshift('Start');
+                    chartData.unshift(100);
+                    filled.gapFlags.unshift(false);
+                    mainChart.options.plugins.gapMarkers = { gapFlags: filled.gapFlags, _opacity: 1 };
                 }
                 
                 mainChart.data.labels = chartLabels;
@@ -6084,11 +6110,9 @@
                 if (pack) createPackStockList(pack);
             }
             
-            // Update Performance Pack charts (with animation)
+            // Update Performance Pack cards and charts
             if (isPro && performanceData.activePacks && performanceData.activePacks.length > 0) {
-                performanceData.activePacks.forEach(packId => {
-                    createPackMiniChart(packId, true);
-                });
+                renderPerformancePacks();
             }
             
             // Update category mini charts in overview
@@ -6117,12 +6141,11 @@
                 
                 mainChart.options.plugins.gapMarkers = { gapFlags: filled.gapFlags, _opacity: 1 };
                 
-                if (entries.length === 1) {
-                    chartLabels.unshift('Start');
-                    chartData.unshift(100);
-                    filled.gapFlags.unshift(false);
-                    mainChart.options.plugins.gapMarkers = { gapFlags: filled.gapFlags, _opacity: 1 };
-                }
+                // Always add Start=100 baseline
+                chartLabels.unshift('Start');
+                chartData.unshift(100);
+                filled.gapFlags.unshift(false);
+                mainChart.options.plugins.gapMarkers = { gapFlags: filled.gapFlags, _opacity: 1 };
             }
             
             // Chart.js Morph-Animation
@@ -6711,7 +6734,7 @@
                 filled.gapFlags.unshift(false);
             }
             
-            categoryDetailChart.data.datasets[0].segment = {};
+            categoryDetailChart.data.datasets[0].segment = createGapSegment(filled.gapFlags);
             
             categoryDetailChart.options.plugins.gapMarkers = { gapFlags: filled.gapFlags, _opacity: 1 };
             
@@ -6930,7 +6953,7 @@
             categoryDetailChart.data.labels = chartLabels;
             categoryDetailChart.data.datasets[0].data = chartData;
             
-            categoryDetailChart.data.datasets[0].segment = {};
+            categoryDetailChart.data.datasets[0].segment = createGapSegment(filled.gapFlags);
             categoryDetailChart.data.datasets[0].borderColor = category.color;
             categoryDetailChart.data.datasets[0].backgroundColor = `${category.color}20`;
             categoryDetailChart.data.datasets[0].pointHoverBackgroundColor = category.color;
@@ -7080,14 +7103,14 @@
                 
                 combinedChart.data.datasets[index].data = catData;
                 
-                combinedChart.data.datasets[index].segment = {};
+                combinedChart.data.datasets[index].segment = createGapSegment(catGaps.gapFlags);
             });
             
             // FYS Index dataset (last one)
             const fysIdx = combinedChart.data.datasets.length - 1;
             combinedChart.data.datasets[fysIdx].data = fysData;
             
-            combinedChart.data.datasets[fysIdx].segment = {};
+            combinedChart.data.datasets[fysIdx].segment = createGapSegment(fysGaps.gapFlags);
             
             combinedChart.update();
         }
@@ -7910,23 +7933,30 @@
                 const pack = performancePacks.find(p => p.id === packId);
                 if (!pack) return;
                 
-                // Get current pack index value
+                // Get current pack index value based on time range
                 let packIndexValue = 100.0;
                 let changeValue = 0;
                 let changePercent = 0;
                 
-                if (performanceData.entries.length > 0) {
-                    const lastEntry = performanceData.entries[performanceData.entries.length - 1];
+                const filteredEntries = getFilteredEntries();
+                
+                if (filteredEntries.length > 0) {
+                    const lastEntry = filteredEntries[filteredEntries.length - 1];
                     packIndexValue = lastEntry.packIndices?.[pack.id] || 100.0;
                     
-                    if (performanceData.entries.length === 1) {
+                    if (filteredEntries.length === 1 && performanceData.entries.length === 1) {
+                        // Very first entry: compare to 100
                         changeValue = packIndexValue - 100;
                         changePercent = (changeValue / 100) * 100;
-                    } else if (performanceData.entries.length > 1) {
-                        const prevEntry = performanceData.entries[performanceData.entries.length - 2];
-                        const prevValue = prevEntry.packIndices?.[pack.id] || 100.0;
-                        changeValue = packIndexValue - prevValue;
-                        changePercent = (changeValue / prevValue) * 100;
+                    } else if (filteredEntries.length > 1) {
+                        const firstEntry = filteredEntries[0];
+                        const firstValue = firstEntry.packIndices?.[pack.id] || 100.0;
+                        changeValue = packIndexValue - firstValue;
+                        changePercent = (changeValue / firstValue) * 100;
+                    } else {
+                        // Only 1 filtered entry but more exist: compare to 100
+                        changeValue = packIndexValue - 100;
+                        changePercent = (changeValue / 100) * 100;
                     }
                 }
 
@@ -7986,20 +8016,19 @@
             
             if (packEntries.length === 0) {
                 const today = new Date();
-                labels = [`${today.getDate()}.${today.getMonth()+1}`];
-                chartData = [100];
-                gapFlags = [false];
+                labels = ['Start', `${today.getDate()}.${today.getMonth()+1}`];
+                chartData = [100, 100];
+                gapFlags = [false, false];
             } else {
                 const filled = fillDateGaps(packEntries, e => e.packIndices[packId], true);
                 labels = filled.labels;
                 chartData = filled.data;
                 gapFlags = filled.gapFlags;
                 
-                if (chartData.length === 1) {
-                    labels.unshift('Start');
-                    chartData.unshift(100);
-                    gapFlags.unshift(false);
-                }
+                // Always add Start=100 baseline (like FYS-Index)
+                labels.unshift('Start');
+                chartData.unshift(100);
+                gapFlags.unshift(false);
             }
 
             const existingChart = window[`packMiniChart_${packId}`];
@@ -8007,6 +8036,7 @@
                 existingChart.data.labels = labels;
                 existingChart.data.datasets[0].data = chartData;
                 existingChart.data.datasets[0].segment = createGapSegment(gapFlags);
+                existingChart.options.plugins.gapMarkers = { gapFlags: gapFlags, _opacity: 1 };
                 existingChart.update({ duration: 450, easing: 'easeInOutCubic' });
                 fadeInGapMarkers(existingChart, 500);
                 return;
@@ -8036,6 +8066,7 @@
                     interaction: { mode: 'index', intersect: false },
                     plugins: {
                         legend: { display: false },
+                        gapMarkers: { gapFlags: gapFlags, _opacity: 1 },
                         tooltip: {
                             backgroundColor: actualTheme === 'dark' ? 'rgba(17,17,17,0.95)' : 'rgba(255,255,255,0.98)',
                             titleColor: actualTheme === 'dark' ? '#fff' : '#ff6b35',
@@ -8333,7 +8364,7 @@
                     pointRadius: 0,
                     pointHoverRadius: 4,
                     
-                    segment: {}
+                    segment: createGapSegment(catGaps.gapFlags)
                 };
             });
 
@@ -8351,7 +8382,7 @@
                 pointRadius: 0,
                 pointHoverRadius: 5,
                 
-                segment: {}
+                segment: createGapSegment(packGaps.gapFlags)
             });
 
             combinedChart = new Chart(canvas.getContext('2d'), {
@@ -8363,6 +8394,7 @@
                     interaction: { mode: 'index', intersect: false },
                     plugins: {
                         legend: { display: false },
+                        gapMarkers: { gapFlags: gapFlags, _opacity: 1 },
                         tooltip: {
                             backgroundColor: actualTheme === 'dark' ? 'rgba(20,20,20,0.96)' : 'rgba(255,255,255,0.98)',
                             titleColor: actualTheme === 'dark' ? '#aaa' : '#666',
@@ -10030,7 +10062,7 @@
                 
                 // Step 5: Reset state
                 wizardCurrentStep = 0;
-                console.log('✓ Current step set to 0');
+                wizardCameFromReview = false;
                 
                 // Step 6: Load draft
                 loadWizardDraft();
@@ -10399,7 +10431,18 @@
             if (isReview) {
                 nextBtn.textContent = '✓ Speichern';
                 nextBtn.onclick = saveWizardCheckIn;
+                wizardCameFromReview = false; // Reset when back on review
                 updateWizardReviewList();
+            } else if (wizardCameFromReview) {
+                nextBtn.textContent = '↩ Zurück zur Zusammenfassung';
+                nextBtn.onclick = function() {
+                    wizardCurrentStep = wizardCategories.length;
+                    updateWizardUI();
+                    setTimeout(() => {
+                        const reviewStep = document.getElementById('wizard-step-review');
+                        if (reviewStep) reviewStep.scrollTop = 0;
+                    }, 100);
+                };
             } else {
                 nextBtn.textContent = 'Weiter';
                 nextBtn.onclick = wizardNextStep;
@@ -10439,20 +10482,16 @@
             }
         }
 
+        let wizardCameFromReview = false;
+        
         function goToWizardStep(step) {
-            console.log('🔄 goToWizardStep called:', step);
-            console.log('  Current step before:', wizardCurrentStep);
+            wizardCameFromReview = true; // Mark that we came from review
             wizardCurrentStep = step;
-            console.log('  Current step after:', wizardCurrentStep);
             updateWizardUI();
-            console.log('  ✓ UI updated - should show step', step);
             
-            // Scroll to top of the step container
             setTimeout(() => {
                 const activeStep = document.querySelector('.step-container-wizard.active');
-                if (activeStep) {
-                    activeStep.scrollTop = 0;
-                }
+                if (activeStep) activeStep.scrollTop = 0;
             }, 100);
         }
 
