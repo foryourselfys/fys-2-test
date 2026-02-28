@@ -10626,62 +10626,50 @@
                     console.log(`First Entry Pack ${packId} Index:`, packIndices[packId]);
                 });
             } else {
-                const lastEntry = performanceData.entries[performanceData.entries.length - 1];
+                // For editing: use the entry BEFORE today as base, not today's entry
+                let baseEntry;
+                if (isEditingToday && performanceData.entries.length >= 2) {
+                    baseEntry = performanceData.entries[performanceData.entries.length - 2];
+                } else {
+                    baseEntry = performanceData.entries[performanceData.entries.length - 1];
+                }
                 
                 // Create adjusted values for FYS Index calculation
-                // Sleep bonus is added to ENERGY INPUT before averaging
                 const adjustedValuesForFYS = {};
                 categories.forEach(cat => {
                     if (cat.id === 'energy') {
-                        // Energy gets the sleep bonus added to its input value
-                        // Example: energy input 9, sleep -4h → bonus -2
-                        // For FYS average: 9 + (-2) = 7
                         adjustedValuesForFYS[cat.id] = (values[cat.id] || 5) + sleepBonus;
-                        console.log('Adjusted Energy for FYS:', adjustedValuesForFYS[cat.id]);
                     } else {
                         adjustedValuesForFYS[cat.id] = values[cat.id] || 5;
                     }
                 });
                 
-                console.log('All Adjusted Values for FYS:', adjustedValuesForFYS);
+                // Calculate FYS Index based on PREVIOUS day's index
+                fysIndex = calculateFYSIndex(adjustedValuesForFYS, baseEntry.fysIndex);
                 
-                // Calculate FYS Index with adjusted energy value
-                fysIndex = calculateFYSIndex(adjustedValuesForFYS, lastEntry.fysIndex);
-                
-                console.log('New FYS Index:', fysIndex);
-                
-                // Now calculate categoryValues (BASE categories)
+                // Calculate categoryValues based on PREVIOUS day's values
                 categories.forEach(cat => {
-                    const prevValue = lastEntry.categoryValues[cat.id] || 100;
+                    const prevValue = baseEntry.categoryValues[cat.id] || 100;
                     
                     if (cat.id === 'energy') {
-                        // For energy category value: use the adjusted input
-                        // This means the category curve also reflects sleep
                         const adjustedInput = adjustedValuesForFYS[cat.id];
                         const dailyChange = adjustedInput - 5;
                         categoryValues[cat.id] = Math.max(0, prevValue + dailyChange);
-                        
-                        console.log('Energy Category Calculation:');
-                        console.log('  Previous Value:', prevValue);
-                        console.log('  Adjusted Input:', adjustedInput);
-                        console.log('  Daily Change:', dailyChange);
-                        console.log('  New Value:', categoryValues[cat.id]);
                     } else {
                         categoryValues[cat.id] = calculateCategoryValue(values[cat.id], prevValue);
                     }
                 });
                 
-                // Calculate pack category values
+                // Calculate pack category values based on PREVIOUS day
                 getActivePackCategories().forEach(cat => {
-                    const prevValue = lastEntry.categoryValues[cat.id] || 100;
+                    const prevValue = baseEntry.categoryValues[cat.id] || 100;
                     categoryValues[cat.id] = calculateCategoryValue(values[cat.id], prevValue);
                 });
                 
-                // Calculate pack indices
+                // Calculate pack indices based on PREVIOUS day
                 performanceData.activePacks.forEach(packId => {
-                    const prevPackIndex = lastEntry.packIndices?.[packId] || 100;
+                    const prevPackIndex = baseEntry.packIndices?.[packId] || 100;
                     packIndices[packId] = calculatePackIndex(packId, values, prevPackIndex);
-                    console.log(`Pack ${packId} Index:`, packIndices[packId]);
                 });
             }
 
