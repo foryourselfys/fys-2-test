@@ -5802,22 +5802,30 @@
             return {};
         }
         
-        // Plugin: tiny white marker at the first real check-in day after a gap
+        // Plugin: tiny white markers at start and end of each gap period
         const gapMarkerPlugin = {
             id: 'gapMarkers',
             afterDatasetsDraw(chart) {
                 const gapFlags = chart.options.plugins.gapMarkers?.gapFlags;
                 if (!gapFlags || gapFlags.length < 2) return;
                 
-                // Find "resume" points: first real day after one or more gap days
-                const resumePoints = [];
-                for (let i = 1; i < gapFlags.length; i++) {
-                    if (!gapFlags[i] && gapFlags[i - 1]) {
-                        resumePoints.push(i);
+                // Find first and last day of each gap period
+                const markers = [];
+                for (let i = 0; i < gapFlags.length; i++) {
+                    if (!gapFlags[i]) continue;
+                    
+                    const prevIsGap = i > 0 && gapFlags[i - 1];
+                    const nextIsGap = i < gapFlags.length - 1 && gapFlags[i + 1];
+                    
+                    // First gap day (gap starts here)
+                    if (!prevIsGap) markers.push(i);
+                    // Last gap day (gap ends here) — only add if different from start
+                    if (!nextIsGap && (prevIsGap || !prevIsGap)) {
+                        if (markers[markers.length - 1] !== i) markers.push(i);
                     }
                 }
                 
-                if (resumePoints.length === 0) return;
+                if (markers.length === 0) return;
                 
                 const ctx = chart.ctx;
                 const xAxis = chart.scales.x;
@@ -5827,14 +5835,14 @@
                 
                 ctx.save();
                 
-                resumePoints.forEach(i => {
+                markers.forEach(i => {
                     const x = xAxis.getPixelForValue(i);
                     const dataset = chart.data.datasets[0];
                     const val = dataset.data[i];
                     if (val === null || val === undefined) return;
                     const y = yAxis.getPixelForValue(val);
                     
-                    // Tiny gap in line: small vertical tick (3px above + below)
+                    // Tiny vertical tick
                     ctx.strokeStyle = color;
                     ctx.lineWidth = 1.5;
                     ctx.setLineDash([]);
