@@ -5668,7 +5668,7 @@
                         pointRadius: 0,
                         pointHoverRadius: 6,
                         fill: true,
-                        spanGaps: false
+                        
                     }]
                 },
                 options: {
@@ -5724,47 +5724,70 @@
         // Update main chart
         // Fill date gaps: creates a continuous timeline from first entry to today
         // Gap days get null (line break) and are flagged for marker rendering
-        function fillDateGaps(entries, valueKey) {
+        function fillDateGaps(entries, valueKey, limitToRange) {
             if (entries.length === 0) return { labels: [], data: [], gapFlags: [] };
             
             const getValue = typeof valueKey === 'function' ? valueKey : (e => e[valueKey]);
             
-            // Local YYYY-MM-DD helper (avoids UTC timezone issues)
             function toLocalDateStr(d) {
                 return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
             }
             
-            // Build a date→value map (normalize to local YYYY-MM-DD)
+            // Build date→value map
             const dateMap = {};
             entries.forEach(e => {
                 const d = toLocalDateStr(new Date(e.date));
                 dateMap[d] = getValue(e);
             });
             
-            // Determine range: first entry to today
             const firstDate = new Date(entries[0].date);
             firstDate.setHours(0,0,0,0);
             const today = new Date();
             today.setHours(0,0,0,0);
             
+            // Optionally limit start date to time range cutoff
+            let startDate = new Date(firstDate);
+            if (limitToRange && currentTimeRange !== 'all') {
+                const rangeStart = new Date(today);
+                switch(currentTimeRange) {
+                    case '1d': rangeStart.setDate(rangeStart.getDate() - 1); break;
+                    case '7d': rangeStart.setDate(rangeStart.getDate() - 7); break;
+                    case '1m': rangeStart.setMonth(rangeStart.getMonth() - 1); break;
+                    case '6m': rangeStart.setMonth(rangeStart.getMonth() - 6); break;
+                    case '1y': rangeStart.setFullYear(rangeStart.getFullYear() - 1); break;
+                }
+                if (rangeStart > firstDate) startDate = rangeStart;
+            }
+            
             const labels = [];
             const data = [];
-            const gapFlags = []; // true = this point is in a gap
+            const gapFlags = [];
             
-            let current = new Date(firstDate);
+            // Find last known value before start date
+            let lastValue = getValue(entries[0]);
+            for (let i = entries.length - 1; i >= 0; i--) {
+                const d = new Date(entries[i].date);
+                d.setHours(0,0,0,0);
+                if (d <= startDate) {
+                    lastValue = getValue(entries[i]);
+                    break;
+                }
+            }
+            
+            let current = new Date(startDate);
             
             while (current <= today) {
                 const dateStr = toLocalDateStr(current);
                 const label = `${current.getDate()}.${current.getMonth()+1}`;
                 
                 if (dateMap[dateStr] !== undefined) {
+                    lastValue = dateMap[dateStr];
                     labels.push(label);
-                    data.push(dateMap[dateStr]);
+                    data.push(lastValue);
                     gapFlags.push(false);
                 } else {
-                    // Gap day: null = line break, flag for marker
                     labels.push(label);
-                    data.push(null);
+                    data.push(lastValue);
                     gapFlags.push(true);
                 }
                 
@@ -5774,77 +5797,57 @@
             return { labels, data, gapFlags };
         }
         
-        // Create Chart.js segment callback — no longer needed for dashed lines
-        // but kept for category charts that may want subtle styling
+        // No dashed segments — gaps are carry-forward with solid lines
         function createGapSegment(gapFlags) {
-            return {}; // Gaps are now null → no line drawn
+            return {};
         }
         
-        // Custom Chart.js plugin: draws small markers at gap start/end positions
+        // Plugin: tiny white marker at the first real check-in day after a gap
         const gapMarkerPlugin = {
             id: 'gapMarkers',
-            afterDraw(chart) {
+            afterDatasetsDraw(chart) {
                 const gapFlags = chart.options.plugins.gapMarkers?.gapFlags;
-                if (!gapFlags || gapFlags.length === 0) return;
+                if (!gapFlags || gapFlags.length < 2) return;
                 
-                // Find gap boundaries: where gap starts (real→gap) and ends (gap→real)
-                const boundaries = [];
-                for (let i = 0; i < gapFlags.length; i++) {
-                    const isGap = gapFlags[i];
-                    const prevIsGap = i > 0 ? gapFlags[i-1] : false;
-                    const nextIsGap = i < gapFlags.length - 1 ? gapFlags[i+1] : false;
-                    
-                    // Last real point before a gap starts
-                    if (!isGap && nextIsGap) {
-                        boundaries.push({ index: i, type: 'start' });
-                    }
-                    // First real point after a gap ends
-                    if (!isGap && prevIsGap) {
-                        boundaries.push({ index: i, type: 'end' });
+                // Find "resume" points: first real day after one or more gap days
+                const resumePoints = [];
+                for (let i = 1; i < gapFlags.length; i++) {
+                    if (!gapFlags[i] && gapFlags[i - 1]) {
+                        resumePoints.push(i);
                     }
                 }
                 
-                if (boundaries.length === 0) return;
+                if (resumePoints.length === 0) return;
                 
                 const ctx = chart.ctx;
                 const xAxis = chart.scales.x;
                 const yAxis = chart.scales.y;
                 const actualTheme = document.documentElement.getAttribute('data-theme') || 'dark';
-                const markerColor = actualTheme === 'dark' ? 'rgba(255,255,255,0.25)' : 'rgba(0,0,0,0.15)';
+                const color = actualTheme === 'dark' ? 'rgba(255,255,255,0.35)' : 'rgba(0,0,0,0.2)';
                 
                 ctx.save();
                 
-                boundaries.forEach(b => {
-                    const x = xAxis.getPixelForValue(b.index);
-                    
-                    // Find the y value at this data point
+                resumePoints.forEach(i => {
+                    const x = xAxis.getPixelForValue(i);
                     const dataset = chart.data.datasets[0];
-                    const val = dataset.data[b.index];
+                    const val = dataset.data[i];
                     if (val === null || val === undefined) return;
-                    
                     const y = yAxis.getPixelForValue(val);
                     
-                    // Draw small vertical tick mark
-                    ctx.strokeStyle = markerColor;
+                    // Tiny gap in line: small vertical tick (3px above + below)
+                    ctx.strokeStyle = color;
                     ctx.lineWidth = 1.5;
                     ctx.setLineDash([]);
                     ctx.beginPath();
-                    ctx.moveTo(x, y - 8);
-                    ctx.lineTo(x, y + 8);
+                    ctx.moveTo(x, y - 4);
+                    ctx.lineTo(x, y + 4);
                     ctx.stroke();
-                    
-                    // Draw small dot
-                    ctx.fillStyle = markerColor;
-                    ctx.beginPath();
-                    ctx.arc(x, y, 3, 0, Math.PI * 2);
-                    ctx.fill();
                 });
                 
                 ctx.restore();
             }
         };
         
-        // Register the plugin globally
         Chart.register(gapMarkerPlugin);
 
         function updateMainChart() {
@@ -5878,15 +5881,15 @@
                     chartData = [100];
                     mainChart.data.datasets[0].segment = undefined;
                 } else {
-                    const filled = fillDateGaps(entries, 'fysIndex');
+                    const filled = fillDateGaps(entries, 'fysIndex', true);
                     chartLabels = filled.labels;
                     chartData = filled.data;
                     mainChart.data.datasets[0].segment = createGapSegment(filled.gapFlags);
-                    mainChart.data.datasets[0].spanGaps = false;
+                    
                     mainChart.options.plugins.gapMarkers = { gapFlags: filled.gapFlags };
                     
                     // Ensure at least 2 points for a visible line
-                    if (chartData.filter(v => v !== null).length === 1) {
+                    if (entries.length === 1) {
                         chartLabels.unshift('Start');
                         chartData.unshift(100);
                         filled.gapFlags.unshift(false);
@@ -5984,15 +5987,23 @@
                     return performanceData.entries;
             }
             
+            // Get entries within range
             const filtered = performanceData.entries.filter(e => {
                 const d = new Date(e.date);
                 d.setHours(0,0,0,0);
                 return d >= cutoffDate;
             });
             
-            // For 1D: if no entries today/yesterday, show last 2 entries as fallback
-            if (filtered.length === 0 && currentTimeRange === '1d') {
-                return performanceData.entries.slice(-2);
+            // If no entries in range, return the most recent entry as baseline
+            if (filtered.length === 0) {
+                return performanceData.entries.slice(-1);
+            }
+            
+            // For comparison: include the last entry BEFORE cutoff as a baseline
+            // (so the chart can show a change from that point)
+            const firstIdx = performanceData.entries.indexOf(filtered[0]);
+            if (firstIdx > 0) {
+                return [performanceData.entries[firstIdx - 1], ...filtered];
             }
             
             return filtered;
@@ -6065,14 +6076,14 @@
                 chartData = [100];
                 mainChart.data.datasets[0].segment = undefined;
             } else {
-                const filled = fillDateGaps(entries, 'fysIndex');
+                const filled = fillDateGaps(entries, 'fysIndex', true);
                 chartLabels = filled.labels;
                 chartData = filled.data;
                 mainChart.data.datasets[0].segment = createGapSegment(filled.gapFlags);
-                mainChart.data.datasets[0].spanGaps = false;
+                
                 mainChart.options.plugins.gapMarkers = { gapFlags: filled.gapFlags };
                 
-                if (chartData.filter(v => v !== null).length === 1) {
+                if (entries.length === 1) {
                     chartLabels.unshift('Start');
                     chartData.unshift(100);
                     filled.gapFlags.unshift(false);
@@ -6654,19 +6665,19 @@
             let chartData = [];
             
             const catId = currentCategoryId;
-            const filled = fillDateGaps(entries, e => e.categoryValues ? e.categoryValues[catId] : 100);
+            const filled = fillDateGaps(entries, e => e.categoryValues ? e.categoryValues[catId] : 100, true);
             chartLabels = filled.labels;
             chartData = filled.data;
             
             // Ensure at least 2 real points
-            if (chartData.filter(v => v !== null).length === 1) {
+            if (entries.length === 1) {
                 chartLabels.unshift('Start');
                 chartData.unshift(100);
                 filled.gapFlags.unshift(false);
             }
             
             categoryDetailChart.data.datasets[0].segment = {};
-            categoryDetailChart.data.datasets[0].spanGaps = false;
+            
             categoryDetailChart.options.plugins.gapMarkers = { gapFlags: filled.gapFlags };
             
             categoryDetailChart.data.labels = chartLabels;
@@ -6870,12 +6881,12 @@
             let chartData = [];
             
             const catId = currentCategoryId;
-            const filled = fillDateGaps(entries, e => e.categoryValues ? e.categoryValues[catId] : 100);
+            const filled = fillDateGaps(entries, e => e.categoryValues ? e.categoryValues[catId] : 100, true);
             chartLabels = filled.labels;
             chartData = filled.data;
             
             // Ensure at least 2 real points
-            if (chartData.filter(v => v !== null).length === 1) {
+            if (entries.length === 1) {
                 chartLabels.unshift('Start');
                 chartData.unshift(100);
                 filled.gapFlags.unshift(false);
@@ -6883,7 +6894,7 @@
             
             categoryDetailChart.data.labels = chartLabels;
             categoryDetailChart.data.datasets[0].data = chartData;
-            categoryDetailChart.data.datasets[0].spanGaps = false;
+            
             categoryDetailChart.data.datasets[0].segment = {};
             categoryDetailChart.data.datasets[0].borderColor = category.color;
             categoryDetailChart.data.datasets[0].backgroundColor = `${category.color}20`;
@@ -6907,7 +6918,7 @@
                 tension: 0.4,
                 pointRadius: 0,
                 pointHoverRadius: 4,
-                spanGaps: false
+                
             }));
 
             datasets.push({
@@ -7009,14 +7020,13 @@
             }
             
             // Use fillDateGaps for FYS Index to get the shared timeline
-            const fysGaps = fillDateGaps(entries, 'fysIndex');
+            const fysGaps = fillDateGaps(entries, 'fysIndex', true);
             let labels = fysGaps.labels;
             let fysData = fysGaps.data;
             let gapFlags = fysGaps.gapFlags;
             
-            // Add Start=100 baseline if only 1 real data point
-            const realPoints = fysData.filter(v => v !== null).length;
-            const needsStart = realPoints <= 1;
+            // Add Start=100 baseline if only 1 entry
+            const needsStart = entries.length <= 1;
             if (needsStart) {
                 labels.unshift('Start');
                 fysData.unshift(100);
@@ -7028,20 +7038,20 @@
             
             // Update each category dataset
             categories.forEach((cat, index) => {
-                const catGaps = fillDateGaps(entries, e => e.categoryValues ? e.categoryValues[cat.id] : 100);
+                const catGaps = fillDateGaps(entries, e => e.categoryValues ? e.categoryValues[cat.id] : 100, true);
                 let catData = catGaps.data;
                 
                 if (needsStart) catData.unshift(100);
                 
                 combinedChart.data.datasets[index].data = catData;
-                combinedChart.data.datasets[index].spanGaps = false;
+                
                 combinedChart.data.datasets[index].segment = {};
             });
             
             // FYS Index dataset (last one)
             const fysIdx = combinedChart.data.datasets.length - 1;
             combinedChart.data.datasets[fysIdx].data = fysData;
-            combinedChart.data.datasets[fysIdx].spanGaps = false;
+            
             combinedChart.data.datasets[fysIdx].segment = {};
             
             combinedChart.update();
@@ -7945,7 +7955,7 @@
                 chartData = [100];
                 gapFlags = [false];
             } else {
-                const filled = fillDateGaps(packEntries, e => e.packIndices[packId]);
+                const filled = fillDateGaps(packEntries, e => e.packIndices[packId], true);
                 labels = filled.labels;
                 chartData = filled.data;
                 gapFlags = filled.gapFlags;
@@ -8261,7 +8271,7 @@
             }
 
             // Use fillDateGaps for timeline
-            const packGaps = fillDateGaps(entries, e => e.packIndices[packId]);
+            const packGaps = fillDateGaps(entries, e => e.packIndices[packId], true);
             let labels = packGaps.labels;
             let gapFlags = packGaps.gapFlags;
             const needsStart = labels.length === 1;
@@ -8273,7 +8283,7 @@
 
             // Create datasets for all pack categories
             const datasets = pack.categories.map(cat => {
-                const catGaps = fillDateGaps(entries, e => e.categoryValues?.[cat.id] || 100);
+                const catGaps = fillDateGaps(entries, e => e.categoryValues?.[cat.id] || 100, true);
                 let catData = catGaps.data;
                 if (needsStart) catData.unshift(100);
                 
@@ -8286,7 +8296,7 @@
                     tension: 0.4,
                     pointRadius: 0,
                     pointHoverRadius: 4,
-                    spanGaps: false,
+                    
                     segment: {}
                 };
             });
@@ -8304,7 +8314,7 @@
                 tension: 0.4,
                 pointRadius: 0,
                 pointHoverRadius: 5,
-                spanGaps: false,
+                
                 segment: {}
             });
 
