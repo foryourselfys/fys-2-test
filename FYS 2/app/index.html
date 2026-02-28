@@ -4638,40 +4638,6 @@
                     ">Activate FYS Pro</button>
                 </div>
 
-                <!-- Test Mode (TEMPORARY - Remove in Production) -->
-                <div class="setting-item" style="text-align: center; border: 2px dashed var(--accent-primary); border-radius: 12px; padding: 16px;">
-                    <div class="setting-label">🧪 TEST MODE</div>
-                    <div class="setting-description">Erlaube mehrere Check-Ins pro Tag (nur zum Testen)</div>
-                    <div style="display: flex; justify-content: center; margin-top: 14px;">
-                        <div class="toggle-switch" id="testModeToggle" onclick="toggleTestMode()">
-                            <div class="toggle-slider"></div>
-                        </div>
-                    </div>
-                    <div style="margin-top: 12px; font-size: 12px; color: var(--text-tertiary); font-style: italic;">
-                        ⚠️ Nur für Entwicklung & Testing
-                    </div>
-                </div>
-
-                <!-- Reset Data -->
-                <div class="setting-item" style="text-align: center;">
-                    <div class="setting-label">🔄 Daten zurücksetzen</div>
-                    <div class="setting-description">Setze alle Werte auf 100 und starte neu ab heute</div>
-                    <button onclick="resetData()" style="
-                        width: 100%;
-                        margin-top: 16px;
-                        padding: 14px;
-                        background: var(--bg-card);
-                        border: 1px solid var(--border);
-                        border-radius: 12px;
-                        color: var(--text-primary);
-                        font-size: 15px;
-                        font-weight: 600;
-                        cursor: pointer;
-                        font-family: inherit;
-                        transition: all 0.3s;
-                    ">Neu starten (alle Daten löschen)</button>
-                </div>
-
                 <!-- Performance Packs Management -->
                 <div id="performancePacksSettings" style="display: none;">
                     <div class="setting-item">
@@ -5140,7 +5106,7 @@
         let sleepHours = 8.0;
         let coachDataAccess = localStorage.getItem('fysCoachData') === 'true';
         let isPro = localStorage.getItem('fysPro') === 'true'; // Pro status
-        let testMode = localStorage.getItem('fysTestMode') === 'true'; // Test Mode für unbegrenzte CheckIns
+        let testMode = false; // Test mode removed
         let performanceData = JSON.parse(localStorage.getItem('fysData')) || { entries: [], activePacks: [] };
         let currentStreak = parseInt(localStorage.getItem('fysStreak')) || 0; // Aktuelle Streak
         let longestStreak = parseInt(localStorage.getItem('fysLongestStreak')) || 0; // Längste Streak
@@ -5950,11 +5916,13 @@
                     
                     mainChart.options.plugins.gapMarkers = { gapFlags: filled.gapFlags, _opacity: 1 };
                     
-                    // Always add Start=100 baseline
-                    chartLabels.unshift('Start');
-                    chartData.unshift(100);
-                    filled.gapFlags.unshift(false);
-                    mainChart.options.plugins.gapMarkers = { gapFlags: filled.gapFlags, _opacity: 1 };
+                    // Add Start=100 only for very first entry ever
+                    if (performanceData.entries.length === 1) {
+                        chartLabels.unshift('Start');
+                        chartData.unshift(100);
+                        filled.gapFlags.unshift(false);
+                        mainChart.options.plugins.gapMarkers = { gapFlags: filled.gapFlags, _opacity: 1 };
+                    }
                 }
                 
                 mainChart.data.labels = chartLabels;
@@ -6141,11 +6109,12 @@
                 
                 mainChart.options.plugins.gapMarkers = { gapFlags: filled.gapFlags, _opacity: 1 };
                 
-                // Always add Start=100 baseline
-                chartLabels.unshift('Start');
-                chartData.unshift(100);
-                filled.gapFlags.unshift(false);
-                mainChart.options.plugins.gapMarkers = { gapFlags: filled.gapFlags, _opacity: 1 };
+                if (performanceData.entries.length === 1) {
+                    chartLabels.unshift('Start');
+                    chartData.unshift(100);
+                    filled.gapFlags.unshift(false);
+                    mainChart.options.plugins.gapMarkers = { gapFlags: filled.gapFlags, _opacity: 1 };
+                }
             }
             
             // Chart.js Morph-Animation
@@ -6247,6 +6216,21 @@
             
             if (stockCount) stockCount.textContent = `${categories.length} Kategorien`;
             if (categoriesTitle) categoriesTitle.textContent = 'Kategorien';
+            
+            // Reset all labels to FYS defaults (in case a pack was open before)
+            const indexLabel = document.querySelector('#chartDetailsView .fys-index-label');
+            const heroLabel = document.getElementById('cdHeroLabel');
+            const headerTitle = document.getElementById('cdHeaderTitle');
+            const radarTitle = document.getElementById('radarSectionTitle');
+            const radarSub = document.getElementById('radarSectionSub');
+            const chartTitle = document.getElementById('allCategoriesTitle');
+            if (indexLabel) indexLabel.textContent = 'FYS-INDEX';
+            if (heroLabel) heroLabel.textContent = 'FYS-INDEX';
+            if (headerTitle) headerTitle.textContent = 'Kategorien';
+            if (radarTitle) radarTitle.textContent = 'Profil-Übersicht';
+            if (radarSub) radarSub.textContent = 'Letzter Check-in';
+            if (chartTitle) chartTitle.textContent = 'Kursverlauf';
+            window._packLegendState = {};
             
             if (entries.length > 0) {
                 const latest = entries[entries.length - 1];
@@ -6727,8 +6711,7 @@
             chartLabels = filled.labels;
             chartData = filled.data;
             
-            // Ensure at least 2 real points
-            if (entries.length === 1) {
+            if (performanceData.entries.length === 1) {
                 chartLabels.unshift('Start');
                 chartData.unshift(100);
                 filled.gapFlags.unshift(false);
@@ -6943,8 +6926,7 @@
             chartLabels = filled.labels;
             chartData = filled.data;
             
-            // Ensure at least 2 real points
-            if (entries.length === 1) {
+            if (performanceData.entries.length === 1) {
                 chartLabels.unshift('Start');
                 chartData.unshift(100);
                 filled.gapFlags.unshift(false);
@@ -7083,8 +7065,8 @@
             let fysData = fysGaps.data;
             let gapFlags = fysGaps.gapFlags;
             
-            // Add Start=100 baseline if only 1 entry
-            const needsStart = entries.length <= 1;
+            // Add Start=100 baseline only for very first entry ever
+            const needsStart = performanceData.entries.length <= 1;
             if (needsStart) {
                 labels.unshift('Start');
                 fysData.unshift(100);
@@ -8016,19 +7998,22 @@
             
             if (packEntries.length === 0) {
                 const today = new Date();
-                labels = ['Start', `${today.getDate()}.${today.getMonth()+1}`];
-                chartData = [100, 100];
-                gapFlags = [false, false];
+                labels = [`${today.getDate()}.${today.getMonth()+1}`];
+                chartData = [100];
+                gapFlags = [false];
             } else {
                 const filled = fillDateGaps(packEntries, e => e.packIndices[packId], true);
                 labels = filled.labels;
                 chartData = filled.data;
                 gapFlags = filled.gapFlags;
                 
-                // Always add Start=100 baseline (like FYS-Index)
-                labels.unshift('Start');
-                chartData.unshift(100);
-                gapFlags.unshift(false);
+                // Only add Start=100 for very first pack entry ever
+                const allPackEntries = performanceData.entries.filter(e => e.packIndices && e.packIndices[packId] !== undefined);
+                if (allPackEntries.length <= 1) {
+                    labels.unshift('Start');
+                    chartData.unshift(100);
+                    gapFlags.unshift(false);
+                }
             }
 
             const existingChart = window[`packMiniChart_${packId}`];
@@ -8341,7 +8326,8 @@
             const packGaps = fillDateGaps(entries, e => e.packIndices[packId], true);
             let labels = packGaps.labels;
             let gapFlags = packGaps.gapFlags;
-            const needsStart = labels.length === 1;
+            const allPackEntries = performanceData.entries.filter(e => e.packIndices && e.packIndices[packId] !== undefined);
+            const needsStart = allPackEntries.length <= 1;
             
             if (needsStart) {
                 labels.unshift('Start');
