@@ -5802,27 +5802,24 @@
             return {};
         }
         
-        // Plugin: tiny white markers at start and end of each gap period
+        // Plugin: subtle aesthetic markers at start and end of each gap period
         const gapMarkerPlugin = {
             id: 'gapMarkers',
             afterDatasetsDraw(chart) {
                 const gapFlags = chart.options.plugins.gapMarkers?.gapFlags;
                 if (!gapFlags || gapFlags.length < 2) return;
                 
-                // Find first and last day of each gap period
+                // Delay rendering until after morph animation
+                const opacity = chart.options.plugins.gapMarkers?._opacity ?? 0;
+                if (opacity <= 0) return;
+                
                 const markers = [];
                 for (let i = 0; i < gapFlags.length; i++) {
                     if (!gapFlags[i]) continue;
-                    
                     const prevIsGap = i > 0 && gapFlags[i - 1];
                     const nextIsGap = i < gapFlags.length - 1 && gapFlags[i + 1];
-                    
-                    // First gap day (gap starts here)
                     if (!prevIsGap) markers.push(i);
-                    // Last gap day (gap ends here) — only add if different from start
-                    if (!nextIsGap && (prevIsGap || !prevIsGap)) {
-                        if (markers[markers.length - 1] !== i) markers.push(i);
-                    }
+                    if (!nextIsGap && markers[markers.length - 1] !== i) markers.push(i);
                 }
                 
                 if (markers.length === 0) return;
@@ -5831,9 +5828,9 @@
                 const xAxis = chart.scales.x;
                 const yAxis = chart.scales.y;
                 const actualTheme = document.documentElement.getAttribute('data-theme') || 'dark';
-                const color = actualTheme === 'dark' ? 'rgba(255,255,255,0.35)' : 'rgba(0,0,0,0.2)';
                 
                 ctx.save();
+                ctx.globalAlpha = opacity;
                 
                 markers.forEach(i => {
                     const x = xAxis.getPixelForValue(i);
@@ -5842,19 +5839,48 @@
                     if (val === null || val === undefined) return;
                     const y = yAxis.getPixelForValue(val);
                     
-                    // Tiny vertical tick
-                    ctx.strokeStyle = color;
-                    ctx.lineWidth = 1.5;
-                    ctx.setLineDash([]);
+                    const gradient = ctx.createRadialGradient(x, y, 0, x, y, 6);
+                    if (actualTheme === 'dark') {
+                        gradient.addColorStop(0, 'rgba(255,255,255,0.18)');
+                        gradient.addColorStop(1, 'rgba(255,255,255,0)');
+                    } else {
+                        gradient.addColorStop(0, 'rgba(0,0,0,0.12)');
+                        gradient.addColorStop(1, 'rgba(0,0,0,0)');
+                    }
+                    ctx.fillStyle = gradient;
                     ctx.beginPath();
-                    ctx.moveTo(x, y - 4);
-                    ctx.lineTo(x, y + 4);
-                    ctx.stroke();
+                    ctx.arc(x, y, 6, 0, Math.PI * 2);
+                    ctx.fill();
+                    
+                    ctx.fillStyle = actualTheme === 'dark' ? 'rgba(255,255,255,0.45)' : 'rgba(0,0,0,0.25)';
+                    ctx.beginPath();
+                    ctx.arc(x, y, 1.5, 0, Math.PI * 2);
+                    ctx.fill();
                 });
                 
                 ctx.restore();
             }
         };
+        
+        // Fade in gap markers after chart animation completes
+        function fadeInGapMarkers(chart, delay = 500) {
+            if (!chart || !chart.options.plugins.gapMarkers) return;
+            chart.options.plugins.gapMarkers._opacity = 0;
+            chart.update('none');
+            
+            setTimeout(() => {
+                const start = performance.now();
+                const duration = 300;
+                function animate(now) {
+                    const progress = Math.min((now - start) / duration, 1);
+                    const ease = progress * (2 - progress); // easeOut
+                    chart.options.plugins.gapMarkers._opacity = ease;
+                    chart.update('none');
+                    if (progress < 1) requestAnimationFrame(animate);
+                }
+                requestAnimationFrame(animate);
+            }, delay);
+        }
         
         Chart.register(gapMarkerPlugin);
 
@@ -5894,14 +5920,14 @@
                     chartData = filled.data;
                     mainChart.data.datasets[0].segment = createGapSegment(filled.gapFlags);
                     
-                    mainChart.options.plugins.gapMarkers = { gapFlags: filled.gapFlags };
+                    mainChart.options.plugins.gapMarkers = { gapFlags: filled.gapFlags, _opacity: 1 };
                     
                     // Ensure at least 2 points for a visible line
                     if (entries.length === 1) {
                         chartLabels.unshift('Start');
                         chartData.unshift(100);
                         filled.gapFlags.unshift(false);
-                        mainChart.options.plugins.gapMarkers = { gapFlags: filled.gapFlags };
+                        mainChart.options.plugins.gapMarkers = { gapFlags: filled.gapFlags, _opacity: 1 };
                     }
                 }
                 
@@ -6089,13 +6115,13 @@
                 chartData = filled.data;
                 mainChart.data.datasets[0].segment = createGapSegment(filled.gapFlags);
                 
-                mainChart.options.plugins.gapMarkers = { gapFlags: filled.gapFlags };
+                mainChart.options.plugins.gapMarkers = { gapFlags: filled.gapFlags, _opacity: 1 };
                 
                 if (entries.length === 1) {
                     chartLabels.unshift('Start');
                     chartData.unshift(100);
                     filled.gapFlags.unshift(false);
-                    mainChart.options.plugins.gapMarkers = { gapFlags: filled.gapFlags };
+                    mainChart.options.plugins.gapMarkers = { gapFlags: filled.gapFlags, _opacity: 1 };
                 }
             }
             
@@ -6106,6 +6132,7 @@
                 duration: 450,
                 easing: 'easeInOutCubic'
             });
+            fadeInGapMarkers(mainChart, 500);
             
             // Count-Up Animation für Index-Wert
             if (entries.length > 0) {
@@ -6665,7 +6692,7 @@
                 const todayLabel = `${today.getDate()}.${today.getMonth()+1}.${today.getFullYear()}`;
                 categoryDetailChart.data.labels = [todayLabel];
                 categoryDetailChart.data.datasets[0].data = [100];
-                categoryDetailChart.update({ duration: 450, easing: 'easeInOutCubic' });
+                categoryDetailChart.update({ duration: 450, easing: 'easeInOutCubic' }); fadeInGapMarkers(categoryDetailChart, 500);
                 return;
             }
             
@@ -6686,7 +6713,7 @@
             
             categoryDetailChart.data.datasets[0].segment = {};
             
-            categoryDetailChart.options.plugins.gapMarkers = { gapFlags: filled.gapFlags };
+            categoryDetailChart.options.plugins.gapMarkers = { gapFlags: filled.gapFlags, _opacity: 1 };
             
             categoryDetailChart.data.labels = chartLabels;
             categoryDetailChart.data.datasets[0].data = chartData;
@@ -6695,7 +6722,7 @@
                 categoryDetailChart.data.datasets[0].backgroundColor = `${category.color}20`;
                 categoryDetailChart.data.datasets[0].pointHoverBackgroundColor = category.color;
             }
-            categoryDetailChart.update({ duration: 450, easing: 'easeInOutCubic' });
+            categoryDetailChart.update({ duration: 450, easing: 'easeInOutCubic' }); fadeInGapMarkers(categoryDetailChart, 500);
             
             // Count-up and change text animation
             if (entries.length > 0) {
@@ -6907,7 +6934,7 @@
             categoryDetailChart.data.datasets[0].borderColor = category.color;
             categoryDetailChart.data.datasets[0].backgroundColor = `${category.color}20`;
             categoryDetailChart.data.datasets[0].pointHoverBackgroundColor = category.color;
-            categoryDetailChart.options.plugins.gapMarkers = { gapFlags: filled.gapFlags };
+            categoryDetailChart.options.plugins.gapMarkers = { gapFlags: filled.gapFlags, _opacity: 1 };
             categoryDetailChart.update('none');
         }
 
@@ -7042,7 +7069,7 @@
             }
             
             combinedChart.data.labels = labels;
-            combinedChart.options.plugins.gapMarkers = { gapFlags: gapFlags };
+            combinedChart.options.plugins.gapMarkers = { gapFlags: gapFlags, _opacity: 1 };
             
             // Update each category dataset
             categories.forEach((cat, index) => {
@@ -7981,6 +8008,7 @@
                 existingChart.data.datasets[0].data = chartData;
                 existingChart.data.datasets[0].segment = createGapSegment(gapFlags);
                 existingChart.update({ duration: 450, easing: 'easeInOutCubic' });
+                fadeInGapMarkers(existingChart, 500);
                 return;
             }
             
