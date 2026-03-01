@@ -9069,6 +9069,7 @@
             }
             
             const hasCheckinOn = (dateStr) => performanceData.entries && performanceData.entries.some(e => {
+                if (e.isCarryForward) return false;
                 const d = new Date(e.date);
                 return toLocalDateStr(d) === dateStr;
             });
@@ -10968,14 +10969,99 @@
             
             console.log('✅ Charts updated with new data!');
 
-            // Kurze Verzögerung für Chart-Rendering, dann Toast
+            // Kurze Verzögerung für Chart-Rendering, dann Toast + Journal Prompt
             setTimeout(() => {
                 showToast();
-                // Latest data point highlighten
-                setTimeout(() => {
-                    highlightLatestDataPoint();
-                }, 300);
+                
+                // Show journal prompt only for first real check-in (not edit)
+                if (!isEditingToday) {
+                    setTimeout(() => {
+                        showJournalPrompt();
+                    }, 800);
+                }
             }, 150);
+        }
+        
+        function showJournalPrompt() {
+            // Don't show if journal already written today
+            function toLocalDS(d) {
+                return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+            }
+            const todayKey = toLocalDS(new Date());
+            if (journalData && journalData[todayKey] && journalData[todayKey].trim().length > 0) return;
+            
+            // Create overlay
+            const overlay = document.createElement('div');
+            overlay.id = 'journalPromptOverlay';
+            overlay.style.cssText = `
+                position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+                background: rgba(0,0,0,0.6); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+                z-index: 9000; display: flex; align-items: center; justify-content: center;
+                animation: fadeIn 0.25s ease;
+                padding: 20px;
+            `;
+            
+            const card = document.createElement('div');
+            card.style.cssText = `
+                background: var(--bg-card); border: 1px solid var(--border);
+                border-radius: 20px; padding: 28px 24px; max-width: 320px; width: 100%;
+                text-align: center; animation: messageIn 0.3s ease;
+            `;
+            
+            card.innerHTML = `
+                <div style="font-size: 36px; margin-bottom: 12px;">📔</div>
+                <div style="font-size: 17px; font-weight: 700; color: var(--text-primary); margin-bottom: 6px;">
+                    Noch ein paar Gedanken?
+                </div>
+                <div style="font-size: 13px; color: var(--text-secondary); line-height: 1.5; margin-bottom: 24px;">
+                    Schreib kurz auf, was dich heute bewegt hat — das hilft dir, Muster zu erkennen.
+                </div>
+                <div style="display: flex; gap: 10px;">
+                    <button id="journalPromptNo" style="
+                        flex: 1; padding: 13px; border-radius: 12px;
+                        background: var(--bg-secondary); border: 1px solid var(--border);
+                        color: var(--text-secondary); font-size: 14px; font-weight: 600;
+                        cursor: pointer; font-family: inherit; transition: all 0.2s;
+                    ">Nicht jetzt</button>
+                    <button id="journalPromptYes" style="
+                        flex: 1; padding: 13px; border-radius: 12px;
+                        background: var(--accent-primary); border: none;
+                        color: #fff; font-size: 14px; font-weight: 600;
+                        cursor: pointer; font-family: inherit; transition: all 0.2s;
+                    ">Ja, gerne ✍️</button>
+                </div>
+            `;
+            
+            overlay.appendChild(card);
+            document.body.appendChild(overlay);
+            
+            document.getElementById('journalPromptNo').onclick = () => {
+                overlay.style.opacity = '0';
+                overlay.style.transition = 'opacity 0.2s ease';
+                setTimeout(() => overlay.remove(), 200);
+            };
+            
+            document.getElementById('journalPromptYes').onclick = () => {
+                overlay.style.opacity = '0';
+                overlay.style.transition = 'opacity 0.2s ease';
+                setTimeout(() => {
+                    overlay.remove();
+                    // Open journal for today
+                    if (typeof toggleJournal === 'function') {
+                        switchView('tools');
+                        setTimeout(() => toggleJournal(), 200);
+                    }
+                }, 200);
+            };
+            
+            // Close on overlay tap
+            overlay.addEventListener('click', (e) => {
+                if (e.target === overlay) {
+                    overlay.style.opacity = '0';
+                    overlay.style.transition = 'opacity 0.2s ease';
+                    setTimeout(() => overlay.remove(), 200);
+                }
+            });
         }
         
         // Pull-to-Refresh Functionality - Flatex Style
