@@ -3483,12 +3483,13 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: rgba(0, 0, 0, 0.85);
-            backdrop-filter: blur(10px);
-            z-index: 1000;
-            align-items: center;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            z-index: 9500;
+            align-items: flex-end;
             justify-content: center;
-            animation: fadeIn 0.3s ease;
+            padding: 0;
         }
 
         .upgrade-modal.active {
@@ -3498,55 +3499,131 @@
         .upgrade-content {
             background: var(--bg-card);
             border: 1px solid var(--border);
-            border-radius: 24px;
-            padding: 32px;
-            max-width: 400px;
-            text-align: center;
+            border-radius: 28px 28px 0 0;
+            padding: 0;
+            width: 100%;
+            max-width: 500px;
             position: relative;
-            animation: slideUp 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            animation: upgradeSlideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            max-height: 90vh;
+            overflow-y: auto;
         }
 
-        @keyframes slideUp {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+        @keyframes upgradeSlideUp {
+            from { transform: translateY(100%); }
+            to { transform: translateY(0); }
         }
-
-        .upgrade-icon {
-            font-size: 64px;
+        
+        .upgrade-handle {
+            width: 36px;
+            height: 4px;
+            background: var(--border);
+            border-radius: 2px;
+            margin: 12px auto 0;
+        }
+        
+        .upgrade-hero {
+            padding: 24px 24px 0;
+            text-align: center;
+        }
+        
+        .upgrade-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: linear-gradient(135deg, rgba(255,107,53,0.15), rgba(255,143,95,0.1));
+            border: 1px solid rgba(255,107,53,0.25);
+            border-radius: 20px;
+            padding: 6px 14px;
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--accent-primary);
+            letter-spacing: 0.5px;
             margin-bottom: 16px;
         }
 
         .upgrade-title {
             font-size: 24px;
-            font-weight: 700;
-            margin-bottom: 8px;
+            font-weight: 800;
+            margin-bottom: 6px;
             color: var(--text-primary);
+            letter-spacing: -0.3px;
         }
 
         .upgrade-description {
             font-size: 14px;
-            font-weight: 300;
             color: var(--text-secondary);
             margin-bottom: 24px;
             line-height: 1.5;
         }
 
         .upgrade-features {
-            text-align: left;
+            padding: 0 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
             margin-bottom: 24px;
         }
 
         .upgrade-feature {
-            padding: 8px 0;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 14px;
+            background: var(--bg-secondary);
+            border-radius: 14px;
             font-size: 14px;
-            font-weight: 400;
             color: var(--text-primary);
+        }
+        
+        .upgrade-feature-icon {
+            width: 34px;
+            height: 34px;
+            border-radius: 10px;
+            background: rgba(255,107,53,0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            flex-shrink: 0;
+        }
+        
+        .upgrade-feature-text {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .upgrade-feature-name {
+            font-weight: 600;
+            font-size: 13px;
+        }
+        
+        .upgrade-feature-desc {
+            font-size: 11px;
+            color: var(--text-tertiary);
+            margin-top: 1px;
+        }
+        
+        .upgrade-footer {
+            padding: 20px 24px;
+            padding-bottom: calc(20px + env(safe-area-inset-bottom, 0px));
+        }
+        
+        .upgrade-price {
+            text-align: center;
+            margin-bottom: 14px;
+        }
+        
+        .upgrade-price-amount {
+            font-size: 28px;
+            font-weight: 800;
+            color: var(--text-primary);
+        }
+        
+        .upgrade-price-period {
+            font-size: 14px;
+            color: var(--text-secondary);
+            font-weight: 500;
         }
 
         .upgrade-btn {
@@ -3554,17 +3631,33 @@
             padding: 16px;
             background: linear-gradient(135deg, #ff6b35, #ff8f5f);
             border: none;
-            border-radius: 12px;
+            border-radius: 14px;
             color: #ffffff;
             font-size: 16px;
-            font-weight: 500;
+            font-weight: 700;
             cursor: pointer;
             transition: all 0.2s;
+            font-family: inherit;
+            letter-spacing: 0.2px;
         }
 
-        .upgrade-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 24px rgba(255, 107, 53, 0.4);
+        .upgrade-btn:active {
+            transform: scale(0.97);
+        }
+        
+        .upgrade-skip {
+            display: block;
+            width: 100%;
+            text-align: center;
+            padding: 12px;
+            background: none;
+            border: none;
+            color: var(--text-tertiary);
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            font-family: inherit;
+            margin-top: 6px;
         }
 
         /* ============================================ */
@@ -4851,23 +4944,65 @@
     </div>
 
     <!-- Upgrade Modal (NEW) -->
-    <div class="upgrade-modal" id="upgradeModal">
+    <div class="upgrade-modal" id="upgradeModal" onclick="if(event.target===this)closeUpgradeModal()">
         <div class="upgrade-content">
-            <button class="close-btn" onclick="closeUpgradeModal()">×</button>
-            <div class="upgrade-icon">⭐</div>
-            <div class="upgrade-title">Upgrade to FYS Pro</div>
-            <div class="upgrade-description">
-                Unlock Performance Packs, PDF Reports, and Advanced Analytics
+            <div class="upgrade-handle"></div>
+            <div class="upgrade-hero">
+                <div class="upgrade-badge">⭐ PRO</div>
+                <div class="upgrade-title">FYS Pro freischalten</div>
+                <div class="upgrade-description">
+                    Hol das Maximum aus deiner Performance — mit erweiterten Tools und tieferen Einblicken.
+                </div>
             </div>
             <div class="upgrade-features">
-                <div class="upgrade-feature">✓ 3 Performance Packs</div>
-                <div class="upgrade-feature">✓ PDF Export</div>
-                <div class="upgrade-feature">✓ Advanced Statistics</div>
-                <div class="upgrade-feature">✓ Unlimited History</div>
+                <div class="upgrade-feature">
+                    <div class="upgrade-feature-icon">📊</div>
+                    <div class="upgrade-feature-text">
+                        <div class="upgrade-feature-name">Performance Packs</div>
+                        <div class="upgrade-feature-desc">Health, Entrepreneur & Custom Packs</div>
+                    </div>
+                </div>
+                <div class="upgrade-feature">
+                    <div class="upgrade-feature-icon">✏️</div>
+                    <div class="upgrade-feature-text">
+                        <div class="upgrade-feature-name">Check-In bearbeiten</div>
+                        <div class="upgrade-feature-desc">Heutigen Check-In bis Mitternacht anpassen</div>
+                    </div>
+                </div>
+                <div class="upgrade-feature">
+                    <div class="upgrade-feature-icon">🧠</div>
+                    <div class="upgrade-feature-text">
+                        <div class="upgrade-feature-name">KI Coach</div>
+                        <div class="upgrade-feature-desc">Persönliche Analyse & Tipps</div>
+                    </div>
+                </div>
+                <div class="upgrade-feature">
+                    <div class="upgrade-feature-icon">📈</div>
+                    <div class="upgrade-feature-text">
+                        <div class="upgrade-feature-name">Erweiterte Statistiken</div>
+                        <div class="upgrade-feature-desc">Detailcharts, Radar & Trendanalyse</div>
+                    </div>
+                </div>
+                <div class="upgrade-feature">
+                    <div class="upgrade-feature-icon">📄</div>
+                    <div class="upgrade-feature-text">
+                        <div class="upgrade-feature-name">PDF Export</div>
+                        <div class="upgrade-feature-desc">Wöchentliche & monatliche Reports</div>
+                    </div>
+                </div>
             </div>
-            <button class="upgrade-btn" onclick="activateProFromModal()">
-                Activate Pro Now
-            </button>
+            <div class="upgrade-footer">
+                <div class="upgrade-price">
+                    <span class="upgrade-price-amount">3,99 €</span>
+                    <span class="upgrade-price-period"> / Monat</span>
+                </div>
+                <button class="upgrade-btn" onclick="activateProFromModal()">
+                    Jetzt Pro werden
+                </button>
+                <button class="upgrade-skip" onclick="closeUpgradeModal()">
+                    Vielleicht später
+                </button>
+            </div>
         </div>
     </div>
 
@@ -6788,7 +6923,11 @@
         }
 
         function closeCategoryDetail() {
-            document.getElementById('categoryDetailModal').classList.remove('active');
+            const modal = document.getElementById('categoryDetailModal');
+            if (modal) {
+                modal.classList.remove('active');
+                modal.style.display = '';
+            }
         }
 
         function updateCategoryDetailData() {
@@ -9192,10 +9331,8 @@
                 // START SPECIAL: Wenn Category Detail sichtbar ist, schließe es
                 if (view === 'home') {
                     const categoryDetailModal = document.getElementById('categoryDetailModal');
-                    if (categoryDetailModal && categoryDetailModal.classList.contains('active') && categoryDetailModal.style.display !== 'none') {
-                        categoryDetailModal.classList.remove('active');
-                        categoryDetailModal.style.display = 'none';
-                        console.log('❌ Category Detail geschlossen');
+                    if (categoryDetailModal && categoryDetailModal.classList.contains('active')) {
+                        closeCategoryDetail();
                         return;
                     }
                 }
@@ -9231,9 +9368,7 @@
                     console.log('🔒 Chart Details geschlossen');
                 }
                 if (categoryDetailModal && categoryDetailModal.classList.contains('active')) {
-                    categoryDetailModal.classList.remove('active');
-                    categoryDetailModal.style.display = '';
-                    console.log('🔒 Category Detail geschlossen');
+                    closeCategoryDetail();
                 }
             }
             
