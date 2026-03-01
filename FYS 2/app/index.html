@@ -524,6 +524,7 @@
         .streak-row {
             display: flex;
             gap: 10px;
+            align-items: stretch;
         }
         
         .streak-item {
@@ -537,16 +538,45 @@
         
         .streak-item.active {
             background: rgba(255, 107, 53, 0.08);
-            border: 1px solid rgba(255, 107, 53, 0.2);
+            border: 1px solid rgba(255, 107, 53, 0.15);
+        }
+        
+        /* Combo Hero Styling */
+        .streak-item.combo-hero {
+            flex: 1.4;
+            background: linear-gradient(135deg, rgba(255, 107, 53, 0.12), rgba(255, 143, 95, 0.08));
+            border: 1.5px solid rgba(255, 107, 53, 0.3);
+            box-shadow: 0 4px 20px rgba(255, 107, 53, 0.1);
+            padding: 14px 8px;
+        }
+        
+        .streak-item.combo-hero .streak-emoji {
+            font-size: 30px;
+            margin-bottom: 6px;
+        }
+        
+        .streak-item.combo-hero .streak-count {
+            font-size: 32px;
+            font-weight: 900;
+            color: var(--accent-primary);
+            text-shadow: 0 0 20px rgba(255, 107, 53, 0.3);
+        }
+        
+        .streak-item.combo-hero .streak-item-label {
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--accent-primary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
         
         .streak-emoji {
-            font-size: 22px;
+            font-size: 20px;
             margin-bottom: 6px;
         }
         
         .streak-count {
-            font-size: 24px;
+            font-size: 22px;
             font-weight: 800;
             color: var(--text-primary);
             line-height: 1;
@@ -572,7 +602,11 @@
 
         @keyframes flameFlicker {
             0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.15); }
+            50% { transform: scale(1.2); }
+        }
+        
+        .streak-item.combo-hero .streak-emoji {
+            animation: flameFlicker 1.5s infinite;
         }
         
         .streak-item.active .streak-emoji {
@@ -4403,17 +4437,17 @@
                             <div class="streak-item-label">Check-in</div>
                             <div class="streak-record-badge" id="streakCheckinRecord"></div>
                         </div>
+                        <div class="streak-item combo-hero" id="streakCombo">
+                            <div class="streak-emoji">🔥</div>
+                            <div class="streak-count" id="streakComboCount">0</div>
+                            <div class="streak-item-label">Kombi-Streak</div>
+                            <div class="streak-record-badge" id="streakComboRecord"></div>
+                        </div>
                         <div class="streak-item" id="streakJournal">
                             <div class="streak-emoji">📔</div>
                             <div class="streak-count" id="streakJournalCount">0</div>
                             <div class="streak-item-label">Tagebuch</div>
                             <div class="streak-record-badge" id="streakJournalRecord"></div>
-                        </div>
-                        <div class="streak-item" id="streakCombo">
-                            <div class="streak-emoji">🔥</div>
-                            <div class="streak-count" id="streakComboCount">0</div>
-                            <div class="streak-item-label">Kombi</div>
-                            <div class="streak-record-badge" id="streakComboRecord"></div>
                         </div>
                     </div>
                 </div>
