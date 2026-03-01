@@ -5203,13 +5203,65 @@
         let isPro = localStorage.getItem('fysPro') === 'true'; // Pro status
         let testMode = false; // Test mode removed
         let performanceData = JSON.parse(localStorage.getItem('fysData')) || { entries: [], activePacks: [] };
-        let currentStreak = parseInt(localStorage.getItem('fysStreak')) || 0; // Aktuelle Streak
-        let longestStreak = parseInt(localStorage.getItem('fysLongestStreak')) || 0; // Längste Streak
+        let currentStreak = parseInt(localStorage.getItem('fysStreak')) || 0;
+        let longestStreak = parseInt(localStorage.getItem('fysLongestStreak')) || 0;
         
         // Ensure activePacks exists in loaded data
         if (!performanceData.activePacks) {
             performanceData.activePacks = [];
         }
+        
+        // Backfill missing days with carry-forward entries
+        // This makes gap days real entries so all calculations see consistent data
+        function backfillMissingDays() {
+            if (performanceData.entries.length === 0) return;
+            
+            const today = new Date();
+            today.setHours(0,0,0,0);
+            
+            const newEntries = [];
+            
+            for (let i = 0; i < performanceData.entries.length; i++) {
+                const entry = performanceData.entries[i];
+                newEntries.push(entry);
+                
+                // Check gap to next entry (or today if last entry)
+                const entryDate = new Date(entry.date);
+                entryDate.setHours(0,0,0,0);
+                
+                let nextDate;
+                if (i < performanceData.entries.length - 1) {
+                    nextDate = new Date(performanceData.entries[i + 1].date);
+                    nextDate.setHours(0,0,0,0);
+                } else {
+                    nextDate = new Date(today);
+                }
+                
+                // Fill gap days between this entry and next
+                const gapStart = new Date(entryDate);
+                gapStart.setDate(gapStart.getDate() + 1);
+                
+                while (gapStart < nextDate) {
+                    newEntries.push({
+                        date: new Date(gapStart).toISOString(),
+                        values: Object.assign({}, entry.values),
+                        categoryValues: Object.assign({}, entry.categoryValues),
+                        sleepHours: entry.sleepHours,
+                        fysIndex: entry.fysIndex,
+                        packIndices: Object.assign({}, entry.packIndices || {}),
+                        isCarryForward: true
+                    });
+                    gapStart.setDate(gapStart.getDate() + 1);
+                }
+            }
+            
+            if (newEntries.length !== performanceData.entries.length) {
+                performanceData.entries = newEntries;
+                localStorage.setItem('fysData', JSON.stringify(performanceData));
+            }
+        }
+        
+        backfillMissingDays();
         
         let mainChart = null;
         let combinedChart = null;
@@ -5794,11 +5846,13 @@
                 return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
             }
             
-            // Build date→value map
+            // Build date→value map and carry-forward flag map
             const dateMap = {};
+            const cfMap = {};
             entries.forEach(e => {
                 const d = toLocalDateStr(new Date(e.date));
                 dateMap[d] = getValue(e);
+                cfMap[d] = !!e.isCarryForward;
             });
             
             const firstDate = new Date(entries[0].date);
@@ -5845,7 +5899,7 @@
                     lastValue = dateMap[dateStr];
                     labels.push(label);
                     data.push(lastValue);
-                    gapFlags.push(false);
+                    gapFlags.push(cfMap[dateStr] || false);
                 } else {
                     labels.push(label);
                     data.push(lastValue);
@@ -6131,52 +6185,26 @@
         }
         
         // Get the baseline entry for percentage comparison
-        // Returns the last entry BEFORE the current time range cutoff
+        // Since gap days are now real entries, we simply find the entry
+        // closest to the start of the time range.
         function getBaselineForRange() {
             if (performanceData.entries.length <= 1) return null;
-            if (currentTimeRange === 'all') return null;
             
-            const now = new Date();
-            now.setHours(0,0,0,0);
-            let cutoffDate;
+            const entries = getFilteredEntries();
+            if (entries.length === 0) return null;
             
-            switch(currentTimeRange) {
-                case '1d':
-                    cutoffDate = new Date(now);
-                    cutoffDate.setDate(cutoffDate.getDate() - 1);
-                    break;
-                case '7d':
-                    cutoffDate = new Date(now);
-                    cutoffDate.setDate(cutoffDate.getDate() - 7);
-                    break;
-                case '1m':
-                    cutoffDate = new Date(now);
-                    cutoffDate.setMonth(cutoffDate.getMonth() - 1);
-                    break;
-                case '6m':
-                    cutoffDate = new Date(now);
-                    cutoffDate.setMonth(cutoffDate.getMonth() - 6);
-                    break;
-                case '1y':
-                    cutoffDate = new Date(now);
-                    cutoffDate.setFullYear(cutoffDate.getFullYear() - 1);
-                    break;
-                default:
-                    return null;
+            // 1D: compare second-to-last vs last entry
+            if (currentTimeRange === '1d') {
+                if (entries.length >= 2) return entries[entries.length - 2];
+                // Only 1 entry in 1D range: find entry before it
+                const idx = performanceData.entries.indexOf(entries[0]);
+                return idx > 0 ? performanceData.entries[idx - 1] : entries[0];
             }
             
-            // Find the last entry BEFORE the cutoff
-            let baseline = null;
-            for (let i = performanceData.entries.length - 1; i >= 0; i--) {
-                const d = new Date(performanceData.entries[i].date);
-                d.setHours(0,0,0,0);
-                if (d < cutoffDate) {
-                    baseline = performanceData.entries[i];
-                    break;
-                }
-            }
-            // If no entry before cutoff, use the very first entry as baseline
-            return baseline || performanceData.entries[0];
+            // For other ranges: first entry in range IS the baseline
+            // (because gap days are now real carry-forward entries)
+            if (currentTimeRange === 'all') return entries[0];
+            return entries[0];
         }
 
         // Change time range
@@ -10688,15 +10716,17 @@
             }
             const todayLocal = toLocalDateStr2(new Date());
             const todayEntryIndex = performanceData.entries.findIndex(e => toLocalDateStr2(new Date(e.date)) === todayLocal);
+            const todayEntry = todayEntryIndex >= 0 ? performanceData.entries[todayEntryIndex] : null;
+            const hasRealEntryToday = todayEntry && !todayEntry.isCarryForward;
             const hasEntryToday = todayEntryIndex >= 0;
             
             let isEditingToday = false;
             
             if (testMode) {
                 isEditingToday = false;
-            } else if (isPro && (lastCheckInDate === today || hasEntryToday)) {
+            } else if (isPro && (lastCheckInDate === today || hasRealEntryToday)) {
                 isEditingToday = true;
-            } else if (lastCheckInDate === today || hasEntryToday) {
+            } else if (!isPro && (lastCheckInDate === today || hasRealEntryToday)) {
                 alert('⚠️ Du hast heute bereits eingecheckt!\n\nNur 1 Check-In pro Tag möglich.\n\nMit FYS Pro kannst du deinen heutigen Check-In bis Mitternacht bearbeiten.');
                 closeWizard();
                 return;
@@ -10802,12 +10832,11 @@
                     console.log(`First Entry Pack ${packId} Index:`, packIndices[packId]);
                 });
             } else {
-                // For editing: use the entry BEFORE today as base
+                // For editing or replacing carry-forward: use the entry BEFORE today as base
                 let baseEntry;
-                if (isEditingToday && todayEntryIndex > 0) {
+                if ((isEditingToday || (hasEntryToday && todayEntry && todayEntry.isCarryForward)) && todayEntryIndex > 0) {
                     baseEntry = performanceData.entries[todayEntryIndex - 1];
-                } else if (isEditingToday && todayEntryIndex === 0) {
-                    // Today is the very first entry — use 100 as base
+                } else if ((isEditingToday || hasEntryToday) && todayEntryIndex === 0) {
                     baseEntry = { fysIndex: 100, categoryValues: {}, packIndices: {} };
                 } else {
                     baseEntry = performanceData.entries[performanceData.entries.length - 1];
@@ -10870,8 +10899,10 @@
                 // Pro-User bearbeitet heutigen Check-In - überschreiben
                 performanceData.entries[todayEntryIndex] = newEntry;
             } else if (isEditingToday) {
-                // Entry today via localStorage but not found — overwrite last
                 performanceData.entries[performanceData.entries.length - 1] = newEntry;
+            } else if (hasEntryToday && todayEntry && todayEntry.isCarryForward) {
+                // Replace carry-forward entry with real check-in
+                performanceData.entries[todayEntryIndex] = newEntry;
             } else {
                 // Neuer Check-In
                 performanceData.entries.push(newEntry);
@@ -10887,6 +10918,7 @@
             }
 
             localStorage.setItem('fysData', JSON.stringify(performanceData));
+            backfillMissingDays(); // Fill any gaps up to today
             localStorage.removeItem('fysWizardDraft');
 
             // Set flag for post-reload actions
