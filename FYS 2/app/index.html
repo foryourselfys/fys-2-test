@@ -8291,11 +8291,7 @@
         
         function handleAddPack() {
             if (!isPro) {
-                // Show upgrade prompt
-                const upgrade = confirm('🌟 Performance Packs sind ein Pro-Feature!\n\nTracke zusätzliche Lebensbereiche wie Finanzen, Kreativität und mehr.\n\nJetzt FYS Pro aktivieren?');
-                if (upgrade) {
-                    togglePro();
-                }
+                showUpgradeModal();
                 return;
             }
             
@@ -9669,7 +9665,7 @@
         
         function openTaskManager() {
             if (!isPro) {
-                alert('⭐ Task Manager ist ein Pro Feature!\n\nUpgrade auf FYS Pro um Zugriff zu erhalten.');
+                showUpgradeModal();
                 return;
             }
             
@@ -10863,8 +10859,8 @@
             } else if (isPro && (lastCheckInDate === today || hasRealEntryToday)) {
                 isEditingToday = true;
             } else if (!isPro && (lastCheckInDate === today || hasRealEntryToday)) {
-                alert('⚠️ Du hast heute bereits eingecheckt!\n\nNur 1 Check-In pro Tag möglich.\n\nMit FYS Pro kannst du deinen heutigen Check-In bis Mitternacht bearbeiten.');
                 closeWizard();
+                showUpgradeModal();
                 return;
             }
             
