@@ -2192,12 +2192,19 @@
         /* Coach View - Full Page */
         #coachView {
             flex-direction: column;
-            height: 100vh;
-            padding-top: 64px;
-            padding-bottom: 80px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            height: 100%;
+            padding-top: 56px;
+            padding-bottom: 0;
             box-sizing: border-box;
             overflow: hidden;
             min-height: 0;
+            background: var(--bg-primary);
+            z-index: 1;
         }
         
         #coachView.active {
@@ -2205,72 +2212,99 @@
         }
         
         .coach-topbar {
-            padding: 16px 20px 12px;
+            padding: 16px 20px 8px;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            flex-shrink: 0;
         }
         
         .coach-topbar-title {
-            font-size: 22px;
+            font-size: 20px;
             font-weight: 700;
             color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
         
         .coach-topbar-subtitle {
-            font-size: 12px;
-            color: var(--text-secondary);
+            font-size: 11px;
+            color: var(--text-tertiary);
             margin-top: 2px;
+            letter-spacing: 0.3px;
         }
 
         .coach-content {
             flex: 1;
             overflow-y: auto;
-            padding: 0 20px 20px;
+            padding: 12px 16px 20px;
             min-height: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        
+        /* Push messages to bottom when few messages */
+        .coach-content::before {
+            content: '';
+            flex: 1;
         }
         
         .coach-welcome {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            flex: 1;
+            padding: 40px 24px;
             text-align: center;
-            padding: 40px 20px;
+            margin-top: auto;
+            margin-bottom: auto;
         }
         
         .coach-welcome-icon {
-            font-size: 48px;
+            width: 56px;
+            height: 56px;
+            border-radius: 16px;
+            background: linear-gradient(135deg, var(--accent-primary), #ff8f5f);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
             margin-bottom: 16px;
+            box-shadow: 0 4px 20px rgba(255, 107, 53, 0.2);
         }
         
         .coach-welcome-title {
-            font-size: 20px;
+            font-size: 18px;
             font-weight: 700;
             color: var(--text-primary);
-            margin-bottom: 8px;
+            margin-bottom: 6px;
         }
         
         .coach-welcome-sub {
-            font-size: 14px;
-            color: var(--text-secondary);
+            font-size: 13px;
+            color: var(--text-tertiary);
             line-height: 1.5;
+            max-width: 260px;
         }
         
         .coach-suggestions {
             display: flex;
+            flex-wrap: wrap;
             gap: 8px;
-            overflow-x: auto;
-            padding: 12px 20px;
-            -webkit-overflow-scrolling: touch;
-            scrollbar-width: none;
+            padding: 8px 20px 4px;
+            justify-content: center;
+            flex-shrink: 0;
         }
         
-        .coach-suggestions::-webkit-scrollbar { display: none; }
-        
         .coach-pill {
-            flex-shrink: 0;
-            padding: 8px 16px;
+            padding: 8px 14px;
             background: var(--bg-card);
             border: 1px solid var(--border);
             border-radius: 20px;
-            font-size: 13px;
+            font-size: 12px;
             color: var(--text-secondary);
             cursor: pointer;
             transition: all 0.2s;
@@ -2281,6 +2315,7 @@
             background: var(--accent-primary);
             color: #fff;
             border-color: var(--accent-primary);
+            transform: scale(0.96);
         }
         
         .close-btn {
@@ -2299,16 +2334,16 @@
         }
 
         .message {
-            margin-bottom: 16px;
+            margin-bottom: 4px;
             display: flex;
-            gap: 12px;
+            gap: 8px;
             animation: messageIn 0.3s ease;
         }
 
         @keyframes messageIn {
             from {
                 opacity: 0;
-                transform: translateY(10px);
+                transform: translateY(6px);
             }
             to {
                 opacity: 1;
@@ -2318,69 +2353,86 @@
 
         .message.user {
             flex-direction: row-reverse;
+            margin-top: 12px;
         }
 
         .message-bubble {
-            max-width: 80%;
-            padding: 14px 18px;
+            max-width: 85%;
+            padding: 12px 16px;
             border-radius: 18px;
             font-size: 14px;
-            line-height: 1.6;
-            color: var(--text-primary); /* Einheitliche Farbe */
+            line-height: 1.55;
+            color: var(--text-primary);
         }
 
         .message.assistant .message-bubble {
             background: var(--bg-card);
             border: 1px solid var(--border);
-            color: var(--text-primary); /* Explizit */
+            color: var(--text-primary);
+            border-bottom-left-radius: 6px;
         }
 
         .message.user .message-bubble {
             background: var(--accent-primary);
-            color: #ffffff; /* Weiß auf Orange */
+            color: #ffffff;
             font-weight: 500;
+            border-bottom-right-radius: 6px;
         }
 
         .coach-input-area {
-            padding: 12px 20px;
-            padding-bottom: calc(12px + env(safe-area-inset-bottom, 0px));
-            background: var(--bg-secondary);
+            padding: 10px 16px;
+            padding-bottom: calc(100px + env(safe-area-inset-bottom, 0px));
+            background: var(--bg-primary);
             border-top: 1px solid var(--border);
+            flex-shrink: 0;
         }
 
         .coach-input-wrapper {
             display: flex;
-            gap: 10px;
+            gap: 8px;
+            align-items: flex-end;
         }
 
         .coach-input {
             flex: 1;
-            padding: 14px 18px;
+            padding: 12px 16px;
             background: var(--bg-card);
             border: 1px solid var(--border);
-            border-radius: 12px;
+            border-radius: 22px;
             color: var(--text-primary);
             font-size: 14px;
             font-family: inherit;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        
+        .coach-input:focus {
+            border-color: var(--accent-primary);
         }
 
         .send-btn {
-            width: 46px;
-            height: 46px;
-            border-radius: 12px;
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
             background: var(--accent-primary);
             border: none;
-            color: #000;
-            font-size: 18px;
+            color: #fff;
+            font-size: 16px;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
             font-family: inherit;
+            transition: opacity 0.2s, transform 0.15s;
+            flex-shrink: 0;
+        }
+        
+        .send-btn:active {
+            transform: scale(0.92);
         }
 
         .send-btn:disabled {
-            opacity: 0.4;
+            opacity: 0.35;
         }
 
         /* Bottom Navigation - Pushup App Style (Floating Pill) */
@@ -4736,17 +4788,26 @@
     <div id="coachView" class="view-section">
         <div class="coach-topbar">
             <div>
-                <div class="coach-topbar-title">KI Coach</div>
+                <div class="coach-topbar-title">
+                    <span style="display: inline-flex; width: 28px; height: 28px; border-radius: 8px; background: linear-gradient(135deg, var(--accent-primary), #ff8f5f); align-items: center; justify-content: center; font-size: 14px;">🧠</span>
+                    KI Coach
+                </div>
                 <div class="coach-topbar-subtitle">Dein persönlicher Performance-Berater</div>
             </div>
         </div>
-        <div class="coach-suggestions">
+        <div class="coach-content" id="coachContent">
+            <div class="coach-welcome" id="coachWelcome">
+                <div class="coach-welcome-icon">💡</div>
+                <div class="coach-welcome-title">Hallo! Wie kann ich helfen?</div>
+                <div class="coach-welcome-sub">Ich analysiere deine Check-in Daten und gebe dir personalisierte Tipps.</div>
+            </div>
+        </div>
+        <div class="coach-suggestions" id="coachSuggestions">
             <div class="coach-pill" onclick="sendPillMessage(this)">Wie war mein Tag?</div>
             <div class="coach-pill" onclick="sendPillMessage(this)">Tipps für morgen</div>
             <div class="coach-pill" onclick="sendPillMessage(this)">Schwächen analysieren</div>
             <div class="coach-pill" onclick="sendPillMessage(this)">Motivation</div>
         </div>
-        <div class="coach-content" id="coachContent"></div>
         <div class="coach-input-area">
             <div class="coach-input-wrapper">
                 <input type="text" class="coach-input" id="coachInput" placeholder="Frag deinen Coach..." onkeypress="if(event.key==='Enter') sendMessage()">
@@ -6027,16 +6088,9 @@
                 return d >= cutoffDate;
             });
             
-            // If no entries in range, return the most recent entry as baseline
+            // If no entries in range, return the most recent entry as fallback
             if (filtered.length === 0) {
                 return performanceData.entries.slice(-1);
-            }
-            
-            // For comparison: include the last entry BEFORE cutoff as a baseline
-            // (so the chart can show a change from that point)
-            const firstIdx = performanceData.entries.indexOf(filtered[0]);
-            if (firstIdx > 0) {
-                return [performanceData.entries[firstIdx - 1], ...filtered];
             }
             
             return filtered;
@@ -7935,19 +7989,22 @@
                     const lastEntry = filteredEntries[filteredEntries.length - 1];
                     packIndexValue = lastEntry.packIndices?.[pack.id] || 100.0;
                     
-                    if (filteredEntries.length === 1 && performanceData.entries.length === 1) {
-                        // Very first entry: compare to 100
+                    if (performanceData.entries.length === 1) {
                         changeValue = packIndexValue - 100;
-                        changePercent = (changeValue / 100) * 100;
+                        changePercent = changeValue;
                     } else if (filteredEntries.length > 1) {
                         const firstEntry = filteredEntries[0];
                         const firstValue = firstEntry.packIndices?.[pack.id] || 100.0;
                         changeValue = packIndexValue - firstValue;
-                        changePercent = (changeValue / firstValue) * 100;
+                        changePercent = firstValue !== 0 ? (changeValue / firstValue) * 100 : 0;
                     } else {
-                        // Only 1 filtered entry but more exist: compare to 100
-                        changeValue = packIndexValue - 100;
-                        changePercent = (changeValue / 100) * 100;
+                        // Only 1 entry in range — find baseline from before the range
+                        const globalIdx = performanceData.entries.indexOf(filteredEntries[0]);
+                        const baseValue = globalIdx > 0 
+                            ? (performanceData.entries[globalIdx - 1].packIndices?.[pack.id] || 100)
+                            : 100;
+                        changeValue = packIndexValue - baseValue;
+                        changePercent = baseValue !== 0 ? (changeValue / baseValue) * 100 : 0;
                     }
                 }
 
@@ -8877,13 +8934,17 @@
             const today = new Date();
             today.setHours(0, 0, 0, 0);
             
+            function toLocalDateStr(d) {
+                return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+            }
+            
             // Helper: count consecutive days backwards from today for a condition
             function countStreak(checkFn) {
                 let streak = 0;
                 let checkDate = new Date(today);
                 
                 while (true) {
-                    const dateStr = checkDate.toISOString().split('T')[0];
+                    const dateStr = toLocalDateStr(checkDate);
                     if (checkFn(dateStr)) {
                         streak++;
                         checkDate.setDate(checkDate.getDate() - 1);
@@ -8896,7 +8957,8 @@
             }
             
             const hasCheckinOn = (dateStr) => performanceData.entries && performanceData.entries.some(e => {
-                return new Date(e.date).toISOString().split('T')[0] === dateStr;
+                const d = new Date(e.date);
+                return toLocalDateStr(d) === dateStr;
             });
             
             const hasJournalOn = (dateStr) => journalData && journalData[dateStr] && journalData[dateStr].trim().length > 0;
@@ -9191,6 +9253,14 @@
 
             const content = document.getElementById('coachContent');
             const sendBtn = document.getElementById('sendBtn');
+            
+            // Hide welcome screen on first message
+            const welcome = document.getElementById('coachWelcome');
+            if (welcome) welcome.remove();
+            
+            // Hide suggestions after sending
+            const suggestions = document.getElementById('coachSuggestions');
+            if (suggestions) suggestions.style.display = 'none';
 
             const userMsg = document.createElement('div');
             userMsg.className = 'message user';
@@ -10528,18 +10598,21 @@
             const today = new Date().toDateString();
             const lastCheckInDate = localStorage.getItem('lastCheckInDate');
             
+            // Also check actual entries for today (robust against localStorage mismatch)
+            function toLocalDateStr2(d) {
+                return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+            }
+            const todayLocal = toLocalDateStr2(new Date());
+            const todayEntryIndex = performanceData.entries.findIndex(e => toLocalDateStr2(new Date(e.date)) === todayLocal);
+            const hasEntryToday = todayEntryIndex >= 0;
+            
             let isEditingToday = false;
             
-            // TEST MODE: Erlaube immer neue CheckIns (überschreibe nicht, erstelle neu)
             if (testMode) {
-                console.log('🧪 TEST MODE: Bypassing date check - creating new entry');
-                isEditingToday = false; // Immer neuer Entry im Test-Mode
-            } else if (isPro && lastCheckInDate === today) {
-                // Pro-User dürfen heutigen Check-In bis 23:59 bearbeiten (überschreiben)
+                isEditingToday = false;
+            } else if (isPro && (lastCheckInDate === today || hasEntryToday)) {
                 isEditingToday = true;
-                console.log('✏️ Pro-User bearbeitet heutigen Check-In');
-            } else if (lastCheckInDate === today) {
-                // Free-User: Nur 1 Check-In pro Tag
+            } else if (lastCheckInDate === today || hasEntryToday) {
                 alert('⚠️ Du hast heute bereits eingecheckt!\n\nNur 1 Check-In pro Tag möglich.\n\nMit FYS Pro kannst du deinen heutigen Check-In bis Mitternacht bearbeiten.');
                 closeWizard();
                 return;
@@ -10645,10 +10718,13 @@
                     console.log(`First Entry Pack ${packId} Index:`, packIndices[packId]);
                 });
             } else {
-                // For editing: use the entry BEFORE today as base, not today's entry
+                // For editing: use the entry BEFORE today as base
                 let baseEntry;
-                if (isEditingToday && performanceData.entries.length >= 2) {
-                    baseEntry = performanceData.entries[performanceData.entries.length - 2];
+                if (isEditingToday && todayEntryIndex > 0) {
+                    baseEntry = performanceData.entries[todayEntryIndex - 1];
+                } else if (isEditingToday && todayEntryIndex === 0) {
+                    // Today is the very first entry — use 100 as base
+                    baseEntry = { fysIndex: 100, categoryValues: {}, packIndices: {} };
                 } else {
                     baseEntry = performanceData.entries[performanceData.entries.length - 1];
                 }
@@ -10706,10 +10782,12 @@
                 packIndices: packIndices
             };
             
-            if (isEditingToday) {
-                // Pro-User bearbeitet heutigen Check-In - überschreiben statt neu anlegen
+            if (isEditingToday && todayEntryIndex >= 0) {
+                // Pro-User bearbeitet heutigen Check-In - überschreiben
+                performanceData.entries[todayEntryIndex] = newEntry;
+            } else if (isEditingToday) {
+                // Entry today via localStorage but not found — overwrite last
                 performanceData.entries[performanceData.entries.length - 1] = newEntry;
-                console.log('✏️ Heutiger Check-In wurde überschrieben (Pro)');
             } else {
                 // Neuer Check-In
                 performanceData.entries.push(newEntry);
