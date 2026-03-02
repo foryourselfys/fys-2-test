@@ -4797,6 +4797,30 @@
                     </div>
                 </div>
 
+                <!-- App-Sperre -->
+                <div class="setting-item">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <div class="setting-label">🔒 App-Sperre</div>
+                            <div class="setting-description">Face ID, Touch ID oder PIN beim Start</div>
+                        </div>
+                        <label style="position: relative; width: 48px; height: 28px; cursor: pointer;">
+                            <input type="checkbox" id="lockToggle" onchange="toggleAppLock()" style="display: none;">
+                            <div id="lockToggleTrack" style="
+                                width: 48px; height: 28px; border-radius: 14px;
+                                background: var(--bg-secondary); border: 1px solid var(--border);
+                                transition: all 0.3s; position: relative;
+                            ">
+                                <div id="lockToggleThumb" style="
+                                    width: 22px; height: 22px; border-radius: 11px;
+                                    background: #fff; position: absolute; top: 2px; left: 2px;
+                                    transition: all 0.3s; box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+                                "></div>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+
                 <!-- Pro Toggle -->
                 <div class="setting-item" style="text-align: center;">
                     <div class="setting-label">🌟 FYS Pro</div>
@@ -5335,6 +5359,11 @@
         }
         
         backfillMissingDays();
+        
+        // Helper: check if user has only made one real check-in ever
+        function isFirstRealEntry() {
+            return performanceData.entries.filter(e => !e.isCarryForward).length <= 1;
+        }
         
         let mainChart = null;
         let combinedChart = null;
@@ -6139,7 +6168,7 @@
                     mainChart.options.plugins.gapMarkers = { gapFlags: filled.gapFlags, _opacity: 1 };
                     
                     // Add Start=100 only for very first entry ever
-                    if (performanceData.entries.length === 1) {
+                    if (isFirstRealEntry()) {
                         chartLabels.unshift('Start');
                         chartData.unshift(100);
                         filled.gapFlags.unshift(false);
@@ -6163,7 +6192,7 @@
                 
                 // Basis für Prozent-Berechnung
                 let baseValue;
-                if (performanceData.entries.length === 1) {
+                if (isFirstRealEntry()) {
                     baseValue = 100;
                 } else {
                     // Use baseline from before time range, or first entry in range
@@ -6352,7 +6381,7 @@
                 
                 mainChart.options.plugins.gapMarkers = { gapFlags: filled.gapFlags, _opacity: 1 };
                 
-                if (performanceData.entries.length === 1) {
+                if (isFirstRealEntry()) {
                     chartLabels.unshift('Start');
                     chartData.unshift(100);
                     filled.gapFlags.unshift(false);
@@ -6380,7 +6409,7 @@
                 const newValue = latest.fysIndex;
                 
                 let baseValue;
-                if (performanceData.entries.length === 1) {
+                if (isFirstRealEntry()) {
                     baseValue = 100;
                 } else {
                     const baseline = getBaselineForRange();
@@ -6490,7 +6519,7 @@
                 const first = entries[0];
                 
                 let baseValue;
-                if (performanceData.entries.length === 1) {
+                if (isFirstRealEntry()) {
                     baseValue = 100;
                 } else {
                     const baseline = getBaselineForRange();
@@ -6627,7 +6656,7 @@
                 const firstValue = first.categoryValues ? first.categoryValues[cat.id] : 100;
                 
                 let baseValue;
-                if (performanceData.entries.length === 1) {
+                if (isFirstRealEntry()) {
                     baseValue = 100;
                 } else {
                     const baseline = getBaselineForRange();
@@ -6760,7 +6789,7 @@
                 const firstValue = first.categoryValues ? first.categoryValues[cat.id] : 100;
                 
                 let baseValue;
-                if (performanceData.entries.length === 1) {
+                if (isFirstRealEntry()) {
                     baseValue = 100;
                 } else {
                     const baseline = getBaselineForRange();
@@ -6888,7 +6917,7 @@
             const firstValue = first.categoryValues ? first.categoryValues[currentCategoryId] : 100;
             
             let baseValue;
-            if (performanceData.entries.length === 1) {
+            if (isFirstRealEntry()) {
                 baseValue = 100;
             } else {
                 const baseline = getBaselineForRange();
@@ -6963,7 +6992,7 @@
             chartLabels = filled.labels;
             chartData = filled.data;
             
-            if (performanceData.entries.length === 1) {
+            if (isFirstRealEntry()) {
                 chartLabels.unshift('Start');
                 chartData.unshift(100);
                 filled.gapFlags.unshift(false);
@@ -6987,7 +7016,7 @@
                 const latest = entries[entries.length - 1];
                 const first = entries[0];
                 const newValue = latest.categoryValues ? latest.categoryValues[currentCategoryId] : 100;
-                const baseValue = performanceData.entries.length === 1 ? 100 : (first.categoryValues ? first.categoryValues[currentCategoryId] : 100);
+                const baseValue = isFirstRealEntry() ? 100 : (first.categoryValues ? first.categoryValues[currentCategoryId] : 100);
                 const change = newValue - baseValue;
                 const changePercent = baseValue !== 0 ? ((change / baseValue) * 100).toFixed(1) : '0.0';
                 
@@ -7178,7 +7207,7 @@
             chartLabels = filled.labels;
             chartData = filled.data;
             
-            if (performanceData.entries.length === 1) {
+            if (isFirstRealEntry()) {
                 chartLabels.unshift('Start');
                 chartData.unshift(100);
                 filled.gapFlags.unshift(false);
@@ -7463,7 +7492,7 @@
             grid.innerHTML = categories.map(cat => {
                 const val = latest?.categoryValues?.[cat.id] || 100;
                 const firstVal = first?.categoryValues?.[cat.id] || 100;
-                const baseVal = performanceData.entries.length === 1 ? 100 : firstVal;
+                const baseVal = isFirstRealEntry() ? 100 : firstVal;
                 const change = val - baseVal;
                 const changePct = baseVal ? ((change / baseVal) * 100).toFixed(1) : '0.0';
                 const changeColor = change > 0 ? 'var(--accent-up)' : change < 0 ? 'var(--accent-down)' : 'var(--text-secondary)';
@@ -8178,7 +8207,7 @@
                     const lastEntry = filteredEntries[filteredEntries.length - 1];
                     packIndexValue = lastEntry.packIndices?.[pack.id] || 100.0;
                     
-                    if (performanceData.entries.length === 1) {
+                    if (isFirstRealEntry()) {
                         changeValue = packIndexValue - 100;
                         changePercent = changeValue;
                     } else if (filteredEntries.length > 1) {
@@ -8260,7 +8289,7 @@
                 
                 // Only add Start=100 for very first pack entry ever
                 const allPackEntries = performanceData.entries.filter(e => e.packIndices && e.packIndices[packId] !== undefined);
-                if (allPackEntries.length <= 1) {
+                if (allPackEntries.filter(e => !e.isCarryForward).length <= 1) {
                     labels.unshift('Start');
                     chartData.unshift(100);
                     gapFlags.unshift(false);
@@ -8578,7 +8607,7 @@
             let labels = packGaps.labels;
             let gapFlags = packGaps.gapFlags;
             const allPackEntries = performanceData.entries.filter(e => e.packIndices && e.packIndices[packId] !== undefined);
-            const needsStart = allPackEntries.length <= 1;
+            const needsStart = allPackEntries.filter(e => !e.isCarryForward).length <= 1;
             
             if (needsStart) {
                 labels.unshift('Start');
@@ -12283,6 +12312,197 @@
             <button class="task-detail-delete" onclick="deleteTask()">Delete Task</button>
         </div>
     </div>
+
+
+<!-- Lock Screen -->
+<div id="lockScreen" style="
+    display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+    background: var(--bg-primary); z-index: 99999;
+    flex-direction: column; align-items: center; justify-content: center;
+    padding: 40px 24px; text-align: center;
+">
+    <div style="font-size: 48px; margin-bottom: 16px;">🔒</div>
+    <div style="font-size: 22px; font-weight: 800; color: var(--text-primary); margin-bottom: 6px;">FYS ist gesperrt</div>
+    <div style="font-size: 13px; color: var(--text-secondary); margin-bottom: 32px; line-height: 1.5;">Entsperre mit Face ID, Touch ID oder deinem PIN</div>
+    
+    <div id="lockPinDisplay" style="
+        display: flex; gap: 12px; margin-bottom: 24px; justify-content: center;
+    ">
+        <div class="pin-dot" style="width: 14px; height: 14px; border-radius: 50%; border: 2px solid var(--border); background: transparent; transition: all 0.2s;"></div>
+        <div class="pin-dot" style="width: 14px; height: 14px; border-radius: 50%; border: 2px solid var(--border); background: transparent; transition: all 0.2s;"></div>
+        <div class="pin-dot" style="width: 14px; height: 14px; border-radius: 50%; border: 2px solid var(--border); background: transparent; transition: all 0.2s;"></div>
+        <div class="pin-dot" style="width: 14px; height: 14px; border-radius: 50%; border: 2px solid var(--border); background: transparent; transition: all 0.2s;"></div>
+    </div>
+    
+    <div id="lockKeypad" style="
+        display: grid; grid-template-columns: repeat(3, 72px); gap: 12px; justify-content: center;
+    ">
+    </div>
+    
+    <div id="lockError" style="color: #ff3366; font-size: 13px; margin-top: 16px; opacity: 0; transition: opacity 0.3s;"></div>
+    
+    <button id="lockBiometricBtn" onclick="attemptBiometric()" style="
+        margin-top: 20px; padding: 12px 24px; background: none; border: 1px solid var(--border);
+        border-radius: 12px; color: var(--text-primary); font-size: 14px; font-weight: 600;
+        cursor: pointer; font-family: inherit; display: none;
+    ">Face ID / Touch ID verwenden</button>
+</div>
+
+<script>
+(function() {
+    let lockPin = '';
+    let enteredPin = '';
+    
+    // Build keypad
+    function buildKeypad() {
+        const keypad = document.getElementById('lockKeypad');
+        if (!keypad) return;
+        keypad.innerHTML = '';
+        const keys = [1,2,3,4,5,6,7,8,9,null,0,'del'];
+        keys.forEach(k => {
+            const btn = document.createElement('button');
+            btn.style.cssText = 'width: 72px; height: 72px; border-radius: 50%; font-size: 24px; font-weight: 600; cursor: pointer; font-family: inherit; transition: all 0.15s; display: flex; align-items: center; justify-content: center;';
+            if (k === null) {
+                btn.style.visibility = 'hidden';
+            } else if (k === 'del') {
+                btn.textContent = '⌫';
+                btn.style.cssText += 'background: none; border: none; color: var(--text-secondary); font-size: 20px;';
+                btn.onclick = () => { enteredPin = enteredPin.slice(0, -1); updatePinDots(); };
+            } else {
+                btn.textContent = k;
+                btn.style.cssText += 'background: var(--bg-secondary); border: 1px solid var(--border); color: var(--text-primary);';
+                btn.onclick = () => {
+                    if (enteredPin.length < 4) {
+                        enteredPin += k;
+                        updatePinDots();
+                        if (enteredPin.length === 4) checkPin();
+                    }
+                };
+            }
+            keypad.appendChild(btn);
+        });
+    }
+    
+    function updatePinDots() {
+        const dots = document.querySelectorAll('#lockPinDisplay .pin-dot');
+        dots.forEach((dot, i) => {
+            dot.style.background = i < enteredPin.length ? 'var(--accent-primary)' : 'transparent';
+            dot.style.borderColor = i < enteredPin.length ? 'var(--accent-primary)' : 'var(--border)';
+        });
+    }
+    
+    function checkPin() {
+        if (enteredPin === lockPin) {
+            unlockApp();
+        } else {
+            const errEl = document.getElementById('lockError');
+            if (errEl) { errEl.textContent = 'Falscher PIN'; errEl.style.opacity = '1'; }
+            const display = document.getElementById('lockPinDisplay');
+            if (display) { display.style.animation = 'shake 0.4s ease'; setTimeout(() => { display.style.animation = ''; }, 400); }
+            enteredPin = '';
+            setTimeout(updatePinDots, 300);
+            setTimeout(() => { if (errEl) errEl.style.opacity = '0'; }, 2000);
+        }
+    }
+    
+    function unlockApp() {
+        const ls = document.getElementById('lockScreen');
+        if (ls) {
+            ls.style.opacity = '0';
+            ls.style.transition = 'opacity 0.3s ease';
+            setTimeout(() => { ls.style.display = 'none'; }, 300);
+        }
+        sessionStorage.setItem('fysUnlocked', 'true');
+    }
+    
+    // Biometric auth via WebAuthn
+    window.attemptBiometric = async function() {
+        try {
+            const credential = await navigator.credentials.get({
+                publicKey: {
+                    challenge: new Uint8Array(32),
+                    timeout: 60000,
+                    userVerification: 'required',
+                    rpId: location.hostname,
+                    allowCredentials: []
+                }
+            });
+            unlockApp();
+        } catch(e) {
+            // Biometric failed/cancelled — user can use PIN
+            console.log('Biometric auth not available, use PIN');
+        }
+    };
+    
+    // Toggle app lock from settings
+    window.toggleAppLock = function() {
+        const toggle = document.getElementById('lockToggle');
+        if (toggle && toggle.checked) {
+            // Setup: ask user to set PIN
+            const pin = prompt('Lege einen 4-stelligen PIN fest:');
+            if (pin && /^\d{4}$/.test(pin)) {
+                localStorage.setItem('fysLockEnabled', 'true');
+                localStorage.setItem('fysLockPin', pin);
+                updateLockToggleUI(true);
+            } else {
+                toggle.checked = false;
+                updateLockToggleUI(false);
+                if (pin !== null) alert('Bitte gib einen 4-stelligen PIN ein (nur Zahlen).');
+            }
+        } else {
+            localStorage.removeItem('fysLockEnabled');
+            localStorage.removeItem('fysLockPin');
+            updateLockToggleUI(false);
+        }
+    };
+    
+    function updateLockToggleUI(enabled) {
+        const track = document.getElementById('lockToggleTrack');
+        const thumb = document.getElementById('lockToggleThumb');
+        if (track && thumb) {
+            track.style.background = enabled ? 'var(--accent-primary)' : 'var(--bg-secondary)';
+            track.style.borderColor = enabled ? 'var(--accent-primary)' : 'var(--border)';
+            thumb.style.left = enabled ? '24px' : '2px';
+        }
+    }
+    
+    // Init lock on page load
+    function initLock() {
+        const enabled = localStorage.getItem('fysLockEnabled') === 'true';
+        const toggle = document.getElementById('lockToggle');
+        if (toggle) toggle.checked = enabled;
+        updateLockToggleUI(enabled);
+        
+        if (!enabled) return;
+        if (sessionStorage.getItem('fysUnlocked') === 'true') return;
+        
+        lockPin = localStorage.getItem('fysLockPin') || '0000';
+        
+        const ls = document.getElementById('lockScreen');
+        if (ls) {
+            ls.style.display = 'flex';
+            buildKeypad();
+            
+            // Show biometric button if WebAuthn available
+            if (window.PublicKeyCredential) {
+                const bioBtn = document.getElementById('lockBiometricBtn');
+                if (bioBtn) bioBtn.style.display = 'inline-block';
+            }
+        }
+    }
+    
+    // Add shake animation
+    const style = document.createElement('style');
+    style.textContent = '@keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-8px)} 75%{transform:translateX(8px)} }';
+    document.head.appendChild(style);
+    
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initLock);
+    } else {
+        initLock();
+    }
+})();
+</script>
 
 </body>
 </html>
