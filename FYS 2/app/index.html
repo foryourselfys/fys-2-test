@@ -2,7 +2,7 @@
 <html lang="de">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>FYS - For Yourself</title>
     
     <!-- Favicon -->
@@ -130,6 +130,16 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+        
+        /* Ausnahme: Coach Chat Text kopierbar */
+        .message-bubble, .coach-input, #coachInput {
+            -webkit-user-select: text;
+            user-select: text;
         }
 
         :root {
@@ -4898,6 +4908,16 @@
                     <div class="pro-badge-small">PRO</div>
                 </div>
 
+                <!-- Custom Pack -->
+                <div class="tool-card" onclick="openCustomPackBuilder()">
+                    <div class="tool-icon">🧩</div>
+                    <div class="tool-info">
+                        <div class="tool-title">Custom Pack erstellen</div>
+                        <div class="tool-description">Eigenes Performance Pack bauen</div>
+                    </div>
+                    <div class="pro-badge-small">PRO</div>
+                </div>
+
                 <!-- FEATURES SECTION -->
                 <div class="section-title" style="margin-top: 32px;">✨ Features</div>
                 
@@ -5365,6 +5385,34 @@
             return performanceData.entries.filter(e => !e.isCarryForward).length <= 1;
         }
         
+
+        // ============================================
+        // GLOBAL SVG ICON REGISTRY - ALL CATEGORIES
+        // ============================================
+        const globalCategoryIcons = {
+            social: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>`,
+            energy: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>`,
+            sleep: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>`,
+            focus: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="6"></circle><circle cx="12" cy="12" r="2"></circle></svg>`,
+            discipline: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>`,
+            sport: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="3"></circle><path d="M6.5 8a7 7 0 0 0 11 0"></path><path d="M9 13l-2 8"></path><path d="M15 13l2 8"></path><path d="M12 13v4"></path></svg>`,
+            nutrition: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8h1a4 4 0 0 1 0 8h-1"></path><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"></path><line x1="6" y1="1" x2="6" y2="4"></line><line x1="10" y1="1" x2="10" y2="4"></line><line x1="14" y1="1" x2="14" y2="4"></line></svg>`,
+            mindset: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.5 2A2.5 2.5 0 0 1 12 4.5v15a2.5 2.5 0 0 1-4.96.44 2.5 2.5 0 0 1-2.96-3.08 3 3 0 0 1-.34-5.58 2.5 2.5 0 0 1 1.32-4.24 2.5 2.5 0 0 1 1.98-3A2.5 2.5 0 0 1 9.5 2Z"></path><path d="M14.5 2A2.5 2.5 0 0 0 12 4.5v15a2.5 2.5 0 0 0 4.96.44 2.5 2.5 0 0 0 2.96-3.08 3 3 0 0 0 .34-5.58 2.5 2.5 0 0 0-1.32-4.24 2.5 2.5 0 0 0-1.98-3A2.5 2.5 0 0 0 14.5 2Z"></path></svg>`,
+            savings: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path></svg>`,
+            investments: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"></polyline><polyline points="16 7 22 7 22 13"></polyline></svg>`,
+            budget: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"></path><path d="M12 18V6"></path></svg>`,
+            income: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12H4"></path><path d="M20 12l-4-4"></path><path d="M20 12l-4 4"></path></svg>`,
+            financial_education: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>`,
+            cardio: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"></path></svg>`,
+            strength: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 6.5v11M17.5 6.5v11M3 9.5h3M18 9.5h3M3 14.5h3M18 14.5h3M9 3v3M15 3v3M9 18v3M15 18v3"></path></svg>`,
+            flexibility: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 16v-2.38C4 11.5 2.97 10.5 3 8c.03-2.72 1.49-6 4.5-6C9.37 2 10 3.8 10 5.5c0 3.11-2 5.66-2 8.68V16"></path><path d="M20 20v-2.38c0-2.12 1.03-3.12 1-5.62-.03-2.72-1.49-6-4.5-6C14.63 6 14 7.8 14 9.5c0 3.11 2 5.66 2 8.68V20"></path></svg>`,
+            mental_health: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 1 1 7.072 0l-.548.547A3.374 3.374 0 0 0 14 18.469V19a2 2 0 1 1-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path></svg>`,
+            networking: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>`,
+            product_development: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path></svg>`,
+            marketing: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>`,
+            sales: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>`,
+            leadership: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>`
+        };
         let mainChart = null;
         let combinedChart = null;
         let individualCharts = {};
@@ -5549,6 +5597,45 @@
             }
         ];
 
+        // ============================================
+        // CUSTOM PERFORMANCE PACKS - DATA
+        // ============================================
+        
+        // Global custom categories pool (available for all custom packs)
+        let customCategoriesPool = JSON.parse(localStorage.getItem('fysCustomCategories')) || [];
+        
+        // Custom packs stored in performanceData
+        if (!performanceData.customPacks) {
+            performanceData.customPacks = [];
+        }
+        
+        // Helper: get ALL packs (built-in + custom)
+        function getAllPacks() {
+            const customs = (performanceData.customPacks || []).map(cp => ({
+                id: cp.id,
+                name: cp.name,
+                icon: cp.icon,
+                description: cp.description || '',
+                isCustom: true,
+                categories: cp.categories.map(c => ({
+                    id: c.id,
+                    name: typeof c.name === 'object' ? c.name : { de: c.name, en: c.name, es: c.name },
+                    emoji: c.icon || c.emoji || '📌',
+                    color: c.color || '#ff6b35',
+                    isPro: true
+                }))
+            }));
+            return [...performancePacks, ...customs];
+        }
+        
+        function saveCustomCategories() {
+            localStorage.setItem('fysCustomCategories', JSON.stringify(customCategoriesPool));
+        }
+        
+        function savePerformanceData() {
+            localStorage.setItem('fysData', JSON.stringify(performanceData));
+        }
+
         // KORRIGIERTE BERECHNUNGEN - EINFACH UND KLAR
         function calculateFYSIndex(values, previousIndex = 100) {
             // Durchschnitt aller Kategorien
@@ -5682,15 +5769,7 @@
             
             form.innerHTML = '';
             
-            const categoryIcons = {
-                social: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>`,
-                energy: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>`,
-                focus: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="6"></circle><circle cx="12" cy="12" r="2"></circle></svg>`,
-                discipline: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>`,
-                sport: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13.73 4a2 2 0 0 0-3.46 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>`,
-                nutrition: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8h1a4 4 0 0 1 0 8h-1"></path><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"></path><line x1="6" y1="1" x2="6" y2="4"></line><line x1="10" y1="1" x2="10" y2="4"></line><line x1="14" y1="1" x2="14" y2="4"></line></svg>`,
-                mindset: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="22"></line></svg>`
-            };
+            const categoryIcons = globalCategoryIcons;
             
             // Regular categories with Icons
             categories.forEach(cat => {
@@ -6346,7 +6425,7 @@
             if (currentStockListType === 'fys') {
                 createStockList();
             } else {
-                const pack = performancePacks.find(p => p.id === currentStockListType);
+                const pack = getAllPacks().find(p => p.id === currentStockListType);
                 if (pack) createPackStockList(pack);
             }
             
@@ -6607,15 +6686,7 @@
             console.log('createStockList entries:', entries.length);
 
             // Category SVG Icons (im Bottom Nav Stil)
-            const categoryIcons = {
-                social: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>`,
-                energy: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>`,
-                focus: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="6"></circle><circle cx="12" cy="12" r="2"></circle></svg>`,
-                discipline: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>`,
-                sport: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13.73 4a2 2 0 0 0-3.46 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>`,
-                nutrition: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8h1a4 4 0 0 1 0 8h-1"></path><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"></path><line x1="6" y1="1" x2="6" y2="4"></line><line x1="10" y1="1" x2="10" y2="4"></line><line x1="14" y1="1" x2="14" y2="4"></line></svg>`,
-                mindset: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="22"></line></svg>`
-            };
+            const categoryIcons = globalCategoryIcons;
 
             // Wenn keine Daten, zeige Demo-Werte
             if (entries.length === 0) {
@@ -6727,27 +6798,7 @@
             console.log('createPackStockList entries:', entries.length);
 
             // SVG Icons for pack categories (same as in settings)
-            const packCategoryIcons = {
-                // Finance Pack
-                savings: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path></svg>`,
-                investments: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>`,
-                budget: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"></path><path d="M12 18V6"></path></svg>`,
-                income: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg>`,
-                financial_education: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>`,
-                
-                // Health Pack
-                cardio: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"></path></svg>`,
-                strength: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6.5 6.5v11M17.5 6.5v11M3 9.5h3M18 9.5h3M3 14.5h3M18 14.5h3M9 3v3M15 3v3M9 18v3M15 18v3"></path></svg>`,
-                flexibility: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"></path></svg>`,
-                mental_health: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 1 1 7.072 0l-.548.547A3.374 3.374 0 0 0 14 18.469V19a2 2 0 1 1-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path></svg>`,
-                
-                // Entrepreneurship Pack
-                networking: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>`,
-                product_development: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path></svg>`,
-                marketing: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.3 15.3a2.4 2.4 0 0 1 0 3.4l-2.6 2.6a2.4 2.4 0 0 1-3.4 0L2.7 8.7a2.41 2.41 0 0 1 0-3.4l2.6-2.6a2.41 2.41 0 0 1 3.4 0L21.3 15.3z"></path><path d="M7.5 10.5L14 17"></path></svg>`,
-                sales: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>`,
-                leadership: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 20h20M5 20V9l7-5 7 5v11M9 20v-6h6v6"></path></svg>`
-            };
+            const packCategoryIcons = globalCategoryIcons;
 
             // If no data, show demo values
             if (entries.length === 0) {
@@ -6852,15 +6903,7 @@
 
             currentCategoryId = categoryId;
 
-            const categoryIcons = {
-                social: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>`,
-                energy: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>`,
-                focus: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="6"></circle><circle cx="12" cy="12" r="2"></circle></svg>`,
-                discipline: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>`,
-                sport: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13.73 4a2 2 0 0 0-3.46 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>`,
-                nutrition: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8h1a4 4 0 0 1 0 8h-1"></path><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"></path><line x1="6" y1="1" x2="6" y2="4"></line><line x1="10" y1="1" x2="10" y2="4"></line><line x1="14" y1="1" x2="14" y2="4"></line></svg>`,
-                mindset: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="22"></line></svg>`
-            };
+            const categoryIcons = globalCategoryIcons;
 
             // Update Header
             const iconContainer = document.getElementById('categoryDetailIcon');
@@ -8010,17 +8053,14 @@
             
             try {
                 if (!performanceData || !performanceData.activePacks) {
-                    console.warn('No active packs data available');
                     return packCategories;
                 }
                 
+                const allPacks = getAllPacks();
                 performanceData.activePacks.forEach(packId => {
-                    const pack = performancePacks.find(p => p.id === packId);
+                    const pack = allPacks.find(p => p.id === packId);
                     if (pack && pack.categories && Array.isArray(pack.categories)) {
                         packCategories = packCategories.concat(pack.categories);
-                        console.log('✓ Added categories from pack:', packId, '→', pack.categories.length, 'categories');
-                    } else {
-                        console.warn('Pack not found or invalid:', packId);
                     }
                 });
             } catch (error) {
@@ -8031,7 +8071,7 @@
         }
 
         function calculatePackIndex(packId, values, previousIndex) {
-            const pack = performancePacks.find(p => p.id === packId);
+            const pack = getAllPacks().find(p => p.id === packId);
             if (!pack) return 100;
 
             const packCategoryIds = pack.categories.map(c => c.id);
@@ -8099,29 +8139,9 @@
             listContainer.innerHTML = '';
 
             // SVG Icons for pack categories (same as in stock list)
-            const packCategoryIcons = {
-                // Finance Pack
-                savings: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 14px; height: 14px;"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path></svg>`,
-                investments: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 14px; height: 14px;"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>`,
-                budget: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 14px; height: 14px;"><circle cx="12" cy="12" r="10"></circle><path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"></path><path d="M12 18V6"></path></svg>`,
-                income: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 14px; height: 14px;"><path d="M20 12H4M20 12l-4-4M20 12l-4 4"></path></svg>`,
-                financial_education: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 14px; height: 14px;"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>`,
-                
-                // Health Pack
-                cardio: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 14px; height: 14px;"><path d="M22 12h-4l-3 9L9 3l-3 9H2"></path></svg>`,
-                strength: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 14px; height: 14px;"><path d="M6.5 6.5v11M17.5 6.5v11M3 9.5h3M18 9.5h3M3 14.5h3M18 14.5h3M9 3v3M15 3v3M9 18v3M15 18v3"></path></svg>`,
-                flexibility: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 14px; height: 14px;"><circle cx="12" cy="12" r="10"></circle><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"></path></svg>`,
-                mental_health: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 14px; height: 14px;"><path d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 1 1 7.072 0l-.548.547A3.374 3.374 0 0 0 14 18.469V19a2 2 0 1 1-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path></svg>`,
-                
-                // Entrepreneurship Pack
-                networking: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 14px; height: 14px;"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>`,
-                product_development: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 14px; height: 14px;"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>`,
-                marketing: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 14px; height: 14px;"><path d="M21.3 15.3a2.4 2.4 0 0 1 0 3.4l-2.6 2.6a2.4 2.4 0 0 1-3.4 0L2.7 8.7a2.41 2.41 0 0 1 0-3.4l2.6-2.6a2.41 2.41 0 0 1 3.4 0L21.3 15.3z"></path><path d="M7.5 10.5L14 17"></path></svg>`,
-                sales: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 14px; height: 14px;"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>`,
-                leadership: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 14px; height: 14px;"><path d="M2 20h20M5 20V9l7-5 7 5v11M9 20v-6h6v6"></path></svg>`
-            };
+            const packCategoryIcons = globalCategoryIcons;
 
-            performancePacks.forEach(pack => {
+            getAllPacks().forEach(pack => {
                 const isActive = performanceData.activePacks.includes(pack.id);
                 
                 const packItem = document.createElement('div');
@@ -8152,12 +8172,58 @@
                             `).join('')}
                         </div>
                     </div>
-                    <div style="display: flex; justify-content: center; margin-top: 14px;">
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin-top: 14px;">
+                        <div style="display: flex; gap: 6px;">
+                            <button class="pack-detail-btn" data-pack-id="${pack.id}" style="
+                                padding: 8px 12px; border-radius: 8px;
+                                background: var(--bg-elevated); border: 1px solid var(--border);
+                                color: var(--text-secondary); font-size: 12px; font-weight: 600;
+                                cursor: pointer; font-family: inherit; display: flex; align-items: center; gap: 5px;
+                            ">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 12px; height: 12px;">
+                                    <circle cx="12" cy="12" r="10"></circle>
+                                    <line x1="12" y1="16" x2="12" y2="12"></line>
+                                    <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                                </svg>
+                                Details
+                            </button>
+                            ${pack.isCustom ? `<button class="pack-edit-btn" data-pack-id="${pack.id}" style="
+                                padding: 8px 12px; border-radius: 8px;
+                                background: rgba(255,107,53,0.1); border: 1px solid rgba(255,107,53,0.2);
+                                color: var(--accent-primary); font-size: 12px; font-weight: 600;
+                                cursor: pointer; font-family: inherit; display: flex; align-items: center; gap: 5px;
+                            ">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 12px; height: 12px;">
+                                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                                </svg>
+                                Bearbeiten
+                            </button>` : ''}
+                        </div>
                         <div class="toggle-switch ${isActive ? 'active' : ''}" id="packToggle_${pack.id}">
                             <div class="toggle-slider"></div>
                         </div>
                     </div>
                 `;
+
+                // Detail button (all packs)
+                const detailBtn = packItem.querySelector('.pack-detail-btn');
+                detailBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const pid = detailBtn.dataset.packId;
+                    const p = getAllPacks().find(pk => pk.id === pid);
+                    if (p) showPackDetailSheet(p);
+                });
+                
+                // Edit button (custom packs only)
+                const editBtn = packItem.querySelector('.pack-edit-btn');
+                if (editBtn) {
+                    editBtn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        const pid = editBtn.dataset.packId;
+                        openPackEditor(pid);
+                    });
+                }
 
                 const toggle = packItem.querySelector('.toggle-switch');
                 toggle.addEventListener('click', (e) => {
@@ -8193,7 +8259,7 @@
 
             // Render each active pack like FYS-Index
             activePacks.forEach(packId => {
-                const pack = performancePacks.find(p => p.id === packId);
+                const pack = getAllPacks().find(p => p.id === packId);
                 if (!pack) return;
                 
                 // Get current pack index value based on time range
@@ -8358,7 +8424,7 @@
 
         // Performance Pack Detail Views
         function openPackDetails(packId) {
-            const pack = performancePacks.find(p => p.id === packId);
+            const pack = getAllPacks().find(p => p.id === packId);
             if (!pack) return;
             
             if (!performanceData.activePacks.includes(packId)) {
@@ -8519,27 +8585,7 @@
             const entries = getFilteredEntries();
             
             // SVG Icons for pack categories
-            const packCategoryIcons = {
-                // Finance Pack
-                savings: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path></svg>`,
-                investments: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>`,
-                budget: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"></path><path d="M12 18V6"></path></svg>`,
-                income: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 12H4M20 12l-4-4M20 12l-4 4"></path></svg>`,
-                financial_education: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>`,
-                
-                // Health Pack
-                cardio: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"></path></svg>`,
-                strength: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6.5 6.5v11M17.5 6.5v11M3 9.5h3M18 9.5h3M3 14.5h3M18 14.5h3M9 3v3M15 3v3M9 18v3M15 18v3"></path></svg>`,
-                flexibility: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"></path></svg>`,
-                mental_health: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 1 1 7.072 0l-.548.547A3.374 3.374 0 0 0 14 18.469V19a2 2 0 1 1-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path></svg>`,
-                
-                // Entrepreneurship Pack
-                networking: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>`,
-                product_development: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>`,
-                marketing: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.3 15.3a2.4 2.4 0 0 1 0 3.4l-2.6 2.6a2.4 2.4 0 0 1-3.4 0L2.7 8.7a2.41 2.41 0 0 1 0-3.4l2.6-2.6a2.41 2.41 0 0 1 3.4 0L21.3 15.3z"></path><path d="M7.5 10.5L14 17"></path></svg>`,
-                sales: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>`,
-                leadership: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 20h20M5 20V9l7-5 7 5v11M9 20v-6h6v6"></path></svg>`
-            };
+            const packCategoryIcons = globalCategoryIcons;
 
             pack.categories.forEach(cat => {
                 let currentValue = 100;
@@ -8591,7 +8637,7 @@
             
             if (combinedChart) combinedChart.destroy();
 
-            const pack = performancePacks.find(p => p.id === packId);
+            const pack = getAllPacks().find(p => p.id === packId);
             if (!pack) return;
             
             const entries = getFilteredEntries().filter(e => e.packIndices && e.packIndices[packId] !== undefined);
@@ -8751,12 +8797,12 @@
             
             // Re-render legend with current pack
             const currentPackId = currentStockListType;
-            const pack = performancePacks.find(p => p.id === currentPackId);
+            const pack = getAllPacks().find(p => p.id === currentPackId);
             if (pack) renderPackCombinedLegend(pack);
         }
 
         function openPackCategoryDetail(packId, categoryId) {
-            const pack = performancePacks.find(p => p.id === packId);
+            const pack = getAllPacks().find(p => p.id === packId);
             if (!pack) {
                 console.error('Pack not found:', packId);
                 return;
@@ -8784,25 +8830,7 @@
             }
             
             // Get icon HTML
-            const packCategoryIcons = {
-                // Finance Pack
-                savings: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path></svg>`,
-                investments: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>`,
-                budget: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"></path><path d="M12 18V6"></path></svg>`,
-                income: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg>`,
-                financial_education: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>`,
-                // Health Pack
-                cardio: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"></path></svg>`,
-                strength: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6.5 6.5v11M17.5 6.5v11M3 9.5h3M18 9.5h3M3 14.5h3M18 14.5h3M9 3v3M15 3v3M9 18v3M15 18v3"></path></svg>`,
-                flexibility: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"></path></svg>`,
-                mental_health: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 1 1 7.072 0l-.548.547A3.374 3.374 0 0 0 14 18.469V19a2 2 0 1 1-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path></svg>`,
-                // Entrepreneurship Pack
-                networking: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>`,
-                product_development: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path></svg>`,
-                marketing: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.3 15.3a2.4 2.4 0 0 1 0 3.4l-2.6 2.6a2.4 2.4 0 0 1-3.4 0L2.7 8.7a2.41 2.41 0 0 1 0-3.4l2.6-2.6a2.41 2.41 0 0 1 3.4 0L21.3 15.3z"></path><path d="M7.5 10.5L14 17"></path></svg>`,
-                sales: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>`,
-                leadership: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 20h20M5 20V9l7-5 7 5v11M9 20v-6h6v6"></path></svg>`
-            };
+            const packCategoryIcons = globalCategoryIcons;
             
             const iconHtml = packCategoryIcons[categoryId] || `<div style="font-size: 24px;">${category.emoji}</div>`;
             
@@ -8971,7 +8999,7 @@
             
             // Find category color
             let categoryColor = '#ff6b35';
-            performancePacks.forEach(pack => {
+            getAllPacks().forEach(pack => {
                 const cat = pack.categories.find(c => c.id === categoryId);
                 if (cat) categoryColor = cat.color;
             });
@@ -10281,37 +10309,7 @@
             return wizardCats;
         }
 
-        const categoryIcons = {
-            // Base categories
-            social: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>`,
-            energy: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>`,
-            sleep: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>`,
-            focus: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="6"></circle><circle cx="12" cy="12" r="2"></circle></svg>`,
-            discipline: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>`,
-            sport: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"></path></svg>`,
-            nutrition: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8h1a4 4 0 0 1 0 8h-1"></path><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"></path><line x1="6" y1="1" x2="6" y2="4"></line><line x1="10" y1="1" x2="10" y2="4"></line><line x1="14" y1="1" x2="14" y2="4"></line></svg>`,
-            mindset: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="22"></line></svg>`,
-            
-            // Finance Pack
-            savings: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path></svg>`,
-            investments: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>`,
-            budget: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"></path><path d="M12 18V6"></path></svg>`,
-            income: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg>`,
-            financial_education: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>`,
-            
-            // Health Pack
-            cardio: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"></path></svg>`,
-            strength: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6.5 6.5v11M17.5 6.5v11M3 9.5h3M18 9.5h3M3 14.5h3M18 14.5h3M9 3v3M15 3v3M9 18v3M15 18v3"></path></svg>`,
-            flexibility: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"></path></svg>`,
-            mental_health: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 1 1 7.072 0l-.548.547A3.374 3.374 0 0 0 14 18.469V19a2 2 0 1 1-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path></svg>`,
-            
-            // Entrepreneurship Pack
-            networking: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>`,
-            product_development: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path></svg>`,
-            marketing: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.3 15.3a2.4 2.4 0 0 1 0 3.4l-2.6 2.6a2.4 2.4 0 0 1-3.4 0L2.7 8.7a2.41 2.41 0 0 1 0-3.4l2.6-2.6a2.41 2.41 0 0 1 3.4 0L21.3 15.3z"></path><path d="M7.5 10.5L14 17"></path></svg>`,
-            sales: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>`,
-            leadership: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 20h20M5 20V9l7-5 7 5v11M9 20v-6h6v6"></path></svg>`
-        };
+        const categoryIcons = globalCategoryIcons;
 
         let wizardCurrentStep = 0;
         let wizardDraft = {};
@@ -11921,6 +11919,611 @@
             showUpgradeModal(); // TODO: Statistics dashboard
         }
 
+
+        // ============================================
+        // CUSTOM PERFORMANCE PACK BUILDER
+        // ============================================
+        
+        let customPackDraft = { name: '', icon: '🧩', description: '', categories: [] };
+        let editingCustomPackId = null;
+        
+
+        // Open editor: custom packs get full editor, built-in packs get read-only detail view
+        function openPackEditor(packId) {
+            // Only for custom packs — opens the builder in edit mode
+            const cp = (performanceData.customPacks || []).find(p => p.id === packId);
+            if (!cp) return;
+            
+            editingCustomPackId = packId;
+            customPackDraft = {
+                name: cp.name,
+                icon: cp.icon,
+                description: cp.description || '',
+                categories: [...cp.categories]
+            };
+            renderCustomPackModal();
+        }
+        
+        function showPackDetailSheet(pack) {
+            let existing = document.getElementById('packDetailSheet');
+            if (existing) existing.remove();
+            
+            const isActive = performanceData.activePacks.includes(pack.id);
+            
+            const overlay = document.createElement('div');
+            overlay.id = 'packDetailSheet';
+            overlay.style.cssText = `
+                position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+                background: rgba(0,0,0,0.7); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+                z-index: 9500; display: flex; align-items: flex-end; justify-content: center;
+            `;
+            
+            overlay.innerHTML = `
+                <div style="
+                    background: var(--bg-card); border: 1px solid var(--border);
+                    border-radius: 28px 28px 0 0; width: 100%; max-width: 500px;
+                    max-height: 85vh; overflow-y: auto;
+                    animation: upgradeSlideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+                ">
+                    <div style="width: 36px; height: 4px; background: var(--border); border-radius: 2px; margin: 12px auto 0;"></div>
+                    
+                    <!-- Header -->
+                    <div style="padding: 20px 24px; text-align: center;">
+                        <div style="font-size: 40px; margin-bottom: 8px;">${pack.icon}</div>
+                        <div style="font-size: 20px; font-weight: 800; color: var(--text-primary); margin-bottom: 4px;">${pack.name}</div>
+                        <div style="font-size: 13px; color: var(--text-secondary); line-height: 1.5;">${pack.description}</div>
+                    </div>
+                    
+                    <!-- Categories -->
+                    <div style="padding: 0 24px 8px;">
+                        <div style="font-size: 12px; font-weight: 600; color: var(--text-tertiary); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px;">Kategorien (${pack.categories.length})</div>
+                        ${pack.categories.map(c => {
+                            const name = typeof c.name === 'object' ? (c.name.de || c.name.en) : c.name;
+                            const icon = globalCategoryIcons[c.id] || '';
+                            return `
+                            <div style="display: flex; align-items: center; gap: 12px; padding: 12px 14px; background: var(--bg-secondary); border-radius: 12px; margin-bottom: 4px;">
+                                <div style="width: 36px; height: 36px; border-radius: 10px; background: ${c.color}20; color: ${c.color}; display: flex; align-items: center; justify-content: center;">
+                                    ${icon ? '<div style="width: 18px; height: 18px;">' + icon + '</div>' : '<span style="font-size: 18px;">' + (c.emoji || '📌') + '</span>'}
+                                </div>
+                                <div style="font-size: 14px; font-weight: 600; color: var(--text-primary);">${name}</div>
+                            </div>`;
+                        }).join('')}
+                    </div>
+                    
+                    <!-- Footer -->
+                    <div style="padding: 16px 24px 24px; padding-bottom: calc(24px + env(safe-area-inset-bottom, 0px));">
+                        <button onclick="togglePerformancePack('${pack.id}'); document.getElementById('packDetailSheet').remove(); renderPackSettings();" style="
+                            width: 100%; padding: 16px;
+                            background: ${isActive ? 'var(--bg-secondary)' : 'linear-gradient(135deg, #ff6b35, #ff8f5f)'};
+                            border: ${isActive ? '1px solid var(--border)' : 'none'};
+                            border-radius: 14px;
+                            color: ${isActive ? 'var(--text-secondary)' : '#fff'};
+                            font-size: 16px; font-weight: 700; cursor: pointer; font-family: inherit;
+                        ">${isActive ? 'Pack deaktivieren' : 'Pack aktivieren'}</button>
+                        <button onclick="document.getElementById('packDetailSheet').remove()" style="
+                            display: block; width: 100%; text-align: center; padding: 12px; background: none;
+                            border: none; color: var(--text-tertiary); font-size: 13px; font-weight: 500;
+                            cursor: pointer; font-family: inherit; margin-top: 6px;
+                        ">Schließen</button>
+                    </div>
+                </div>
+            `;
+            
+            overlay.addEventListener('click', e => { if (e.target === overlay) overlay.remove(); });
+            document.body.appendChild(overlay);
+        }
+
+        function openCustomPackBuilder() {
+            if (!isPro) { showUpgradeModal(); return; }
+            
+            // Check limit: max 1 custom pack
+            if (!editingCustomPackId && performanceData.customPacks && performanceData.customPacks.length >= 1) {
+                const existing = performanceData.customPacks[0];
+                editingCustomPackId = existing.id;
+                customPackDraft = {
+                    name: existing.name,
+                    icon: existing.icon,
+                    description: existing.description || '',
+                    categories: [...existing.categories]
+                };
+            } else if (!editingCustomPackId) {
+                customPackDraft = { name: '', icon: '🧩', description: '', categories: [] };
+            }
+            
+            renderCustomPackModal();
+        }
+        
+        function renderCustomPackModal() {
+            let existing = document.getElementById('customPackModal');
+            if (existing) existing.remove();
+            
+            const isEditing = !!editingCustomPackId;
+            const cats = customPackDraft.categories;
+            
+            const overlay = document.createElement('div');
+            overlay.id = 'customPackModal';
+            overlay.style.cssText = `
+                position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+                background: rgba(0,0,0,0.7); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+                z-index: 9500; display: flex; align-items: flex-end; justify-content: center;
+            `;
+            
+            // iconOptions moved to openPackIconPicker()
+            
+            overlay.innerHTML = `
+                <div style="
+                    background: var(--bg-card); border: 1px solid var(--border);
+                    border-radius: 28px 28px 0 0; width: 100%; max-width: 500px;
+                    max-height: 92vh; overflow-y: auto;
+                    animation: upgradeSlideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+                ">
+                    <div style="width: 36px; height: 4px; background: var(--border); border-radius: 2px; margin: 12px auto 0;"></div>
+                    
+                    <!-- Header -->
+                    <div style="padding: 20px 24px 0; display: flex; justify-content: space-between; align-items: center;">
+                        <div style="font-size: 18px; font-weight: 800; color: var(--text-primary);">
+                            ${isEditing ? 'Pack bearbeiten' : 'Custom Pack erstellen'}
+                        </div>
+                        <button onclick="closeCustomPackModal()" style="width: 32px; height: 32px; border-radius: 50%; background: var(--bg-secondary); border: 1px solid var(--border); color: var(--text-primary); font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center;">×</button>
+                    </div>
+                    
+                    <!-- Pack Info -->
+                    <div style="padding: 20px 24px;">
+                        <!-- Icon Picker (opens popup) -->
+                        <div style="margin-bottom: 16px;">
+                            <div style="font-size: 12px; font-weight: 600; color: var(--text-secondary); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;">Icon</div>
+                            <button onclick="openPackIconPicker()" style="
+                                display: flex; align-items: center; gap: 10px; padding: 10px 14px;
+                                background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 10px;
+                                cursor: pointer; font-family: inherit; width: 100%; transition: all 0.2s;
+                            ">
+                                <span style="font-size: 28px;">${customPackDraft.icon}</span>
+                                <span style="font-size: 13px; color: var(--text-secondary); font-weight: 500;">Tippen um Icon zu ändern</span>
+                                <span style="margin-left: auto; color: var(--text-tertiary); font-size: 14px;">›</span>
+                            </button>
+                        </div>
+                        
+                        <!-- Name -->
+                        <div style="margin-bottom: 12px;">
+                            <div style="font-size: 12px; font-weight: 600; color: var(--text-secondary); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px;">Pack Name *</div>
+                            <input id="cpName" type="text" value="${customPackDraft.name}" placeholder="z.B. Kreativität Pack" maxlength="30"
+                                oninput="customPackDraft.name=this.value"
+                                style="width: 100%; padding: 12px 14px; background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 10px; color: var(--text-primary); font-size: 14px; font-family: inherit; outline: none;">
+                        </div>
+                        
+                        <!-- Description -->
+                        <div style="margin-bottom: 20px;">
+                            <div style="font-size: 12px; font-weight: 600; color: var(--text-secondary); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px;">Beschreibung</div>
+                            <input id="cpDesc" type="text" value="${customPackDraft.description}" placeholder="Kurze Beschreibung (optional)" maxlength="60"
+                                oninput="customPackDraft.description=this.value"
+                                style="width: 100%; padding: 12px 14px; background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 10px; color: var(--text-primary); font-size: 14px; font-family: inherit; outline: none;">
+                        </div>
+                        
+                        <!-- Categories -->
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                            <div style="font-size: 12px; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px;">Kategorien (${cats.length}/5)</div>
+                            ${cats.length < 5 ? '<button onclick="openCategoryPicker()" style="padding: 6px 12px; background: var(--accent-primary); border: none; border-radius: 8px; color: #fff; font-size: 12px; font-weight: 600; cursor: pointer; font-family: inherit;">+ Hinzufügen</button>' : ''}
+                        </div>
+                        
+                        <div id="cpCatList">
+                            ${cats.length === 0 ? '<div style="text-align: center; padding: 24px; color: var(--text-tertiary); font-size: 13px;">Noch keine Kategorien hinzugefügt</div>' : 
+                            cats.map((c, i) => `
+                                <div style="display: flex; align-items: center; gap: 12px; padding: 12px 14px; background: var(--bg-secondary); border-radius: 12px; margin-bottom: 6px;">
+                                    <span style="font-size: 20px;">${c.icon || c.emoji || '📌'}</span>
+                                    <div style="flex: 1;">
+                                        <div style="font-size: 14px; font-weight: 600; color: var(--text-primary);">${typeof c.name === 'object' ? c.name.de : c.name}</div>
+                                    </div>
+                                    <button onclick="removePackCategory(${i})" style="width: 28px; height: 28px; border-radius: 50%; background: rgba(255,51,102,0.1); border: none; color: #ff3366; font-size: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center;">×</button>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                    
+                    <!-- Footer -->
+                    <div style="padding: 12px 24px 24px; padding-bottom: calc(24px + env(safe-area-inset-bottom, 0px));">
+                        <button onclick="saveCustomPack()" style="
+                            width: 100%; padding: 16px; background: linear-gradient(135deg, #ff6b35, #ff8f5f);
+                            border: none; border-radius: 14px; color: #fff; font-size: 16px; font-weight: 700;
+                            cursor: pointer; font-family: inherit;
+                        ">${isEditing ? 'Pack speichern' : 'Pack erstellen'}</button>
+                        ${isEditing ? `<button onclick="deleteCustomPack()" style="
+                            display: block; width: 100%; text-align: center; padding: 12px; background: none;
+                            border: none; color: #ff3366; font-size: 13px; font-weight: 600;
+                            cursor: pointer; font-family: inherit; margin-top: 8px;
+                        ">Pack löschen</button>` : ''}
+                    </div>
+                </div>
+            `;
+            
+            overlay.addEventListener('click', e => { if (e.target === overlay) closeCustomPackModal(); });
+            document.body.appendChild(overlay);
+        }
+        
+        function openPackIconPicker() {
+            let existing = document.getElementById('iconPickerPopup');
+            if (existing) existing.remove();
+            
+            const emojiGroups = {
+                'Aktivität': ['🏃','🏋️','🧘','⚽','🏀','🎾','🏊','🚴','🥊','🎿','🏄','🤸','🧗','🏇','⛷️','🏌️','🤾','🏸'],
+                'Gesundheit': ['❤️','💪','🧠','💊','🩺','🏥','🫀','🫁','🦷','👁️','🧬','🩸','🍎','🥗','🥤','💤'],
+                'Arbeit': ['💼','📊','📈','💰','🏢','📋','✏️','📌','🗂️','📁','🖥️','⌨️','📞','🤝','👔','💡'],
+                'Kreativität': ['🎨','🎵','🎭','📷','🎬','✍️','🎸','🎹','🎤','📝','🖌️','🎪','💃','🕺','🎧','📚'],
+                'Lifestyle': ['🌱','🌍','✈️','🏠','🚗','☕','🍽️','🛌','🧘','🌅','🌙','⭐','🌈','🎯','🔥','⚡'],
+                'Natur': ['🌿','🌳','🌺','🌸','🍀','🌊','🏔️','🌋','🐾','🦋','🐝','🌻','🍃','🌞','❄️','🌵'],
+                'Tech': ['💻','📱','🔬','🤖','🎮','🕹️','📡','🔧','⚙️','🛠️','💾','🧪','🔭','🛸','🧲','💎'],
+                'Symbole': ['🧩','🎯','🏆','🏅','👑','💫','✨','🌟','⚡','🔥','❤️‍🔥','💥','🎉','🚀','🗝️','🛡️']
+            };
+            
+            const overlay = document.createElement('div');
+            overlay.id = 'iconPickerPopup';
+            overlay.style.cssText = `
+                position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+                background: rgba(0,0,0,0.7); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+                z-index: 9600; display: flex; align-items: center; justify-content: center; padding: 20px;
+            `;
+            
+            let groupsHTML = '';
+            for (const [group, emojis] of Object.entries(emojiGroups)) {
+                groupsHTML += `
+                    <div style="margin-bottom: 16px;">
+                        <div style="font-size: 11px; font-weight: 700; color: var(--text-tertiary); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;">${group}</div>
+                        <div style="display: flex; flex-wrap: wrap; gap: 4px;">
+                            ${emojis.map(e => `
+                                <button onclick="selectPackIcon('${e}')" style="
+                                    width: 42px; height: 42px; border-radius: 10px; font-size: 22px;
+                                    background: ${customPackDraft.icon === e ? 'rgba(255,107,53,0.15)' : 'var(--bg-secondary)'};
+                                    border: ${customPackDraft.icon === e ? '2px solid var(--accent-primary)' : '1px solid var(--border)'};
+                                    cursor: pointer; display: flex; align-items: center; justify-content: center;
+                                    transition: all 0.1s;
+                                ">${e}</button>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            }
+            
+            overlay.innerHTML = `
+                <div style="
+                    background: var(--bg-card); border: 1px solid var(--border); border-radius: 20px;
+                    width: 100%; max-width: 400px; max-height: 80vh; display: flex; flex-direction: column;
+                    animation: messageIn 0.3s ease;
+                ">
+                    <div style="padding: 16px 20px 12px; display: flex; justify-content: space-between; align-items: center; flex-shrink: 0;">
+                        <div style="font-size: 16px; font-weight: 700; color: var(--text-primary);">Icon wählen</div>
+                        <button onclick="document.getElementById('iconPickerPopup').remove()" style="
+                            width: 32px; height: 32px; border-radius: 50%; background: var(--bg-secondary);
+                            border: 1px solid var(--border); color: var(--text-primary); font-size: 16px;
+                            cursor: pointer; display: flex; align-items: center; justify-content: center;
+                        ">×</button>
+                    </div>
+                    <div style="flex: 1; overflow-y: auto; padding: 0 20px 20px;">
+                        ${groupsHTML}
+                    </div>
+                </div>
+            `;
+            
+            overlay.addEventListener('click', e => { if (e.target === overlay) overlay.remove(); });
+            document.body.appendChild(overlay);
+        }
+        
+        function selectPackIcon(icon) {
+            customPackDraft.icon = icon;
+            document.getElementById('iconPickerPopup')?.remove();
+            renderCustomPackModal();
+        }
+
+        function setPackIcon(icon) {
+            customPackDraft.icon = icon;
+            renderCustomPackModal();
+        }
+        
+        function removePackCategory(index) {
+            customPackDraft.categories.splice(index, 1);
+            renderCustomPackModal();
+        }
+        
+        function closeCustomPackModal() {
+            const m = document.getElementById('customPackModal');
+            if (m) { m.style.opacity = '0'; m.style.transition = 'opacity 0.2s'; setTimeout(() => m.remove(), 200); }
+            editingCustomPackId = null;
+            customPackDraft = { name: '', icon: '🧩', description: '', categories: [] };
+        }
+        
+        function saveCustomPack() {
+            const name = customPackDraft.name.trim();
+            if (!name) { document.getElementById('cpName').style.borderColor = '#ff3366'; return; }
+            if (customPackDraft.categories.length === 0) { alert('Füge mindestens eine Kategorie hinzu.'); return; }
+            
+            if (!performanceData.customPacks) performanceData.customPacks = [];
+            
+            if (editingCustomPackId) {
+                const idx = performanceData.customPacks.findIndex(p => p.id === editingCustomPackId);
+                if (idx >= 0) {
+                    performanceData.customPacks[idx].name = name;
+                    performanceData.customPacks[idx].icon = customPackDraft.icon;
+                    performanceData.customPacks[idx].description = customPackDraft.description;
+                    performanceData.customPacks[idx].categories = customPackDraft.categories;
+                }
+            } else {
+                const packId = 'custom_' + Date.now();
+                performanceData.customPacks.push({
+                    id: packId,
+                    name: name,
+                    icon: customPackDraft.icon,
+                    description: customPackDraft.description,
+                    categories: customPackDraft.categories
+                });
+            }
+            
+            savePerformanceData();
+            closeCustomPackModal();
+            renderPackSettings();
+            renderPerformancePacks();
+        }
+        
+        function deleteCustomPack() {
+            if (!editingCustomPackId) return;
+            
+            // Remove from active packs
+            const activeIdx = performanceData.activePacks.indexOf(editingCustomPackId);
+            if (activeIdx >= 0) performanceData.activePacks.splice(activeIdx, 1);
+            
+            // Remove pack
+            performanceData.customPacks = (performanceData.customPacks || []).filter(p => p.id !== editingCustomPackId);
+            
+            // Clean entries: remove pack data from entries
+            performanceData.entries.forEach(entry => {
+                if (entry.packIndices) delete entry.packIndices[editingCustomPackId];
+            });
+            
+            savePerformanceData();
+            closeCustomPackModal();
+            renderPackSettings();
+            renderPerformancePacks();
+        }
+        
+        // ============================================
+        // CATEGORY PICKER (for Custom Pack)
+        // ============================================
+        
+        function openCategoryPicker() {
+            let existing = document.getElementById('catPickerModal');
+            if (existing) existing.remove();
+            
+            // Build available categories: base + all pack cats + custom pool
+            const usedIds = customPackDraft.categories.map(c => c.id);
+            const allAvailable = [];
+            
+            // Base categories
+            categories.forEach(c => {
+                if (!usedIds.includes(c.id)) {
+                    allAvailable.push({ id: c.id, name: c.name || { de: c.id }, icon: c.emoji || '📌', color: c.color, source: 'Basis' });
+                }
+            });
+            
+            // Built-in pack categories
+            getAllPacks().forEach(pack => {
+                pack.categories.forEach(c => {
+                    if (!usedIds.includes(c.id) && !allAvailable.find(a => a.id === c.id)) {
+                        const nameObj = typeof c.name === 'object' ? c.name : { de: c.name, en: c.name };
+                        allAvailable.push({ id: c.id, name: nameObj, icon: c.emoji || '📌', color: c.color, source: pack.name });
+                    }
+                });
+            });
+            
+            // Custom categories pool
+            customCategoriesPool.forEach(c => {
+                if (!usedIds.includes(c.id) && !allAvailable.find(a => a.id === c.id)) {
+                    allAvailable.push({ id: c.id, name: typeof c.name === 'object' ? c.name : { de: c.name }, icon: c.icon || '📌', color: c.color || '#ff6b35', source: 'Custom' });
+                }
+            });
+            
+            const overlay = document.createElement('div');
+            overlay.id = 'catPickerModal';
+            overlay.style.cssText = `
+                position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+                background: rgba(0,0,0,0.7); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+                z-index: 9600; display: flex; align-items: flex-end; justify-content: center;
+            `;
+            
+            overlay.innerHTML = `
+                <div style="
+                    background: var(--bg-card); border: 1px solid var(--border);
+                    border-radius: 28px 28px 0 0; width: 100%; max-width: 500px;
+                    max-height: 80vh; display: flex; flex-direction: column;
+                    animation: upgradeSlideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+                ">
+                    <div style="width: 36px; height: 4px; background: var(--border); border-radius: 2px; margin: 12px auto 0;"></div>
+                    <div style="padding: 16px 24px 8px; display: flex; justify-content: space-between; align-items: center;">
+                        <div style="font-size: 16px; font-weight: 700; color: var(--text-primary);">Kategorie wählen</div>
+                        <button onclick="document.getElementById('catPickerModal').remove()" style="width: 32px; height: 32px; border-radius: 50%; background: var(--bg-secondary); border: 1px solid var(--border); color: var(--text-primary); font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center;">×</button>
+                    </div>
+                    
+                    <!-- Search -->
+                    <div style="padding: 0 24px 8px;">
+                        <input id="catSearch" type="text" placeholder="Suche oder erstelle neue Kategorie..." oninput="filterCategoryPicker()" style="
+                            width: 100%; padding: 10px 14px; background: var(--bg-secondary); border: 1px solid var(--border);
+                            border-radius: 10px; color: var(--text-primary); font-size: 14px; font-family: inherit; outline: none;">
+                    </div>
+                    
+                    <!-- Category List -->
+                    <div id="catPickerList" style="flex: 1; overflow-y: auto; padding: 0 24px 16px;">
+                        ${allAvailable.map(c => `
+                            <div onclick="addCategoryToPack('${c.id}')" style="
+                                display: flex; align-items: center; gap: 12px; padding: 12px 14px;
+                                background: var(--bg-secondary); border-radius: 12px; margin-bottom: 4px; cursor: pointer;
+                                transition: all 0.15s;
+                            " class="cat-pick-item" data-name="${(typeof c.name === 'object' ? c.name.de : c.name).toLowerCase()}">
+                                <span style="font-size: 20px;">${c.icon}</span>
+                                <div style="flex: 1;">
+                                    <div style="font-size: 14px; font-weight: 600; color: var(--text-primary);">${typeof c.name === 'object' ? c.name.de : c.name}</div>
+                                    <div style="font-size: 11px; color: var(--text-tertiary);">${c.source}</div>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                    
+                    <!-- Create New Category -->
+                    <div id="catPickerCreate" style="padding: 12px 24px 24px; padding-bottom: calc(24px + env(safe-area-inset-bottom, 0px)); border-top: 1px solid var(--border);">
+                        <button onclick="openNewCategoryForm()" style="
+                            width: 100%; padding: 14px; background: var(--bg-secondary); border: 1px solid var(--border);
+                            border-radius: 12px; color: var(--accent-primary); font-size: 14px; font-weight: 600;
+                            cursor: pointer; font-family: inherit;
+                        ">+ Neue Kategorie erstellen</button>
+                    </div>
+                </div>
+            `;
+            
+            overlay.addEventListener('click', e => { if (e.target === overlay) overlay.remove(); });
+            document.body.appendChild(overlay);
+        }
+        
+        function filterCategoryPicker() {
+            const q = (document.getElementById('catSearch')?.value || '').toLowerCase();
+            document.querySelectorAll('.cat-pick-item').forEach(item => {
+                const name = item.dataset.name || '';
+                item.style.display = name.includes(q) ? 'flex' : 'none';
+            });
+        }
+        
+        function addCategoryToPack(catId) {
+            if (customPackDraft.categories.length >= 5) return;
+            if (customPackDraft.categories.find(c => c.id === catId)) return;
+            
+            // Find category in all sources
+            let cat = null;
+            
+            // Check base categories
+            const baseCat = categories.find(c => c.id === catId);
+            if (baseCat) {
+                cat = { id: catId, name: baseCat.name || { de: catId }, icon: baseCat.emoji || '📌', color: baseCat.color };
+            }
+            
+            // Check built-in pack categories
+            if (!cat) {
+                for (const pack of performancePacks) {
+                    const pc = pack.categories.find(c => c.id === catId);
+                    if (pc) {
+                        cat = { id: catId, name: pc.name, icon: pc.emoji || '📌', color: pc.color };
+                        break;
+                    }
+                }
+            }
+            
+            // Check custom pool
+            if (!cat) {
+                const custom = customCategoriesPool.find(c => c.id === catId);
+                if (custom) cat = { ...custom };
+            }
+            
+            if (cat) {
+                customPackDraft.categories.push(cat);
+                const picker = document.getElementById('catPickerModal');
+                if (picker) picker.remove();
+                renderCustomPackModal();
+            }
+        }
+        
+        // ============================================
+        // NEW CATEGORY CREATION
+        // ============================================
+        
+        function openNewCategoryForm() {
+            const picker = document.getElementById('catPickerModal');
+            if (picker) picker.remove();
+            
+            let existing = document.getElementById('newCatModal');
+            if (existing) existing.remove();
+            
+            const emojiOptions = ['📌','💡','🎨','🎵','📖','🏋️','🧘','🌱','🔬','💻','🎮','🏠','❤️','🌍','✈️','🍎','💼','📷','🎭','🔧','🎯','⚡','🌊','🏔️','🎓'];
+            const colorOptions = ['#ff6b35','#00c96d','#3498db','#e74c3c','#f39c12','#9b59b6','#1abc9c','#e67e22','#2ecc71','#8e44ad','#00d4ff','#ffd700'];
+            
+            const overlay = document.createElement('div');
+            overlay.id = 'newCatModal';
+            overlay.style.cssText = `
+                position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+                background: rgba(0,0,0,0.7); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+                z-index: 9700; display: flex; align-items: center; justify-content: center; padding: 20px;
+            `;
+            
+            overlay.innerHTML = `
+                <div style="
+                    background: var(--bg-card); border: 1px solid var(--border); border-radius: 20px;
+                    width: 100%; max-width: 360px; padding: 24px;
+                    animation: messageIn 0.3s ease;
+                ">
+                    <div style="font-size: 16px; font-weight: 700; color: var(--text-primary); margin-bottom: 20px;">Neue Kategorie</div>
+                    
+                    <!-- Name -->
+                    <div style="margin-bottom: 14px;">
+                        <div style="font-size: 11px; font-weight: 600; color: var(--text-secondary); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px;">Name *</div>
+                        <input id="newCatName" type="text" placeholder="z.B. Kreativität" maxlength="25" style="
+                            width: 100%; padding: 10px 14px; background: var(--bg-secondary); border: 1px solid var(--border);
+                            border-radius: 10px; color: var(--text-primary); font-size: 14px; font-family: inherit; outline: none;">
+                    </div>
+                    
+                    <!-- Icon -->
+                    <div style="margin-bottom: 14px;">
+                        <div style="font-size: 11px; font-weight: 600; color: var(--text-secondary); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px;">Icon</div>
+                        <div id="newCatIconGrid" style="display: flex; flex-wrap: wrap; gap: 4px;">
+                            ${emojiOptions.map((e, i) => `<button onclick="document.getElementById('newCatSelectedIcon').value='${e}'; document.querySelectorAll('#newCatIconGrid button').forEach(b=>b.style.border='1px solid var(--border)'); this.style.border='2px solid var(--accent-primary)'" style="width: 36px; height: 36px; border-radius: 8px; font-size: 18px; background: var(--bg-secondary); border: ${i===0?'2px solid var(--accent-primary)':'1px solid var(--border)'}; cursor: pointer; display: flex; align-items: center; justify-content: center;">${e}</button>`).join('')}
+                        </div>
+                        <input type="hidden" id="newCatSelectedIcon" value="${emojiOptions[0]}">
+                    </div>
+                    
+                    <!-- Color -->
+                    <div style="margin-bottom: 20px;">
+                        <div style="font-size: 11px; font-weight: 600; color: var(--text-secondary); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px;">Farbe</div>
+                        <div id="newCatColorGrid" style="display: flex; flex-wrap: wrap; gap: 6px;">
+                            ${colorOptions.map((c, i) => `<button onclick="document.getElementById('newCatSelectedColor').value='${c}'; document.querySelectorAll('#newCatColorGrid button').forEach(b=>b.style.outline='none'); this.style.outline='2px solid var(--text-primary)'" style="width: 30px; height: 30px; border-radius: 50%; background: ${c}; border: none; cursor: pointer; ${i===0?'outline: 2px solid var(--text-primary);':''}"></button>`).join('')}
+                        </div>
+                        <input type="hidden" id="newCatSelectedColor" value="${colorOptions[0]}">
+                    </div>
+                    
+                    <div style="display: flex; gap: 10px;">
+                        <button onclick="document.getElementById('newCatModal').remove(); openCategoryPicker();" style="
+                            flex: 1; padding: 13px; border-radius: 12px; background: var(--bg-secondary);
+                            border: 1px solid var(--border); color: var(--text-secondary); font-size: 14px;
+                            font-weight: 600; cursor: pointer; font-family: inherit;">Abbrechen</button>
+                        <button onclick="saveNewCategory()" style="
+                            flex: 1; padding: 13px; border-radius: 12px; background: var(--accent-primary);
+                            border: none; color: #fff; font-size: 14px; font-weight: 600;
+                            cursor: pointer; font-family: inherit;">Erstellen</button>
+                    </div>
+                </div>
+            `;
+            
+            overlay.addEventListener('click', e => { if (e.target === overlay) { overlay.remove(); openCategoryPicker(); } });
+            document.body.appendChild(overlay);
+        }
+        
+        function saveNewCategory() {
+            const name = (document.getElementById('newCatName')?.value || '').trim();
+            if (!name) { document.getElementById('newCatName').style.borderColor = '#ff3366'; return; }
+            
+            const icon = document.getElementById('newCatSelectedIcon')?.value || '📌';
+            const color = document.getElementById('newCatSelectedColor')?.value || '#ff6b35';
+            const id = 'custom_cat_' + name.toLowerCase().replace(/[^a-z0-9]/g, '_') + '_' + Date.now();
+            
+            // Check duplicate name
+            const exists = customCategoriesPool.find(c => (typeof c.name === 'object' ? c.name.de : c.name).toLowerCase() === name.toLowerCase());
+            if (exists) { alert('Eine Kategorie mit diesem Namen existiert bereits.'); return; }
+            
+            const newCat = { id, name: { de: name, en: name, es: name }, icon, color };
+            
+            // Save to global pool
+            customCategoriesPool.push(newCat);
+            saveCustomCategories();
+            
+            // Add to current pack draft
+            if (customPackDraft.categories.length < 5) {
+                customPackDraft.categories.push(newCat);
+            }
+            
+            document.getElementById('newCatModal')?.remove();
+            renderCustomPackModal();
+        }
+
         function openProFeatures() {
             showUpgradeModal();
         }
@@ -11960,6 +12563,13 @@
                             <div class="upgrade-feature-text">
                                 <div class="upgrade-feature-name">Performance Packs</div>
                                 <div class="upgrade-feature-desc">Health, Entrepreneur & Custom Packs tracken</div>
+                            </div>
+                        </div>
+                        <div class="upgrade-feature">
+                            <div class="upgrade-feature-icon">🧩</div>
+                            <div class="upgrade-feature-text">
+                                <div class="upgrade-feature-name">Custom Performance Pack</div>
+                                <div class="upgrade-feature-desc">Eigene Kategorien & Packs erstellen</div>
                             </div>
                         </div>
                         <div class="upgrade-feature">
@@ -12219,7 +12829,7 @@
         // Override openPackDetails to set active pack context
         const originalOpenPackDetails = openPackDetails;
         openPackDetails = function(packId) {
-            const pack = performancePacks.find(p => p.id === packId);
+            const pack = getAllPacks().find(p => p.id === packId);
             if (pack) {
                 activePackContext = { id: pack.id, name: pack.name };
             }
