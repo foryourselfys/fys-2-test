@@ -121,9 +121,15 @@
             left: 16px;
             height: 28px;
             width: auto;
-            z-index: 999; /* Above all views except modals */
-            pointer-events: auto; /* Klickbar */
-            cursor: pointer; /* Logo is decorative, not clickable */
+            z-index: 999;
+            pointer-events: auto;
+            cursor: pointer;
+        }
+        
+        @supports (padding-top: env(safe-area-inset-top)) {
+            .header-logo-fys {
+                top: calc(14px + env(safe-area-inset-top));
+            }
         }
 
         * {
@@ -442,7 +448,8 @@
         /* Header with Logo */
         .header {
             background: var(--bg-secondary);
-            padding: 20px 20px 20px 20px;
+            padding: 20px 20px 14px 20px;
+            padding-top: calc(20px + env(safe-area-inset-top, 0px));
             position: fixed;
             top: 0;
             left: 0;
@@ -452,27 +459,19 @@
             justify-content: space-between;
             align-items: center;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-            min-height: 70px; /* Mindesthöhe für richtigen Header */
+            min-height: calc(64px + env(safe-area-inset-top, 0px));
         }
         
-        /* Header Hintergrund bis ganz nach oben (verhindert durchscheinen beim Scrollen) */
+        /* Header Hintergrund bis ganz nach oben — solide Farbe über Status-Bar */
         .header::before {
             content: '';
             position: absolute;
-            top: -200px; /* Geht weit nach oben über safe-area */
+            top: -100px;
             left: 0;
             right: 0;
-            height: 200px;
+            bottom: 0;
             background: var(--bg-secondary);
             z-index: -1;
-        }
-        
-        /* iOS safe area support */
-        @supports (padding-top: env(safe-area-inset-top)) {
-            .header {
-                padding-top: calc(20px + env(safe-area-inset-top));
-                min-height: calc(70px + env(safe-area-inset-top));
-            }
         }
         
         /* Progress Badges */
@@ -2242,7 +2241,7 @@
             right: 0;
             bottom: 0;
             height: 100%;
-            padding-top: 56px;
+            padding-top: calc(56px + env(safe-area-inset-top, 0px));
             padding-bottom: 0;
             box-sizing: border-box;
             overflow: hidden;
@@ -2626,7 +2625,7 @@
         .chart-details-view,
         .settings-container,
         .tools-container {
-            padding-top: 70px; /* Exakt Header-Höhe - kein extra Abstand */
+            padding-top: calc(70px + env(safe-area-inset-top, 0px));
         }
         
         /* iOS safe area support für Content */
@@ -3428,33 +3427,42 @@
         /* ============================================ */
         /* TOOLS VIEW */
         /* ============================================ */
+        .tools-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 24px;
+        }
+        
         .tool-card {
             display: flex;
+            flex-direction: column;
             align-items: center;
-            gap: 16px;
-            padding: 16px;
+            text-align: center;
+            gap: 10px;
+            padding: 20px 12px;
             background: var(--bg-card);
             border: 1px solid var(--border);
-            border-radius: 12px;
-            margin-bottom: 12px;
+            border-radius: 16px;
             cursor: pointer;
             transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
         }
-
-        .tool-card:hover {
-            background: var(--bg-elevated);
-            transform: translateX(4px);
+        
+        .tool-card:active {
+            transform: scale(0.97);
         }
 
         .tool-icon {
-            font-size: 32px;
-            width: 48px;
-            height: 48px;
+            font-size: 26px;
+            width: 52px;
+            height: 52px;
             display: flex;
             align-items: center;
             justify-content: center;
-            background: var(--bg-elevated);
-            border-radius: 12px;
+            border-radius: 14px;
+            position: relative;
         }
 
         .tool-info {
@@ -3462,25 +3470,60 @@
         }
 
         .tool-title {
-            font-size: 16px;
-            font-weight: 500;
+            font-size: 14px;
+            font-weight: 700;
             color: var(--text-primary);
-            margin-bottom: 4px;
+            margin-bottom: 3px;
         }
 
         .tool-description {
-            font-size: 13px;
-            font-weight: 300;
-            color: var(--text-secondary);
+            font-size: 11px;
+            font-weight: 400;
+            color: var(--text-tertiary);
+            line-height: 1.4;
         }
 
         .pro-badge-small {
+            position: absolute;
+            top: 8px;
+            right: 8px;
             background: linear-gradient(135deg, #ffd700, #ffed4e);
             color: #000;
-            padding: 4px 8px;
-            border-radius: 6px;
-            font-size: 10px;
-            font-weight: 700;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 8px;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+        }
+        
+        .tool-card.pro-feature {
+            border: 1px solid rgba(255, 215, 0, 0.25);
+            box-shadow: 0 0 0 1px rgba(255, 215, 0, 0.08), 0 2px 12px rgba(255, 215, 0, 0.06);
+        }
+        
+        .tool-card-wide {
+            grid-column: span 2;
+            flex-direction: row;
+            text-align: left;
+            padding: 16px 18px;
+            gap: 14px;
+        }
+        
+        .tool-card-wide .tool-icon {
+            width: 44px;
+            height: 44px;
+            font-size: 22px;
+            border-radius: 12px;
+            flex-shrink: 0;
+        }
+        
+        .tools-section-label {
+            font-size: 16px;
+            font-weight: 800;
+            color: var(--text-primary);
+            text-align: center;
+            margin-bottom: 14px;
+            letter-spacing: -0.2px;
         }
 
         /* ============================================ */
@@ -4720,28 +4763,7 @@
         </div>
 
         <!-- Habit Tracker View -->
-        <div id="habitsView" class="view-section">
-            <div class="tracker-content">
-                <div class="section-title" id="habitsTitle"></div>
-                <div class="coming-soon-screen">
-                    <div class="coming-soon-icon">🎯</div>
-                    <div class="coming-soon-title" id="habitComingTitle"></div>
-                    <div class="coming-soon-text" id="habitComingText"></div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Sober Tracker View -->
-        <div id="soberView" class="view-section">
-            <div class="tracker-content">
-                <div class="section-title" id="soberTitle"></div>
-                <div class="coming-soon-screen">
-                    <div class="coming-soon-icon">🌟</div>
-                    <div class="coming-soon-title" id="soberComingTitle"></div>
-                    <div class="coming-soon-text" id="soberComingText"></div>
-                </div>
-            </div>
-        </div>
+<!-- Habit & Sober Tracker: rendered as modals -->
 
         <!-- Settings View -->
         <div id="settingsView" class="view-section">
@@ -4856,100 +4878,84 @@
 
         <!-- Tools View (NEW) -->
         <div id="toolsView" class="view-section">
-            <div class="content-container">
-                <!-- TOOLS SECTION -->
-                <div class="section-title">🛠️ Tools</div>
+            <div class="content-container" style="padding-top: 70px;">
                 
-                <!-- Tagebuch (Journal) -->
-                <div class="tool-card" onclick="openJournal()">
-                    <div class="tool-icon">📔</div>
-                    <div class="tool-info">
-                        <div class="tool-title">Tagebuch</div>
-                        <div class="tool-description">Dokumentiere deine Gedanken</div>
+                <!-- DAILY TOOLS -->
+                <div class="tools-section-label">Tägliche Tools</div>
+                <div class="tools-grid">
+                    <div class="tool-card" onclick="openJournal()" style="background: linear-gradient(135deg, rgba(255,179,71,0.08), rgba(255,179,71,0.02));">
+                        <div class="tool-icon" style="background: rgba(255,179,71,0.12); color: #ffb347;">📔</div>
+                        <div class="tool-info">
+                            <div class="tool-title">Tagebuch</div>
+                            <div class="tool-description">Gedanken festhalten</div>
+                        </div>
+                    </div>
+                    
+                    <div class="tool-card pro-feature" onclick="openTaskManager()" style="background: linear-gradient(135deg, rgba(0,201,109,0.08), rgba(0,201,109,0.02));">
+                        <div class="tool-icon" style="background: rgba(0,201,109,0.12); color: #00c96d;">✅</div>
+                        <div class="tool-info">
+                            <div class="tool-title">Task Manager</div>
+                            <div class="tool-description">Aufgaben erledigen</div>
+                        </div>
+                    </div>
+                    
+                    <div class="tool-card pro-feature" onclick="openHabitTracker()" style="background: linear-gradient(135deg, rgba(255,107,53,0.08), rgba(255,107,53,0.02));">
+                        <div class="tool-icon" style="background: rgba(255,107,53,0.12); color: #ff6b35;">🎯</div>
+                        <div class="tool-info">
+                            <div class="tool-title">Habit Tracker</div>
+                            <div class="tool-description">Gewohnheiten aufbauen</div>
+                        </div>
+                    </div>
+                    
+                    <div class="tool-card pro-feature" onclick="openSoberTracker()" style="background: linear-gradient(135deg, rgba(147,112,219,0.08), rgba(147,112,219,0.02));">
+                        <div class="tool-icon" style="background: rgba(147,112,219,0.12); color: #9370db;">🌟</div>
+                        <div class="tool-info">
+                            <div class="tool-title">Sober Tracker</div>
+                            <div class="tool-description">Fortschritt feiern</div>
+                        </div>
                     </div>
                 </div>
                 
-                <!-- Task Manager -->
-                <div class="tool-card" onclick="openTaskManager()">
-                    <div class="tool-icon">✓</div>
-                    <div class="tool-info">
-                        <div class="tool-title">Task Manager</div>
-                        <div class="tool-description">Verwalte deine Aufgaben</div>
+                <!-- PERFORMANCE PACKS -->
+                <div class="tools-section-label">Performance Packs</div>
+                <div class="tools-grid">
+                    <div class="tool-card pro-feature" onclick="handleAddPack()" style="background: linear-gradient(135deg, rgba(52,152,219,0.08), rgba(52,152,219,0.02));">
+                        <div class="tool-icon" style="background: rgba(52,152,219,0.12); color: #3498db;">📊</div>
+                        <div class="tool-info">
+                            <div class="tool-title">Pack hinzufügen</div>
+                            <div class="tool-description">Aus 11 Packs wählen</div>
+                        </div>
                     </div>
-                    <div class="pro-badge-small">PRO</div>
+                    
+                    <div class="tool-card pro-feature" onclick="openCustomPackBuilder()" style="background: linear-gradient(135deg, rgba(231,76,60,0.08), rgba(231,76,60,0.02));">
+                        <div class="tool-icon" style="background: rgba(231,76,60,0.12); color: #e74c3c;">🧩</div>
+                        <div class="tool-info">
+                            <div class="tool-title">Custom Pack</div>
+                            <div class="tool-description">Eigenes Pack bauen</div>
+                        </div>
+                    </div>
                 </div>
                 
-                <!-- Habit Tracker -->
-                <div class="tool-card" onclick="openHabitTracker()">
-                    <div class="tool-icon">🎯</div>
-                    <div class="tool-info">
-                        <div class="tool-title">Habit Tracker</div>
-                        <div class="tool-description">Tracke deine Gewohnheiten</div>
+                <!-- ANALYSE & EXPORT -->
+                <div class="tools-section-label">Analyse & Export</div>
+                <div class="tools-grid" style="margin-bottom: 24px;">
+                    <div class="tool-card pro-feature" onclick="openPerformanceReport()" style="background: linear-gradient(135deg, rgba(46,204,113,0.08), rgba(46,204,113,0.02));">
+                        <div class="tool-icon" style="background: rgba(46,204,113,0.12); color: #2ecc71;">📄</div>
+                        <div class="tool-info">
+                            <div class="tool-title">PDF Report</div>
+                            <div class="tool-description">Report exportieren</div>
+                        </div>
                     </div>
-                    <div class="pro-badge-small">PRO</div>
+                    
+                    <div class="tool-card pro-feature" onclick="openStatistics()" style="background: linear-gradient(135deg, rgba(155,89,182,0.08), rgba(155,89,182,0.02));">
+                        <div class="tool-icon" style="background: rgba(155,89,182,0.12); color: #9b59b6;">📈</div>
+                        <div class="tool-info">
+                            <div class="tool-title">Statistiken</div>
+                            <div class="tool-description">Analysen & Trends</div>
+                        </div>
+                    </div>
                 </div>
                 
-                <!-- Sober Tracker -->
-                <div class="tool-card" onclick="openSoberTracker()">
-                    <div class="tool-icon">🌟</div>
-                    <div class="tool-info">
-                        <div class="tool-title">Sober Tracker</div>
-                        <div class="tool-description">Verfolge deine Erfolge</div>
-                    </div>
-                    <div class="pro-badge-small">PRO</div>
-                </div>
-
-                <!-- FEATURES SECTION -->
-                <div class="section-title" style="margin-top: 32px;">✨ Features</div>
-                
-                <!-- Performance Pack hinzufügen -->
-                <div class="tool-card" onclick="handleAddPack()">
-                    <div class="tool-icon">📊</div>
-                    <div class="tool-info">
-                        <div class="tool-title">Performance Pack hinzufügen</div>
-                        <div class="tool-description">Wähle aus 11 vorgefertigten Packs</div>
-                    </div>
-                    <div class="pro-badge-small">PRO</div>
-                </div>
-                
-                <!-- Custom Pack erstellen -->
-                <div class="tool-card" onclick="openCustomPackBuilder()">
-                    <div class="tool-icon">🧩</div>
-                    <div class="tool-info">
-                        <div class="tool-title">Custom Pack erstellen</div>
-                        <div class="tool-description">Eigenes Performance Pack bauen</div>
-                    </div>
-                    <div class="pro-badge-small">PRO</div>
-                </div>
-                
-                <!-- Performance Report -->
-                <div class="tool-card" onclick="openPerformanceReport()">
-                    <div class="tool-icon">📊</div>
-                    <div class="tool-info">
-                        <div class="tool-title">Performance Report</div>
-                        <div class="tool-description">Detaillierten PDF-Report exportieren</div>
-                    </div>
-                    <div class="pro-badge-small">PRO</div>
-                </div>
-                
-                <!-- Daten & Statistiken -->
-                <div class="tool-card" onclick="openStatistics()">
-                    <div class="tool-icon">📈</div>
-                    <div class="tool-info">
-                        <div class="tool-title">Daten & Statistiken</div>
-                        <div class="tool-description">Detaillierte Statistiken & Analysen</div>
-                    </div>
-                    <div class="pro-badge-small">PRO</div>
-                </div>
-                
-                <!-- Pro Features Overview -->
-                <div class="tool-card" onclick="openProFeatures()">
-                    <div class="tool-icon">⭐</div>
-                    <div class="tool-info">
-                        <div class="tool-title">Pro Features</div>
-                        <div class="tool-description">Alle Premium-Features ansehen</div>
-                    </div>
-                </div>
             </div>
         </div>
 
@@ -5078,6 +5084,32 @@
         <div class="journal-entry-date" id="journalEntryDate"></div>
         <textarea class="journal-textarea" id="journalTextarea" placeholder="Schreibe deine Gedanken..."></textarea>
         <button class="journal-save-btn" onclick="saveJournalEntry()">Speichern</button>
+    </div>
+
+    <!-- Habit Tracker Modal -->
+    <div class="journal-modal" id="habitTrackerModal">
+        <div class="journal-header">
+            <div class="journal-title">🎯 Habit Tracker</div>
+            <button class="close-btn" onclick="closeHabitTracker()">×</button>
+        </div>
+        <div class="journal-content" style="padding: 16px 20px;">
+            <div id="habitList"></div>
+            <button id="habitAddBtn" onclick="showAddHabitForm()" style="
+                width: 100%; padding: 14px; margin-top: 12px;
+                background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px;
+                color: var(--accent-primary); font-size: 14px; font-weight: 600;
+                cursor: pointer; font-family: inherit; display: flex; align-items: center; justify-content: center; gap: 6px;
+            ">+ Neue Gewohnheit</button>
+        </div>
+    </div>
+
+    <!-- Sober Tracker Modal -->
+    <div class="journal-modal" id="soberTrackerModal">
+        <div class="journal-header">
+            <div class="journal-title">🌟 Sober Tracker</div>
+            <button class="close-btn" onclick="closeSoberTracker()">×</button>
+        </div>
+        <div class="journal-content" style="padding: 20px; text-align: center;" id="soberContent"></div>
     </div>
 
     <!-- Confirm Modal -->
@@ -9488,16 +9520,21 @@
                     const journalModal = document.getElementById('journalModal');
                     const taskManagerModal = document.getElementById('taskManagerModal');
                     
+                    const habitModal = document.getElementById('habitTrackerModal');
+                    const soberModal = document.getElementById('soberTrackerModal');
+                    
                     const journalVisible = journalModal && journalModal.classList.contains('active') && journalModal.style.display !== 'none';
                     const taskManagerVisible = taskManagerModal && taskManagerModal.classList.contains('active') && taskManagerModal.style.display !== 'none';
+                    const habitVisible = habitModal && habitModal.classList.contains('active') && habitModal.style.display !== 'none';
+                    const soberVisible = soberModal && soberModal.classList.contains('active') && soberModal.style.display !== 'none';
                     
-                    if (journalVisible || taskManagerVisible) {
-                        // User drückt nochmal Tools → Tool komplett schließen
+                    if (journalVisible || taskManagerVisible || habitVisible || soberVisible) {
                         if (journalVisible) { journalModal.classList.remove('active'); journalModal.style.display = 'none'; }
                         if (taskManagerVisible) { taskManagerModal.classList.remove('active'); taskManagerModal.style.display = 'none'; }
+                        if (habitVisible) { habitModal.classList.remove('active'); habitModal.style.display = 'none'; }
+                        if (soberVisible) { soberModal.classList.remove('active'); soberModal.style.display = 'none'; }
                         lastActiveToolModal = null;
                         toolsMenuVisible = true;
-                        console.log('🔒 Tool geschlossen (Tools-Tab Doppelklick)');
                         return;
                     }
                 }
@@ -9526,7 +9563,14 @@
                 }
                 if (taskManagerModal && taskManagerModal.classList.contains('active')) {
                     taskManagerModal.style.display = 'none';
-                    console.log('📦 Tasks versteckt (Tab-Wechsel)');
+                }
+                const habitModal = document.getElementById('habitTrackerModal');
+                if (habitModal && habitModal.classList.contains('active')) {
+                    habitModal.style.display = 'none';
+                }
+                const soberModal = document.getElementById('soberTrackerModal');
+                if (soberModal && soberModal.classList.contains('active')) {
+                    soberModal.style.display = 'none';
                 }
             }
             
@@ -9555,6 +9599,14 @@
                 const taskManagerModal = document.getElementById('taskManagerModal');
                 if (journalModal && journalModal.classList.contains('active')) {
                     journalModal.style.display = 'flex';
+                }
+                const habitModal2 = document.getElementById('habitTrackerModal');
+                if (habitModal2 && habitModal2.classList.contains('active')) {
+                    habitModal2.style.display = 'flex';
+                }
+                const soberModal2 = document.getElementById('soberTrackerModal');
+                if (soberModal2 && soberModal2.classList.contains('active')) {
+                    soberModal2.style.display = 'flex';
                     console.log('🔄 Journal wieder sichtbar');
                 }
                 if (taskManagerModal && taskManagerModal.classList.contains('active')) {
@@ -10226,20 +10278,393 @@
         // Enter key in quick add - wird in DOMContentLoaded weiter unten hinzugefügt
 
 
-        function openHabitTracker() {
-            if (!isPro) {
-                showUpgradeModal();
-                return;
-            }
-            showUpgradeModal(); // TODO: Habit Tracker
+        // ============================================
+        // HABIT TRACKER
+        // ============================================
+        let habitData = JSON.parse(localStorage.getItem('fysHabits')) || [];
+        // habitData = [{ id, name, icon, createdAt, log: { 'YYYY-MM-DD': true } }]
+        
+        function saveHabitData() {
+            localStorage.setItem('fysHabits', JSON.stringify(habitData));
         }
-
-        function openSoberTracker() {
-            if (!isPro) {
-                showUpgradeModal();
+        
+        function todayStr() {
+            const d = new Date();
+            return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+        }
+        
+        function openHabitTracker() {
+            if (!isPro) { showUpgradeModal(); return; }
+            const modal = document.getElementById('habitTrackerModal');
+            modal.classList.add('active');
+            modal.style.display = 'flex';
+            lastActiveToolModal = modal;
+            renderHabits();
+        }
+        
+        function closeHabitTracker() {
+            const modal = document.getElementById('habitTrackerModal');
+            modal.classList.remove('active');
+            modal.style.display = 'none';
+            lastActiveToolModal = null;
+        }
+        
+        function renderHabits() {
+            const list = document.getElementById('habitList');
+            if (!list) return;
+            
+            const today = todayStr();
+            
+            if (habitData.length === 0) {
+                list.innerHTML = `
+                    <div style="text-align: center; padding: 40px 20px;">
+                        <div style="font-size: 40px; margin-bottom: 12px;">🎯</div>
+                        <div style="font-size: 16px; font-weight: 700; color: var(--text-primary); margin-bottom: 6px;">Noch keine Gewohnheiten</div>
+                        <div style="font-size: 13px; color: var(--text-secondary);">Erstelle deine erste Gewohnheit und tracke sie täglich.</div>
+                    </div>
+                `;
                 return;
             }
-            showUpgradeModal(); // TODO: Sober Tracker
+            
+            list.innerHTML = '';
+            
+            habitData.forEach((habit, idx) => {
+                const doneToday = habit.log && habit.log[today];
+                const streak = countHabitStreak(habit);
+                
+                // Last 7 days dots
+                let dotsHTML = '';
+                for (let i = 6; i >= 0; i--) {
+                    const d = new Date();
+                    d.setDate(d.getDate() - i);
+                    const ds = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+                    const done = habit.log && habit.log[ds];
+                    dotsHTML += `<div style="width:10px;height:10px;border-radius:50%;background:${done ? 'var(--accent-primary)' : 'var(--bg-elevated)'};border:1px solid ${done ? 'var(--accent-primary)' : 'var(--border)'};"></div>`;
+                }
+                
+                const item = document.createElement('div');
+                item.style.cssText = 'background:var(--bg-card);border:1px solid var(--border);border-radius:14px;padding:16px;margin-bottom:8px;';
+                
+                item.innerHTML = `
+                    <div style="display:flex;align-items:center;justify-content:space-between;">
+                        <div style="display:flex;align-items:center;gap:10px;flex:1;">
+                            <span style="font-size:22px;">${habit.icon || '🎯'}</span>
+                            <div>
+                                <div style="font-size:14px;font-weight:700;color:var(--text-primary);">${habit.name}</div>
+                                <div style="font-size:11px;color:var(--text-tertiary);margin-top:2px;">${streak > 0 ? '🔥 ' + streak + ' Tage Streak' : 'Noch keine Streak'}</div>
+                            </div>
+                        </div>
+                        <button class="habit-check" style="
+                            width:44px;height:44px;border-radius:50%;
+                            background:${doneToday ? 'var(--accent-primary)' : 'var(--bg-secondary)'};
+                            border:2px solid ${doneToday ? 'var(--accent-primary)' : 'var(--border)'};
+                            color:${doneToday ? '#fff' : 'var(--text-tertiary)'};
+                            font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;
+                            transition:all 0.2s;
+                        ">${doneToday ? '✓' : ''}</button>
+                    </div>
+                    <div style="display:flex;gap:4px;margin-top:10px;align-items:center;">
+                        <span style="font-size:10px;color:var(--text-tertiary);margin-right:4px;">7 Tage:</span>
+                        ${dotsHTML}
+                        <button class="habit-delete" style="margin-left:auto;background:none;border:none;color:var(--text-tertiary);font-size:14px;cursor:pointer;padding:4px;">×</button>
+                    </div>
+                `;
+                
+                // Toggle today
+                item.querySelector('.habit-check').addEventListener('click', () => {
+                    if (!habit.log) habit.log = {};
+                    habit.log[today] = !habit.log[today];
+                    if (!habit.log[today]) delete habit.log[today];
+                    saveHabitData();
+                    renderHabits();
+                });
+                
+                // Delete
+                item.querySelector('.habit-delete').addEventListener('click', () => {
+                    habitData.splice(idx, 1);
+                    saveHabitData();
+                    renderHabits();
+                });
+                
+                list.appendChild(item);
+            });
+        }
+        
+        function countHabitStreak(habit) {
+            if (!habit.log) return 0;
+            let streak = 0;
+            const d = new Date();
+            while (true) {
+                const ds = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+                if (habit.log[ds]) {
+                    streak++;
+                    d.setDate(d.getDate() - 1);
+                } else {
+                    break;
+                }
+            }
+            return streak;
+        }
+        
+        function showAddHabitForm() {
+            let existing = document.getElementById('addHabitPopup');
+            if (existing) existing.remove();
+            
+            const icons = ['🎯','💪','📖','🧘','🏃','💧','🥗','📝','🌅','💤','🚶','🧠','🎵','📵','🙏','💊','🍎','🌿'];
+            let selectedIcon = icons[0];
+            
+            const overlay = document.createElement('div');
+            overlay.id = 'addHabitPopup';
+            overlay.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.7);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);z-index:9600;display:flex;align-items:center;justify-content:center;padding:20px;';
+            
+            const card = document.createElement('div');
+            card.style.cssText = 'background:var(--bg-card);border:1px solid var(--border);border-radius:20px;width:100%;max-width:340px;padding:24px;animation:messageIn 0.3s ease;';
+            
+            const title = document.createElement('div');
+            title.style.cssText = 'font-size:16px;font-weight:700;color:var(--text-primary);margin-bottom:16px;';
+            title.textContent = 'Neue Gewohnheit';
+            card.appendChild(title);
+            
+            // Name input
+            const inputWrap = document.createElement('div');
+            inputWrap.style.marginBottom = '12px';
+            const nameInput = document.createElement('input');
+            nameInput.id = 'habitNameInput';
+            nameInput.type = 'text';
+            nameInput.placeholder = 'z.B. Morgens meditieren';
+            nameInput.maxLength = 30;
+            nameInput.style.cssText = 'width:100%;padding:12px 14px;background:var(--bg-secondary);border:1px solid var(--border);border-radius:10px;color:var(--text-primary);font-size:14px;font-family:inherit;outline:none;';
+            inputWrap.appendChild(nameInput);
+            card.appendChild(inputWrap);
+            
+            // Icon picker
+            const iconSection = document.createElement('div');
+            iconSection.style.marginBottom = '16px';
+            const iconLabel = document.createElement('div');
+            iconLabel.style.cssText = 'font-size:11px;font-weight:600;color:var(--text-tertiary);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;';
+            iconLabel.textContent = 'Icon';
+            iconSection.appendChild(iconLabel);
+            
+            const iconGrid = document.createElement('div');
+            iconGrid.style.cssText = 'display:flex;flex-wrap:wrap;gap:4px;';
+            
+            const iconBtns = [];
+            icons.forEach((ic, i) => {
+                const btn = document.createElement('button');
+                btn.style.cssText = 'width:38px;height:38px;border-radius:8px;font-size:18px;background:var(--bg-secondary);cursor:pointer;display:flex;align-items:center;justify-content:center;';
+                btn.style.border = i === 0 ? '2px solid var(--accent-primary)' : '1px solid var(--border)';
+                btn.textContent = ic;
+                btn.addEventListener('click', () => {
+                    selectedIcon = ic;
+                    iconBtns.forEach(b => b.style.border = '1px solid var(--border)');
+                    btn.style.border = '2px solid var(--accent-primary)';
+                });
+                iconBtns.push(btn);
+                iconGrid.appendChild(btn);
+            });
+            
+            iconSection.appendChild(iconGrid);
+            card.appendChild(iconSection);
+            
+            // Buttons
+            const btnRow = document.createElement('div');
+            btnRow.style.cssText = 'display:flex;gap:10px;';
+            
+            const cancelBtn = document.createElement('button');
+            cancelBtn.style.cssText = 'flex:1;padding:13px;border-radius:12px;background:var(--bg-secondary);border:1px solid var(--border);color:var(--text-secondary);font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;';
+            cancelBtn.textContent = 'Abbrechen';
+            cancelBtn.addEventListener('click', () => overlay.remove());
+            
+            const createBtn = document.createElement('button');
+            createBtn.style.cssText = 'flex:1;padding:13px;border-radius:12px;background:var(--accent-primary);border:none;color:#fff;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;';
+            createBtn.textContent = 'Erstellen';
+            createBtn.addEventListener('click', () => {
+                const name = nameInput.value.trim();
+                if (!name) { nameInput.style.borderColor = '#ff3366'; return; }
+                habitData.push({ id: 'habit_' + Date.now(), name: name, icon: selectedIcon, createdAt: new Date().toISOString(), log: {} });
+                saveHabitData();
+                overlay.remove();
+                renderHabits();
+            });
+            
+            btnRow.appendChild(cancelBtn);
+            btnRow.appendChild(createBtn);
+            card.appendChild(btnRow);
+            
+            overlay.appendChild(card);
+            overlay.addEventListener('click', e => { if (e.target === overlay) overlay.remove(); });
+            document.body.appendChild(overlay);
+            setTimeout(() => nameInput.focus(), 100);
+        }
+        
+        // saveNewHabit is now inline in showAddHabitForm
+        
+        // ============================================
+        // SOBER TRACKER
+        // ============================================
+        let soberData = JSON.parse(localStorage.getItem('fysSober')) || null;
+        // soberData = { startDate: 'ISO', label: 'Alkohol', icon: '🍺' } or null
+        
+        function saveSoberData() {
+            localStorage.setItem('fysSober', JSON.stringify(soberData));
+        }
+        
+        function openSoberTracker() {
+            if (!isPro) { showUpgradeModal(); return; }
+            const modal = document.getElementById('soberTrackerModal');
+            modal.classList.add('active');
+            modal.style.display = 'flex';
+            lastActiveToolModal = modal;
+            renderSoberTracker();
+        }
+        
+        function closeSoberTracker() {
+            const modal = document.getElementById('soberTrackerModal');
+            modal.classList.remove('active');
+            modal.style.display = 'none';
+            lastActiveToolModal = null;
+        }
+        
+        function renderSoberTracker() {
+            const container = document.getElementById('soberContent');
+            if (!container) return;
+            
+            if (!soberData) {
+                // Setup screen
+                container.innerHTML = `
+                    <div style="padding: 30px 0;">
+                        <div style="font-size: 48px; margin-bottom: 16px;">🌟</div>
+                        <div style="font-size: 18px; font-weight: 700; color: var(--text-primary); margin-bottom: 8px;">Sober Tracker starten</div>
+                        <div style="font-size: 13px; color: var(--text-secondary); margin-bottom: 28px; line-height: 1.5;">Wähle worauf du verzichtest und tracke deinen Fortschritt.</div>
+                        
+                        <div id="soberOptions" style="display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-bottom: 24px;">
+                        </div>
+                        
+                        <div style="margin-bottom: 16px;">
+                            <input id="soberCustomLabel" type="text" placeholder="Oder eigene Bezeichnung..." maxlength="25" style="width:100%;padding:12px 14px;background:var(--bg-secondary);border:1px solid var(--border);border-radius:10px;color:var(--text-primary);font-size:14px;font-family:inherit;outline:none;text-align:center;">
+                        </div>
+                        
+                        <button onclick="startSoberTracking()" style="
+                            width:100%;padding:16px;background:linear-gradient(135deg,#ff6b35,#ff8f5f);
+                            border:none;border-radius:14px;color:#fff;font-size:16px;font-weight:700;
+                            cursor:pointer;font-family:inherit;
+                        ">Jetzt starten</button>
+                    </div>
+                `;
+                
+                const options = [
+                    { icon: '🍺', label: 'Alkohol' },
+                    { icon: '🚬', label: 'Rauchen' },
+                    { icon: '🍬', label: 'Zucker' },
+                    { icon: '☕', label: 'Koffein' },
+                    { icon: '📱', label: 'Social Media' },
+                    { icon: '🎮', label: 'Gaming' },
+                ];
+                
+                const optContainer = document.getElementById('soberOptions');
+                let selectedOption = null;
+                
+                options.forEach(opt => {
+                    const btn = document.createElement('button');
+                    btn.style.cssText = 'padding:10px 16px;border-radius:10px;background:var(--bg-card);border:1px solid var(--border);color:var(--text-primary);font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:6px;transition:all 0.2s;';
+                    btn.innerHTML = opt.icon + ' ' + opt.label;
+                    btn.addEventListener('click', () => {
+                        optContainer.querySelectorAll('button').forEach(b => { b.style.borderColor = 'var(--border)'; b.style.background = 'var(--bg-card)'; });
+                        btn.style.borderColor = 'var(--accent-primary)';
+                        btn.style.background = 'rgba(255,107,53,0.1)';
+                        selectedOption = opt;
+                        document.getElementById('soberCustomLabel').value = '';
+                    });
+                    optContainer.appendChild(btn);
+                });
+                
+                // Store selectedOption reference for startSoberTracking
+                container._selectedOption = () => selectedOption;
+                
+            } else {
+                // Active tracking
+                const start = new Date(soberData.startDate);
+                const now = new Date();
+                const diffMs = now - start;
+                const totalDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+                const totalHours = Math.floor(diffMs / (1000 * 60 * 60));
+                const hours = totalHours % 24;
+                
+                // Milestones
+                const milestones = [1, 3, 7, 14, 30, 60, 90, 100, 180, 365];
+                const nextMilestone = milestones.find(m => m > totalDays) || (totalDays + 1);
+                const progress = Math.min(100, (totalDays / nextMilestone) * 100);
+                
+                container.innerHTML = `
+                    <div style="padding: 20px 0;">
+                        <div style="font-size: 48px; margin-bottom: 8px;">${soberData.icon || '🌟'}</div>
+                        <div style="font-size: 13px; color: var(--text-secondary); margin-bottom: 4px;">Frei von ${soberData.label}</div>
+                        
+                        <div style="font-size: 56px; font-weight: 900; color: var(--accent-primary); line-height: 1; margin: 16px 0 4px;">${totalDays}</div>
+                        <div style="font-size: 16px; font-weight: 600; color: var(--text-primary); margin-bottom: 4px;">${totalDays === 1 ? 'Tag' : 'Tage'}</div>
+                        <div style="font-size: 12px; color: var(--text-tertiary);">+ ${hours} Stunden</div>
+                        
+                        <!-- Progress to next milestone -->
+                        <div style="margin: 24px auto; max-width: 260px;">
+                            <div style="display: flex; justify-content: space-between; font-size: 11px; color: var(--text-tertiary); margin-bottom: 6px;">
+                                <span>Nächstes Ziel</span>
+                                <span>${nextMilestone} Tage</span>
+                            </div>
+                            <div style="height: 8px; background: var(--bg-secondary); border-radius: 4px; overflow: hidden;">
+                                <div style="height: 100%; width: ${progress}%; background: linear-gradient(90deg, var(--accent-primary), #ff8f5f); border-radius: 4px; transition: width 0.5s;"></div>
+                            </div>
+                        </div>
+                        
+                        <!-- Milestones reached -->
+                        <div style="display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; margin: 20px 0;">
+                            ${milestones.filter(m => m <= totalDays).map(m => '<div style="padding:6px 12px;border-radius:8px;background:rgba(255,107,53,0.1);border:1px solid rgba(255,107,53,0.2);font-size:12px;font-weight:700;color:var(--accent-primary);">🏅 ' + m + ' Tage</div>').join('')}
+                        </div>
+                        
+                        <div style="font-size: 11px; color: var(--text-tertiary); margin-top: 16px;">Gestartet am ${start.toLocaleDateString('de-DE', { day: 'numeric', month: 'long', year: 'numeric' })}</div>
+                        
+                        <button onclick="resetSoberTracker()" style="
+                            margin-top: 24px; padding: 12px 24px;
+                            background: none; border: 1px solid var(--border); border-radius: 10px;
+                            color: var(--text-tertiary); font-size: 13px; font-weight: 500;
+                            cursor: pointer; font-family: inherit;
+                        ">Zurücksetzen</button>
+                    </div>
+                `;
+            }
+        }
+        
+        function startSoberTracking() {
+            const container = document.getElementById('soberContent');
+            const selectedOption = container._selectedOption ? container._selectedOption() : null;
+            const customLabel = (document.getElementById('soberCustomLabel')?.value || '').trim();
+            
+            let label, icon;
+            if (customLabel) {
+                label = customLabel;
+                icon = '🌟';
+            } else if (selectedOption) {
+                label = selectedOption.label;
+                icon = selectedOption.icon;
+            } else {
+                // Nothing selected
+                return;
+            }
+            
+            soberData = {
+                startDate: new Date().toISOString(),
+                label: label,
+                icon: icon
+            };
+            
+            saveSoberData();
+            renderSoberTracker();
+        }
+        
+        function resetSoberTracker() {
+            if (!confirm('Wirklich zurücksetzen? Dein Fortschritt geht verloren.')) return;
+            soberData = null;
+            saveSoberData();
+            renderSoberTracker();
         }
 
         function changeMonth(delta) {
